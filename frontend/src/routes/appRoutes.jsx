@@ -4,6 +4,8 @@ import PublicLayout from "../layouts/publicLayout";
 
 
 import HomePage from "../pages/public/homepage";
+import CartPage from "../pages/public/cartPage";
+import CheckoutPage from "../pages/public/checkout";
 
 
 export default function AppRoutes() {
@@ -13,6 +15,8 @@ export default function AppRoutes() {
       {/* PUBLIC ROUTES */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
       </Route>
 
       {/* ADMIN ROUTES */}

@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import { FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
 import logo from "../../assets/logo.jpg";
+import { useCart } from "../../context/cartContext";
 
 export default function Navbar() {
+  const { totalItems } = useCart();
+
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -49,9 +52,13 @@ export default function Navbar() {
 
           <Link to="/cart" className="relative hover:text-black">
             <FaShoppingCart size={18} />
-            <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-              2
-            </span>
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                {totalItems}
+              </span>
+            )}
+
+
           </Link>
 
           <Link to="/account" className="hover:text-black">

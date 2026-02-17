@@ -1,6 +1,10 @@
 import { FaShoppingCart } from "react-icons/fa";
+import { useCart } from "../../context/cartContext";
+
 
 export default function ProductCard({ product }) {
+  const { addToCart } = useCart();
+
   return (
     <div className="border rounded-lg p-4 hover:shadow-lg transition duration-300 bg-white">
 
@@ -30,7 +34,17 @@ export default function ProductCard({ product }) {
       </p>
 
       {/* Add to Cart */}
-      <button className="mt-4 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+      <button
+        onClick={() =>
+          addToCart({
+            id: product.id || Math.random(),
+            name: product.name,
+            price: product.price,
+          })
+        }
+        className="mt-4 w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+      >
+
         <FaShoppingCart size={14} />
         Add to Cart
       </button>
