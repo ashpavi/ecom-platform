@@ -42,6 +42,7 @@ export default function HomePage() {
                 <ProductCard
                 key={item}
                 product={{
+                id: item,
                     name: "Premium Product",
                     price: 4500,
                     image: ""

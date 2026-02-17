@@ -1,11 +1,14 @@
+import { Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 
 export default function ProductCard({ product }) {
+  const productId = product?.id ?? 1;
+  const productPath = `/products/${productId}`;
   return (
     <div className="border rounded-lg p-4 hover:shadow-lg transition duration-300 bg-white">
 
       {/* Product Image */}
-      <div className="h-48 bg-gray-200 rounded mb-4 overflow-hidden">
+      <Link to={productPath} className="block h-48 bg-gray-200 rounded mb-4 overflow-hidden" aria-label={`View details for ${product.name}`}>
         {product.image ? (
           <img
             src={product.image}
@@ -17,12 +20,12 @@ export default function ProductCard({ product }) {
             No Image
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Product Name */}
-      <h3 className="font-semibold text-gray-800 truncate">
+      <Link to={productPath} className="font-semibold text-gray-800 truncate block">
         {product.name}
-      </h3>
+      </Link>
 
       {/* Price */}
       <p className="text-blue-600 font-bold mt-2">

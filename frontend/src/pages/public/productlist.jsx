@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const products = [
   {
@@ -98,6 +99,7 @@ function HeartIcon({ filled }) {
 
 function ProductCard({ product }) {
   const [wished, setWished] = useState(false);
+  const productPath = `/products/${product.id}`;
   return (
     <div
       style={{
@@ -140,23 +142,30 @@ function ProductCard({ product }) {
       </button>
 
       {/* Image */}
-      <div style={{ background: "#f9fafb", height: 220, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+      <Link
+        to={productPath}
+        style={{ display: "block", background: "#f9fafb", height: 220, overflow: "hidden" }}
+        aria-label={`View details for ${product.name}`}
+      >
         <img
           src={product.image}
           alt={product.name}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
           onError={e => { e.target.style.display = "none"; }}
         />
-      </div>
+      </Link>
 
       {/* Info */}
       <div style={{ padding: "14px 16px 16px" }}>
         <div style={{ fontSize: 10, fontWeight: 700, color: "#6b7280", letterSpacing: "1px", marginBottom: 4 }}>
           {product.brand}
         </div>
-        <div style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 6, lineHeight: 1.3 }}>
+        <Link
+          to={productPath}
+          style={{ fontSize: 15, fontWeight: 600, color: "#111827", marginBottom: 6, lineHeight: 1.3, textDecoration: "none", display: "block" }}
+        >
           {product.name}
-        </div>
+        </Link>
         <StarRating rating={product.rating} reviews={product.reviews} />
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
           <span style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>
