@@ -4,6 +4,7 @@ import PublicLayout from "../layouts/publicLayout";
 
 
 import HomePage from "../pages/public/homepage";
+import ProductList from "../pages/public/productlist";
 
 
 export default function AppRoutes() {
@@ -13,8 +14,8 @@ export default function AppRoutes() {
       {/* PUBLIC ROUTES */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductList />} />
       </Route>
-
       {/* ADMIN ROUTES */}
       {/* <Route element={<AdminLayout />}>
         <Route path="/admin/adminDashboard" element={<AdminDashboard />} />
