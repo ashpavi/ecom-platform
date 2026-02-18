@@ -9,7 +9,17 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
+
 export default function CheckoutPage() {
+  const [shippingData, setShippingData] = useState({
+  fullName: "",
+  streetAddress: "",
+  city: "",
+  zipcode: "",
+  contactno:"",
+  email:"",
+});
+
   const { cartItems } = useCart();
   const navigate = useNavigate();
 
@@ -45,23 +55,71 @@ export default function CheckoutPage() {
           {/* LEFT SIDE */}
           <div className="lg:col-span-2 space-y-8">
 
-            {/* Shipping Card */}
+            {/* Delivery Card */}
             <div className="bg-white p-6 rounded-xl shadow-sm border space-y-5">
-              <h3 className="text-lg font-semibold">Shipping Address</h3>
+              <h3 className="text-lg font-semibold">Delivery Address</h3>
 
-              <input className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Full Name" />
+              <input
+                value={shippingData.fullName}
+                onChange={(e) =>
+                  setShippingData({ ...shippingData, fullName: e.target.value })
+                }
+                className="w-full border rounded-lg px-4 py-3"
+                placeholder="Full Name"
+              />
 
-              <input className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Street Address" />
 
-              <div className="grid md:grid-cols-3 gap-4">
-                <input className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="City" />
-                <input className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="State" />
-                <input className="border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="ZIP Code" />
+              <input
+                value={shippingData.streetAddress}
+                onChange={(e) =>
+                  setShippingData({ ...shippingData, streetAddress: e.target.value })
+                }
+                className="w-full border rounded-lg px-4 py-3"
+                placeholder="Street Address"
+              />  
+
+
+              <div className="grid md:grid-cols-2 gap-4">
+                <input
+                  value={shippingData.city}
+                  onChange={(e) =>
+                    setShippingData({ ...shippingData, city: e.target.value })
+                  }
+                  className="w-full border rounded-lg px-4 py-3"
+                  placeholder="City"
+                />
+
+                <input
+                  value={shippingData.zipcode}
+                  onChange={(e) =>
+                    setShippingData({ ...shippingData, zipcode: e.target.value })
+                  }
+                  className="w-full border rounded-lg px-4 py-3"
+                  placeholder="ZIP Code"
+                />
+
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-4">
+
+                <input
+                  value={shippingData.contactno}
+                  onChange={(e) =>
+                    setShippingData({ ...shippingData, contactno: e.target.value })
+                  }
+                  className="w-full border rounded-lg px-4 py-3"
+                  placeholder="Contact Number"
+                />
+
+                <input
+                  value={shippingData.email}
+                  onChange={(e) =>
+                    setShippingData({ ...shippingData, email: e.target.value })
+                  }
+                  className="w-full border rounded-lg px-4 py-3"
+                  placeholder="Email Address"
+                />
+
               </div>
             </div>
 
@@ -146,13 +204,8 @@ export default function CheckoutPage() {
             </div>
 
             <div className="flex justify-between text-gray-600">
-              <span>Shipping</span>
+              <span>Delivery Cost</span>
               <span>${shipping.toFixed(2)}</span>
-            </div>
-
-            <div className="flex justify-between text-gray-600">
-              <span>Estimated Tax</span>
-              <span>${tax.toFixed(2)}</span>
             </div>
 
             <hr />
@@ -164,9 +217,17 @@ export default function CheckoutPage() {
               </span>
             </div>
 
-            <button className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition mt-4">
+            <button
+              onClick={() =>
+                navigate("/orderSuccess", {
+                  state: { shippingData }
+                })
+              }
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition mt-4"
+            >
               Place Order →
             </button>
+
 
             <p className="text-xs text-gray-500 text-center mt-4">
               Secure 256-bit SSL encrypted payment processing.
