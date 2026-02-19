@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const products = [
   {
@@ -183,6 +183,10 @@ function ProductCard({ product }) {
 }
 
 export default function ProductList() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+  
   const [selectedSizes, setSelectedSizes] = useState([8]);
   const [selectedColor, setSelectedColor] = useState(1);
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -191,6 +195,21 @@ export default function ProductList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("Featured");
   const [viewMode, setViewMode] = useState("grid");
+
+  // Filter products based on search query
+  const filteredProducts = searchQuery
+    ? products.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.brand.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : products;
+
+  // Check if search returned no results and redirect to no-results page
+  useEffect(() => {
+    if (searchQuery && filteredProducts.length === 0) {
+      navigate(`/no-results?search=${encodeURIComponent(searchQuery)}`);
+    }
+  }, [searchQuery, filteredProducts, navigate]);
 
   const toggleSize = (size) => {
     setSelectedSizes(prev =>
@@ -224,8 +243,12 @@ export default function ProductList() {
         </div>
 
         {/* Page heading */}
-        <h1 style={{ fontSize: 28, fontWeight: 800, margin: "0 0 4px", color: "#111827" }}>Men's Footwear</h1>
-        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 24 }}>1,248 premium items found</div>
+        <h1 style={{ fontSize: 28, fontWeight: 800, margin: "0 0 4px", color: "#111827" }}>
+          {searchQuery ? `Search Results for "${searchQuery}"` : "Men's Footwear"}
+        </h1>
+        <div style={{ fontSize: 14, color: "#6b7280", marginBottom: 24 }}>
+          {filteredProducts.length} {searchQuery ? "result(s)" : "premium items"} found
+        </div>
 
         <div style={{ display: "flex", gap: 28 }}>
           {/* Sidebar */}
@@ -388,7 +411,7 @@ export default function ProductList() {
               gridTemplateColumns: viewMode === "grid" ? "repeat(3, 1fr)" : "1fr",
               gap: 20,
             }}>
-              {products.map(product => (
+              {filteredProducts.map(product => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

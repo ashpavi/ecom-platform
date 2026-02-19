@@ -1,8 +1,33 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
+import { useState, useEffect } from "react";
 import logo from "../../assets/logo.jpg";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get search query from URL directly
+  const getSearchQuery = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('search') || '';
+  };
+  
+  const [searchQuery, setSearchQuery] = useState(getSearchQuery());
+
+  // Update search query when location changes
+  useEffect(() => {
+    setSearchQuery(getSearchQuery());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
     <nav className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -32,13 +57,15 @@ export default function Navbar() {
         </div>
 
         {/* SEARCH BAR */}
-        <div className="hidden md:flex flex-1 mx-8">
+        <form onSubmit={handleSearch} className="hidden md:flex flex-1 mx-8">
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search products..."
             className="w-full bg-gray-100 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-        </div>
+        </form>
 
         {/* RIGHT SECTION */}
         <div className="flex items-center space-x-6 text-gray-600">

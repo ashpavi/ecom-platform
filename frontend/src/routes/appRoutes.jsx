@@ -2,10 +2,10 @@ import { Routes, Route } from "react-router-dom";
 
 import PublicLayout from "../layouts/publicLayout";
 
-
 import HomePage from "../pages/public/homepage";
 import ProductList from "../pages/public/productlist";
 import ProductDetails from "../pages/public/productdetails";
+import NoResults from "../pages/public/noresults";
 
 
 export default function AppRoutes() {
@@ -18,6 +18,9 @@ export default function AppRoutes() {
         <Route path="/products" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
       </Route>
+
+      {/* NO RESULTS PAGE - WITHOUT FOOTER */}
+      <Route path="/no-results" element={<NoResults />} />
       {/* ADMIN ROUTES */}
       {/* <Route element={<AdminLayout />}>
         <Route path="/admin/adminDashboard" element={<AdminDashboard />} />
