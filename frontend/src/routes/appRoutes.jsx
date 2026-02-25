@@ -13,6 +13,8 @@ import ProfileSettingsPage from "../pages/public/account/profileSettings";
 import AccountLayout from "../pages/public/account/accountLayout";
 import LoginPage from "../pages/public/account/login";
 import RegisterPage from "../pages/public/account/register";
+import OrderDetailsModal from "../components/store/account/orderDetailModal";
+
 
 
 export default function AppRoutes() {
@@ -34,6 +36,7 @@ export default function AppRoutes() {
         <Route path="/account" element={<DashboardPage />} />
         <Route path="/account/orders" element={<MyOrdersPage />} />
         <Route path="/account/profile" element={<ProfileSettingsPage />} />
+        <Route path="/account/order/:orderId" element={<OrderDetailsModal/>} />
       </Route>
       </Route>
 

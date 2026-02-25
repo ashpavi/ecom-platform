@@ -1,81 +1,144 @@
-import { FaShoppingBag, FaTruck, FaCheckCircle } from "react-icons/fa";
+import {
+  FaShoppingBag,
+  FaTruck,
+  FaCheckCircle
+} from "react-icons/fa";
+import {Link}  from "react-router-dom";
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
 
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900">
+      {/* ================= HEADER ================= */}
+      <div className="space-y-2">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900">
           Welcome Back, Alex 👋
         </h2>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-gray-500 text-sm sm:text-base">
           Here’s an overview of your account activity.
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid md:grid-cols-3 gap-6">
 
-        <div className="bg-blue-50 p-6 rounded-xl shadow-sm">
+      {/* ================= STATS CARDS ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {/* Total Orders */}
+        <div className="group bg-gradient-to-br from-blue-50 to-white 
+                        p-6 rounded-2xl shadow-sm hover:shadow-md 
+                        transition-all duration-300 border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Orders</p>
-              <p className="text-2xl font-bold text-blue-600">12</p>
+              <p className="text-sm text-gray-500">Total Orders</p>
+              <p className="text-3xl font-bold text-blue-600 mt-1">
+                12
+              </p>
             </div>
-            <FaShoppingBag className="text-blue-600" size={22} />
+            <div className="bg-blue-100 p-3 rounded-full group-hover:scale-110 transition">
+              <FaShoppingBag className="text-blue-600" size={18} />
+            </div>
           </div>
         </div>
 
-        <div className="bg-yellow-50 p-6 rounded-xl shadow-sm">
+        {/* Processing */}
+        <div className="group bg-gradient-to-br from-yellow-50 to-white 
+                        p-6 rounded-2xl shadow-sm hover:shadow-md 
+                        transition-all duration-300 border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Processing</p>
-              <p className="text-2xl font-bold text-yellow-600">3</p>
+              <p className="text-sm text-gray-500">Processing</p>
+              <p className="text-3xl font-bold text-yellow-600 mt-1">
+                3
+              </p>
             </div>
-            <FaTruck className="text-yellow-600" size={22} />
+            <div className="bg-yellow-100 p-3 rounded-full group-hover:scale-110 transition">
+              <FaTruck className="text-yellow-600" size={18} />
+            </div>
           </div>
         </div>
 
-        <div className="bg-green-50 p-6 rounded-xl shadow-sm">
+        {/* Completed */}
+        <div className="group bg-gradient-to-br from-green-50 to-white 
+                        p-6 rounded-2xl shadow-sm hover:shadow-md 
+                        transition-all duration-300 border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Completed</p>
-              <p className="text-2xl font-bold text-green-600">9</p>
+              <p className="text-sm text-gray-500">Completed</p>
+              <p className="text-3xl font-bold text-green-600 mt-1">
+                9
+              </p>
             </div>
-            <FaCheckCircle className="text-green-600" size={22} />
+            <div className="bg-green-100 p-3 rounded-full group-hover:scale-110 transition">
+              <FaCheckCircle className="text-green-600" size={18} />
+            </div>
           </div>
         </div>
 
       </div>
 
-      {/* Recent Orders */}
-      <div className="bg-white border rounded-xl shadow-sm p-6">
-        <h3 className="font-semibold mb-4">Recent Orders</h3>
+
+      {/* ================= RECENT ORDERS ================= */}
+      <div className="bg-white border rounded-2xl shadow-sm p-6">
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
+          <h3 className="font-semibold text-lg">
+            Recent Orders
+          </h3>
+          <Link to="/account/orders">
+          <button className="text-sm text-blue-600 hover:underline">
+            View All
+          </button>
+          </Link>
+        </div>
 
         <div className="space-y-4">
 
-          <div className="flex justify-between items-center border-b pb-3">
+          {/* Order Item */}
+          <div className="flex flex-col sm:flex-row 
+                          sm:items-center sm:justify-between 
+                          gap-3 p-4 rounded-xl 
+                          hover:bg-gray-50 transition border">
+
             <div>
-              <p className="font-medium">#ORD-882193</p>
-              <p className="text-sm text-gray-500">Placed on Oct 24</p>
+              <p className="font-medium text-gray-800">
+                #ORD-882193
+              </p>
+              <p className="text-sm text-gray-500">
+                Placed on Oct 24
+              </p>
             </div>
-            <span className="text-yellow-600 text-sm font-medium">
+
+            <span className="inline-flex items-center justify-center 
+                             px-3 py-1 rounded-full text-xs font-medium 
+                             bg-yellow-100 text-yellow-700 w-fit">
               Processing
             </span>
           </div>
 
-          <div className="flex justify-between items-center border-b pb-3">
+
+          <div className="flex flex-col sm:flex-row 
+                          sm:items-center sm:justify-between 
+                          gap-3 p-4 rounded-xl 
+                          hover:bg-gray-50 transition border">
+
             <div>
-              <p className="font-medium">#ORD-882120</p>
-              <p className="text-sm text-gray-500">Placed on Oct 18</p>
+              <p className="font-medium text-gray-800">
+                #ORD-882120
+              </p>
+              <p className="text-sm text-gray-500">
+                Placed on Oct 18
+              </p>
             </div>
-            <span className="text-green-600 text-sm font-medium">
+
+            <span className="inline-flex items-center justify-center 
+                             px-3 py-1 rounded-full text-xs font-medium 
+                             bg-green-100 text-green-700 w-fit">
               Delivered
             </span>
           </div>
 
         </div>
+
       </div>
 
     </div>

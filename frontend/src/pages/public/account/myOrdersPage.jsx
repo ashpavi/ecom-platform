@@ -1,11 +1,38 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import OrderDetailsModal from "../../../components/store/account/orderDetailModal";
 
 export default function MyOrdersPage() {
-  const navigate = useNavigate();
+
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const orders = [
-    { id: "ORD-882193", total: 409.75, status: "Processing" },
-    { id: "ORD-882120", total: 129.00, status: "Delivered" },
+    {
+      id: "ORD-882193",
+      total: 409.75,
+      status: "Processing",
+      date: "Oct 24, 2024",
+      items: [
+        { name: "Wireless Headphones", price: 299, quantity: 1 },
+        { name: "Cotton Tee", price: 55.75, quantity: 2 }
+      ],
+      shipping: {
+        name: "Alex Morgan",
+        address: "123 Main Street, NY 10001"
+      }
+    },
+    {
+      id: "ORD-882120",
+      total: 129.00,
+      status: "Delivered",
+      date: "Oct 18, 2024",
+      items: [
+        { name: "Ceramic Mug", price: 29, quantity: 3 }
+      ],
+      shipping: {
+        name: "Alex Morgan",
+        address: "123 Main Street, NY 10001"
+      }
+    }
   ];
 
   return (
@@ -16,7 +43,7 @@ export default function MyOrdersPage() {
         {orders.map((order) => (
           <div
             key={order.id}
-            className="border rounded-xl p-5 flex justify-between items-center hover:shadow-sm"
+            className="border rounded-xl p-5 flex justify-between items-center hover:shadow-sm transition"
           >
             <div>
               <p className="font-semibold">{order.id}</p>
@@ -37,9 +64,7 @@ export default function MyOrdersPage() {
               </span>
 
               <button
-                onClick={() =>
-                  navigate(`/account/orders/${order.id}`)
-                }
+                onClick={() => setSelectedOrder(order)}
                 className="text-blue-600 hover:underline text-sm"
               >
                 View Details
@@ -48,6 +73,14 @@ export default function MyOrdersPage() {
           </div>
         ))}
       </div>
+
+      {/* Modal */}
+      {selectedOrder && (
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+        />
+      )}
     </div>
   );
 }
