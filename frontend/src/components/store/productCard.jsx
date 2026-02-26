@@ -1,7 +1,10 @@
+import { Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../../context/cartContext";
 
 export default function ProductCard({ product }) {
+  const productId = product?.id ?? 1;
+  const productPath = `/products/${productId}`;
   const { addToCart } = useCart();
 
   return (
@@ -10,6 +13,7 @@ export default function ProductCard({ product }) {
                     overflow-hidden">
 
       {/* Product Image */}
+      <Link to={productPath} className="block h-48 bg-gray-200 rounded mb-4 overflow-hidden" aria-label={`View details for ${product.name}`}>
       <div className="relative h-52 sm:h-56 md:h-60 bg-gray-100 overflow-hidden">
         {product.image ? (
           <img
@@ -24,8 +28,12 @@ export default function ProductCard({ product }) {
             No Image
           </div>
         )}
-      </div>
+      </Link>
 
+      {/* Product Name */}
+      <Link to={productPath} className="font-semibold text-gray-800 truncate block">
+        {product.name}
+      </Link>
       {/* Content Section */}
       <div className="p-4 sm:p-5">
 

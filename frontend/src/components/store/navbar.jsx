@@ -1,3 +1,6 @@
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
+import { useState, useEffect } from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -11,6 +14,29 @@ import logo from "../../assets/logo.jpg";
 import { useCart } from "../../context/cartContext";
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Get search query from URL directly
+  const getSearchQuery = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('search') || '';
+  };
+  
+  const [searchQuery, setSearchQuery] = useState(getSearchQuery());
+
+  // Update search query when location changes
+  useEffect(() => {
+    setSearchQuery(getSearchQuery());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.search]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
   const { totalItems } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -63,6 +89,12 @@ export default function Navbar() {
           {/* RIGHT SECTION */}
           <div className="flex items-center space-x-4 sm:space-x-6 text-gray-600">
 
+          {/* Nav Links */}
+          <div className="hidden md:flex space-x-6 text-gray-600 font-medium">
+            <Link to="/" className="hover:text-black">Home</Link>
+            <Link to="/products" className="hover:text-black">Products</Link>
+            <Link to="/new" className="hover:text-black">New Arrivals</Link>
+            <Link to="/sale" className="hover:text-black">Sale</Link>
             <Link to="/cart" className="relative hover:text-black">
               <FaShoppingCart size={18} />
               {totalItems > 0 && (
@@ -87,6 +119,8 @@ export default function Navbar() {
         onClick={() => setIsOpen(false)}
       />
 
+        {/* SEARCH BAR */}
+        <form onSubmit={handleSearch} className="hidden md:flex flex-1 mx-8">
       {/* SIDE DRAWER */}
       <div
         className={`fixed top-0 left-0 h-full w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50
@@ -105,9 +139,30 @@ export default function Navbar() {
           {/* Search */}
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search products..."
             className="w-full bg-gray-100 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+        </form>
+
+        {/* RIGHT SECTION */}
+        <div className="flex items-center space-x-6 text-gray-600">
+
+          <Link to="/wishlist" className="hover:text-black">
+            <FaHeart size={18} />
+          </Link>
+
+          <Link to="/cart" className="relative hover:text-black">
+            <FaShoppingCart size={18} />
+            <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+              2
+            </span>
+          </Link>
+
+          <Link to="/account" className="hover:text-black">
+            <FaUser size={18} />
+          </Link>
 
           {/* Links */}
           <div className="flex flex-col space-y-4 text-gray-700 font-medium">

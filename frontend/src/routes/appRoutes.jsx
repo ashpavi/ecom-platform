@@ -2,8 +2,12 @@ import { Routes, Route } from "react-router-dom";
 
 import PublicLayout from "../layouts/publicLayout";
 
-
 import HomePage from "../pages/public/homepage";
+import ProductList from "../pages/public/productlist";
+import ProductDetails from "../pages/public/productdetails";
+import NoResults from "../pages/public/noresults";
+import AboutUs from "../pages/public/aboutus";
+import ContactUs from "../pages/public/contactus";
 import CartPage from "../pages/public/cartPage";
 import CheckoutPage from "../pages/public/checkout";
 import OrderSuccessPage from "../pages/public/orderSuccess";
@@ -26,6 +30,16 @@ export default function AppRoutes() {
       {/* PUBLIC ROUTES */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductList />} />
+        <Route path="/products/:id" element={<ProductDetails />} />
+      </Route>
+
+      {/* ABOUT US PAGE - WITHOUT NAVBAR & FOOTER */}
+      <Route path="/about" element={<AboutUs />} />
+      {/* CONTACT US PAGE - WITHOUT NAVBAR & FOOTER */}
+      <Route path="/contact" element={<ContactUs />} />
+      {/* NO RESULTS PAGE - WITHOUT FOOTER */}
+      <Route path="/no-results" element={<NoResults />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/orderSuccess" element={<OrderSuccessPage />} />
