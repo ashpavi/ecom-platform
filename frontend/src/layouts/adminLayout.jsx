@@ -1,13 +1,36 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import AdminSidebar from "../components/admin/AdminSidebar";
+import { FaBars } from "react-icons/fa";
 
 export default function AdminLayout() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="flex">
-      <div className="w-64 bg-gray-900 text-white min-h-screen p-4">
-        Admin Sidebar
-      </div>
-      <div className="flex-1 p-6">
-        <Outlet />
+    <div className="h-screen flex bg-gray-100 overflow-hidden">
+
+      {/* Sidebar */}
+      <AdminSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+      {/* Main Content Wrapper */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+
+        {/* Mobile Top Bar */}
+        <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="p-2 rounded-lg bg-gray-100"
+          >
+            <FaBars />
+          </button>
+          <h1 className="font-semibold">Admin Panel</h1>
+        </div>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 lg:p-10">
+          <Outlet />
+        </div>
+
       </div>
     </div>
   );
