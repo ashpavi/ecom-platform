@@ -4,35 +4,7 @@ import { Mail, Phone, MapPin, Instagram } from 'lucide-react';
 const Footer = () => {
   return (
     <footer className="bg-white border-t border-gray-200">
-      {/* Newsletter Section */}
-      <div className="bg-gradient-to-b from-blue-50 to-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Subscribe to our newsletter
-          </h2>
-          <p className="text-gray-600 mb-8">
-            Stay updated on new arrivals, trends, and exclusive offers.
-          </p>
-          <div className="flex justify-center items-center max-w-md mx-auto">
-            <div className="relative flex-1">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-r-lg hover:bg-blue-700 transition-colors flex items-center gap-2 whitespace-nowrap">
-              Subscribe
-              <span>→</span>
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mt-4">
-            By subscribing you agree to our <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
-          </p>
-        </div>
-      </div>
-
+      
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -171,21 +143,11 @@ const Footer = () => {
       {/* Bottom Bar */}
       <div className="border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-sm text-gray-600">
-              © 2024 LuxeStore. All rights reserved.
+              © LuxeStore 2026. All rights reserved
             </p>
-            <div className="flex gap-6">
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                中文版
-              </a>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                한국어
-              </a>
-              <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                日本語
-              </a>
-            </div>
+      
           </div>
         </div>
       </div>

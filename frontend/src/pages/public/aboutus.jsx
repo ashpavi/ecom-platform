@@ -60,7 +60,7 @@ export default function AboutUs() {
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <button
-              onClick={() => navigate("/shop")}
+              onClick={() => navigate("/products")}
               className="bg-blue-600 px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
             >
               Explore Our Store
@@ -80,22 +80,47 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="border-y bg-gray-50">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="text-center py-10 border-r last:border-r-0"
-            >
-              <p className="text-2xl font-bold text-blue-600">
-                {stat.value}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                {stat.label}
-              </p>
-            </div>
-          ))}
+      
+      {/* STATS SECTION */}
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20">
+        <div className="max-w-6xl mx-auto px-6">
+
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold">Trusted by Millions</h2>
+            <p className="text-gray-500 mt-3">
+              Our impact in numbers speaks for itself.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            {stats.map((stat) => (
+              <div
+                key={stat.label}
+                className="group bg-white rounded-2xl p-8 text-center 
+                          shadow-sm border border-gray-100
+                          hover:shadow-xl hover:-translate-y-2
+                          transition-all duration-300"
+              >
+                {/* Number */}
+                <p className="text-4xl font-bold bg-gradient-to-r 
+                              from-blue-600 to-blue-400 
+                              bg-clip-text text-transparent">
+                  {stat.value}
+                </p>
+
+                {/* Divider */}
+                <div className="w-12 h-1 bg-blue-600 mx-auto my-4 rounded-full 
+                                group-hover:w-20 transition-all duration-300" />
+
+                {/* Label */}
+                <p className="text-gray-500 text-sm tracking-wide">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+
+          </div>
         </div>
       </section>
 
@@ -177,7 +202,7 @@ export default function AboutUs() {
           Join us on our journey to redefine modern shopping.
         </p>
         <button
-          onClick={() => navigate("/shop")}
+          onClick={() => navigate("/products")}
           className="mt-6 bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-200 transition"
         >
           Start Shopping →
