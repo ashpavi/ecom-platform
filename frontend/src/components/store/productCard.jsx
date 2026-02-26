@@ -3,18 +3,22 @@ import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../../context/cartContext";
 
 export default function ProductCard({ product }) {
-  const productId = product?.id ?? 1;
-  const productPath = `/products/${productId}`;
   const { addToCart } = useCart();
 
+  const productId = product?.id ?? 1;
+  const productPath = `/products/${productId}`;
+
   return (
-    <div className="group bg-white rounded-2xl border  border-gray-600 
+    <div className="group bg-white rounded-2xl border border-gray-200
                     hover:shadow-xl transition-all duration-300 
                     overflow-hidden">
 
-      {/* Product Image */}
-      <Link to={productPath} className="block h-48 bg-gray-200 rounded mb-4 overflow-hidden" aria-label={`View details for ${product.name}`}>
-      <div className="relative h-52 sm:h-56 md:h-60 bg-gray-100 overflow-hidden">
+      {/* IMAGE */}
+      <Link
+        to={productPath}
+        className="block relative h-52 sm:h-56 md:h-60 bg-gray-100 overflow-hidden"
+        aria-label={`View details for ${product.name}`}
+      >
         {product.image ? (
           <img
             src={product.image}
@@ -30,28 +34,27 @@ export default function ProductCard({ product }) {
         )}
       </Link>
 
-      {/* Product Name */}
-      <Link to={productPath} className="font-semibold text-gray-800 truncate block">
-        {product.name}
-      </Link>
-      {/* Content Section */}
+      {/* CONTENT */}
       <div className="p-4 sm:p-5">
 
-        {/* Product Name */}
-        <h3 className="text-sm sm:text-base font-semibold text-gray-800 truncate">
+        {/* NAME */}
+        <Link
+          to={productPath}
+          className="text-sm sm:text-base font-semibold text-gray-800 truncate block hover:text-blue-600 transition"
+        >
           {product.name}
-        </h3>
+        </Link>
 
-        {/* Price */}
+        {/* PRICE */}
         <p className="text-blue-600 text-base sm:text-lg font-bold mt-2">
           LKR {product.price}
         </p>
 
-        {/* Add to Cart */}
+        {/* ADD TO CART */}
         <button
           onClick={() =>
             addToCart({
-              id: product.id || Math.random(),
+              id: product.id ?? Math.random(),
               name: product.name,
               price: product.price,
             })
@@ -64,6 +67,7 @@ export default function ProductCard({ product }) {
           <FaShoppingCart size={14} />
           Add to Cart
         </button>
+
       </div>
     </div>
   );

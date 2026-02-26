@@ -6,8 +6,6 @@ import HomePage from "../pages/public/homepage";
 import ProductList from "../pages/public/productlist";
 import ProductDetails from "../pages/public/productdetails";
 import NoResults from "../pages/public/noresults";
-import AboutUs from "../pages/public/aboutus";
-import ContactUs from "../pages/public/contactus";
 import CartPage from "../pages/public/cartPage";
 import CheckoutPage from "../pages/public/checkout";
 import OrderSuccessPage from "../pages/public/orderSuccess";
@@ -20,6 +18,8 @@ import RegisterPage from "../pages/public/account/register";
 import OrderDetailsModal from "../components/store/account/orderDetailModal";
 import AdminLayout from "../layouts/adminLayout";
 import AdminDashboard from "../pages/admin/adminDashboard";
+import AboutUs from "../pages/public/aboutUs";
+import ContactUs from "../pages/public/contactUs";
 
 
 
@@ -32,14 +32,9 @@ export default function AppRoutes() {
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetails />} />
-      </Route>
-
-      {/* ABOUT US PAGE - WITHOUT NAVBAR & FOOTER */}
-      <Route path="/about" element={<AboutUs />} />
-      {/* CONTACT US PAGE - WITHOUT NAVBAR & FOOTER */}
-      <Route path="/contact" element={<ContactUs />} />
-      {/* NO RESULTS PAGE - WITHOUT FOOTER */}
-      <Route path="/no-results" element={<NoResults />} />
+        <Route path="/aboutUs" element={<AboutUs />} /> 
+        <Route path="/contactUs" element={<ContactUs />} />        
+        <Route path="/no-results" element={<NoResults />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/orderSuccess" element={<OrderSuccessPage />} />

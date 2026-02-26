@@ -8,9 +8,9 @@ export default function HomePage() {
   return (
     <div className="space-y-20">
 
-      {/* ================= HERO SECTION ================= */}
+      {/* HERO */}
       <section>
-        <Carousel 
+        <Carousel
           slides={[
             {
               tag: "New Collection",
@@ -37,15 +37,13 @@ export default function HomePage() {
         />
       </section>
 
-      {/* ================= FEATURED PRODUCTS ================= */}
+      {/* FEATURED */}
       <section>
-        <div className="max-w-7xl mx-auto px-10 sm:px-4 lg:px-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-xl sm:text-2xl font-bold">
-              Featured Products
-            </h2>
-          </div>
+          <h2 className="text-xl sm:text-2xl font-bold mb-8">
+            Featured Products
+          </h2>
 
           <div className="grid grid-cols-1 
                           sm:grid-cols-2 
@@ -56,10 +54,7 @@ export default function HomePage() {
               <ProductCard
                 key={item}
                 product={{
-                id: item,
-                    name: "Premium Product",
-                    price: 4500,
-                    image: ""
+                  id: item,
                   name: "Premium Product",
                   price: 4500,
                   image: ""
@@ -71,16 +66,14 @@ export default function HomePage() {
         </div>
       </section>
 
-
-      {/* ================= PROMOTIONAL BANNER ================= */}
-      <section className="relative overflow-hidden 
-                          bg-linear-to-r 
+      {/* PROMO */}
+      <section className="bg-gradient-to-r 
                           from-blue-600 
                           to-blue-500 
                           text-white 
                           py-16 sm:py-20">
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="max-w-7xl mx-auto px-4 text-center">
 
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold">
             Special Weekend Sale
@@ -94,8 +87,7 @@ export default function HomePage() {
                              px-8 py-3 rounded-xl 
                              font-semibold 
                              hover:bg-gray-200 
-                             active:scale-95
-                             transition-all">
+                             transition">
             Explore Deals
           </button>
 
