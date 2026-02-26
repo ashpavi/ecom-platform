@@ -6,6 +6,8 @@ import HomePage from "../pages/public/homepage";
 import ProductList from "../pages/public/productlist";
 import ProductDetails from "../pages/public/productdetails";
 import NoResults from "../pages/public/noresults";
+import AboutUs from "../pages/public/aboutus";
+import ContactUs from "../pages/public/contactus";
 
 
 export default function AppRoutes() {
@@ -19,6 +21,10 @@ export default function AppRoutes() {
         <Route path="/products/:id" element={<ProductDetails />} />
       </Route>
 
+      {/* ABOUT US PAGE - WITHOUT NAVBAR & FOOTER */}
+      <Route path="/about" element={<AboutUs />} />
+      {/* CONTACT US PAGE - WITHOUT NAVBAR & FOOTER */}
+      <Route path="/contact" element={<ContactUs />} />
       {/* NO RESULTS PAGE - WITHOUT FOOTER */}
       <Route path="/no-results" element={<NoResults />} />
       {/* ADMIN ROUTES */}
