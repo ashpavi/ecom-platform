@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import AdminSidebar from "../components/admin/AdminSidebar";
+import AdminSidebar from "../components/admin/adminSideBar";
 import { FaBars } from "react-icons/fa";
 
 export default function AdminLayout() {
