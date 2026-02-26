@@ -14,6 +14,8 @@ import AccountLayout from "../pages/public/account/accountLayout";
 import LoginPage from "../pages/public/account/login";
 import RegisterPage from "../pages/public/account/register";
 import OrderDetailsModal from "../components/store/account/orderDetailModal";
+import AdminLayout from "../layouts/adminLayout";
+import AdminDashboard from "../pages/admin/adminDashboard";
 
 
 
@@ -42,9 +44,9 @@ export default function AppRoutes() {
 
 
       {/* ADMIN ROUTES */}
-      {/* <Route element={<AdminLayout />}>
+      <Route element={<AdminLayout />}>
         <Route path="/admin/adminDashboard" element={<AdminDashboard />} />
-      </Route> */}
+      </Route> 
 
       {/* SUPER ADMIN ROUTES */}
       {/* <Route element={<SuperAdminLayout />}>
