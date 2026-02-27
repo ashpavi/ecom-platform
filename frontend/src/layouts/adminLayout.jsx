@@ -7,7 +7,7 @@ export default function AdminLayout() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="h-screen flex bg-gray-100 overflow-hidden">
+    <div className="h-screen flex bg-white overflow-hidden">
 
       {/* Sidebar */}
       <AdminSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
@@ -19,7 +19,7 @@ export default function AdminLayout() {
         <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b">
           <button
             onClick={() => setIsOpen(true)}
-            className="p-2 rounded-lg bg-gray-100"
+            className="p-2 rounded-lg bg-white border"
           >
             <FaBars />
           </button>

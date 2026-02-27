@@ -1,1010 +1,566 @@
 import { useState } from "react";
 
-const styles = `
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  :root {
-    --bg: #0a0b0f;
-    --surface: #111318;
-    --surface2: #181c24;
-    --border: #1e2330;
-    --accent: #e8ff47;
-    --accent2: #4fffb0;
-    --accent3: #ff6b6b;
-    --accent4: #7b9cff;
-    --text: #f0f2ff;
-    --muted: #5a6175;
-    --muted2: #8892a4;
-  }
-
-  .dash-root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    overflow: hidden;
-  }
-
-  /* SIDEBAR */
-  .sidebar {
-    width: 240px;
-    min-height: 100vh;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-  }
-
-  .sidebar::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 1px;
-    height: 100%;
-    background: linear-gradient(180deg, transparent, var(--accent) 40%, var(--accent2) 70%, transparent);
-    opacity: 0.3;
-  }
-
-  .logo-area {
-    padding: 28px 24px 24px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .logo-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .logo-icon {
-    width: 32px;
-    height: 32px;
-    background: var(--accent);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 800;
-    color: #0a0b0f;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  }
-
-  .logo-text {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--text);
-    letter-spacing: -0.3px;
-  }
-
-  .logo-sub {
-    font-size: 9px;
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    display: block;
-    margin-top: 1px;
-  }
-
-  .role-chip {
-    margin: 16px 24px;
-    background: linear-gradient(135deg, rgba(232,255,71,0.12), rgba(79,255,176,0.08));
-    border: 1px solid rgba(232,255,71,0.2);
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: 0.5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .role-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-  }
-
-  .nav-section {
-    padding: 8px 12px;
-    flex: 1;
-  }
-
-  .nav-label {
-    font-size: 9px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    padding: 12px 12px 6px;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.18s ease;
-    font-size: 13.5px;
-    font-weight: 400;
-    color: var(--muted2);
-    position: relative;
-    margin-bottom: 1px;
-  }
-
-  .nav-item:hover {
-    background: var(--surface2);
-    color: var(--text);
-  }
-
-  .nav-item.active {
-    background: rgba(232,255,71,0.1);
-    color: var(--accent);
-    font-weight: 500;
-  }
-
-  .nav-item.active::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 25%;
-    height: 50%;
-    width: 3px;
-    background: var(--accent);
-    border-radius: 0 2px 2px 0;
-  }
-
-  .nav-icon {
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 15px;
-  }
-
-  .nav-badge {
-    margin-left: auto;
-    background: var(--accent3);
-    color: white;
-    font-size: 9px;
-    font-weight: 700;
-    padding: 2px 6px;
-    border-radius: 10px;
-  }
-
-  .sidebar-footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-  }
-
-  .user-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    font-weight: 800;
-    font-size: 13px;
-    color: #0a0b0f;
-    flex-shrink: 0;
-  }
-
-  .user-name { font-size: 13px; font-weight: 500; }
-  .user-role { font-size: 11px; color: var(--muted2); }
-
-  /* MAIN */
-  .main {
-    flex: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* TOPBAR */
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 32px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    backdrop-filter: blur(12px);
-  }
-
-  .page-title {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.4px;
-  }
-
-  .topbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .icon-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 15px;
-    transition: all 0.15s;
-    position: relative;
-  }
-
-  .icon-btn:hover { background: var(--border); }
-
-  .notif-dot {
-    position: absolute;
-    top: 6px; right: 6px;
-    width: 7px; height: 7px;
-    background: var(--accent3);
-    border-radius: 50%;
-    border: 2px solid var(--surface);
-  }
-
-  .content {
-    padding: 32px;
-    flex: 1;
-  }
-
-  /* STATS GRID */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, border-color 0.2s;
-  }
-
-  .stat-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(232,255,71,0.2);
-  }
-
-  .stat-card::after {
-    content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    opacity: 0.05;
-    transform: translate(30%, -30%);
-  }
-
-  .stat-card:nth-child(1)::after { background: var(--accent); }
-  .stat-card:nth-child(2)::after { background: var(--accent2); }
-  .stat-card:nth-child(3)::after { background: var(--accent4); }
-  .stat-card:nth-child(4)::after { background: var(--accent3); }
-
-  .stat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .stat-icon-wrap {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-  }
-
-  .stat-trend {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 8px;
-    border-radius: 20px;
-  }
-
-  .trend-up { background: rgba(79,255,176,0.12); color: var(--accent2); }
-  .trend-down { background: rgba(255,107,107,0.12); color: var(--accent3); }
-
-  .stat-value {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    font-weight: 800;
-    font-size: 28px;
-    letter-spacing: -1px;
-    margin-bottom: 4px;
-  }
-
-  .stat-label {
-    font-size: 12px;
-    color: var(--muted2);
-    font-weight: 400;
-  }
-
-  /* PANELS ROW */
-  .panels-row {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    overflow: hidden;
-  }
-
-  .panel-head {
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .panel-title {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-  }
-
-  .panel-action {
-    font-size: 12px;
-    color: var(--accent);
-    cursor: pointer;
-    font-weight: 500;
-    border: none;
-    background: none;
-    padding: 0;
-  }
-
-  /* ADMINS TABLE */
-  .table-wrap {
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th {
-    text-align: left;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 12px 22px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  td {
-    padding: 13px 22px;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(30,35,48,0.5);
-    color: var(--muted2);
-  }
-
-  tr:last-child td { border-bottom: none; }
-
-  tr:hover td { background: rgba(255,255,255,0.01); }
-
-  .admin-name-cell {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .mini-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 700;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    color: #0a0b0f;
-    flex-shrink: 0;
-  }
-
-  .admin-name { color: var(--text); font-weight: 500; font-size: 13px; }
-  .admin-email { font-size: 11px; color: var(--muted); }
-
-  .status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .status-active { background: rgba(79,255,176,0.12); color: var(--accent2); }
-  .status-inactive { background: rgba(90,97,117,0.2); color: var(--muted2); }
-  .status-pending { background: rgba(255,107,107,0.12); color: var(--accent3); }
-
-  .action-row {
-    display: flex;
-    gap: 6px;
-  }
-
-  .act-btn {
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.15s;
-  }
-
-  .act-btn:hover { background: var(--border); }
-
-  /* ACTIVITY FEED */
-  .feed-list {
-    padding: 8px 0;
-  }
-
-  .feed-item {
-    display: flex;
-    gap: 12px;
-    padding: 12px 22px;
-    transition: background 0.15s;
-  }
-
-  .feed-item:hover { background: rgba(255,255,255,0.01); }
-
-  .feed-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-
-  .feed-text { font-size: 12.5px; color: var(--muted2); line-height: 1.5; }
-  .feed-text strong { color: var(--text); font-weight: 500; }
-  .feed-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  /* BOTTOM ROW */
-  .bottom-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
-  }
-
-  /* SETTINGS PANEL */
-  .settings-list {
-    padding: 8px 0;
-  }
-
-  .setting-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 13px 22px;
-    border-bottom: 1px solid rgba(30,35,48,0.5);
-  }
-
-  .setting-row:last-child { border-bottom: none; }
-
-  .setting-label { font-size: 13px; color: var(--text); font-weight: 400; }
-  .setting-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-
-  /* TOGGLE */
-  .toggle {
-    width: 40px;
-    height: 22px;
-    border-radius: 11px;
-    position: relative;
-    cursor: pointer;
-    transition: background 0.2s;
-    border: none;
-    flex-shrink: 0;
-  }
-
-  .toggle.on { background: var(--accent); }
-  .toggle.off { background: var(--border); }
-
-  .toggle-knob {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: white;
-    top: 3px;
-    transition: left 0.2s;
-  }
-
-  .toggle.on .toggle-knob { left: 21px; }
-  .toggle.off .toggle-knob { left: 3px; }
-
-  /* REPORTS */
-  .report-item {
-    padding: 13px 22px;
-    border-bottom: 1px solid rgba(30,35,48,0.5);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .report-item:last-child { border-bottom: none; }
-
-  .report-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-  }
-
-  .report-name { font-size: 13px; font-weight: 500; color: var(--text); }
-  .report-meta { font-size: 11px; color: var(--muted); }
-
-  .download-btn {
-    margin-left: auto;
-    padding: 5px 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted2);
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  }
-
-  .download-btn:hover {
-    background: rgba(232,255,71,0.1);
-    border-color: rgba(232,255,71,0.3);
-    color: var(--accent);
-  }
-
-  /* BAR CHART */
-  .mini-chart {
-    padding: 16px 22px 20px;
-    display: flex;
-    align-items: flex-end;
-    gap: 6px;
-    height: 80px;
-  }
-
-  .bar-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    height: 100%;
-    justify-content: flex-end;
-  }
-
-  .bar {
-    width: 100%;
-    border-radius: 4px 4px 2px 2px;
-    transition: height 0.4s ease;
-  }
-
-  .bar-month {
-    font-size: 9px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  /* ADD ADMIN MODAL LOOK */
-  .add-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    background: var(--accent);
-    color: #0a0b0f;
-    border: none;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
-  .add-btn:hover { opacity: 0.88; }
-
-  .alert-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(255,107,107,0.08);
-    border: 1px solid rgba(255,107,107,0.2);
-    border-radius: 10px;
-    padding: 12px 18px;
-    margin-bottom: 24px;
-    font-size: 13px;
-    color: var(--accent3);
-  }
-`;
-
-const NAV = [
-  { id: "overview", label: "Overview", icon: "⊞", section: "MAIN" },
-  { id: "admins", label: "Manage Admins", icon: "👤", section: "SUPER ADMIN", badge: "3" },
-  { id: "settings", label: "Platform Settings", icon: "⚙️", section: "SUPER ADMIN" },
-  { id: "reports", label: "System Reports", icon: "📊", section: "SUPER ADMIN" },
-  { id: "security", label: "Security & Audit", icon: "🔒", section: "SYSTEM" },
-  { id: "logs", label: "Access Logs", icon: "📋", section: "SYSTEM" },
+const admins = [
+  { id: 1, name: "Elena Moreau", email: "elena@luxestore.com", role: "Store Admin", store: "LuxeStore NY", status: "active", joined: "Jan 12, 2024", avatar: "EM" },
+  { id: 2, name: "James Okafor", email: "james@luxestore.com", role: "Catalog Admin", store: "LuxeStore LA", status: "active", joined: "Feb 3, 2024", avatar: "JO" },
+  { id: 3, name: "Priya Nair", email: "priya@luxestore.com", role: "Finance Admin", store: "LuxeStore UK", status: "suspended", joined: "Mar 18, 2024", avatar: "PN" },
+  { id: 4, name: "Marcus Liu", email: "marcus@luxestore.com", role: "Store Admin", store: "LuxeStore AU", status: "active", joined: "Apr 5, 2024", avatar: "ML" },
+  { id: 5, name: "Sofia Reyes", email: "sofia@luxestore.com", role: "Support Admin", store: "LuxeStore EU", status: "inactive", joined: "May 22, 2024", avatar: "SR" },
 ];
 
-const ADMINS = [
-  { name: "Sophie Laurent", email: "s.laurent@luxestore.com", role: "Store Admin", status: "active", last: "2m ago", color: "#e8ff47" },
-  { name: "Raj Nair", email: "r.nair@luxestore.com", role: "Catalog Admin", status: "active", last: "1h ago", color: "#4fffb0" },
-  { name: "Mia Chen", email: "m.chen@luxestore.com", role: "Support Lead", status: "inactive", last: "2d ago", color: "#7b9cff" },
-  { name: "Felix Wagner", email: "f.wagner@luxestore.com", role: "Finance Admin", status: "pending", last: "—", color: "#ff9f47" },
+const systemReports = [
+  { label: "Total Revenue", value: "$2.84M", change: "+18.4%", up: true, icon: "💰" },
+  { label: "Active Users", value: "142,390", change: "+9.2%", up: true, icon: "👥" },
+  { label: "Orders Today", value: "3,847", change: "+5.1%", up: true, icon: "📦" },
+  { label: "System Uptime", value: "99.98%", change: "-0.01%", up: false, icon: "🖥️" },
 ];
 
-const ACTIVITY = [
-  { color: "#e8ff47", text: <><strong>Sophie Laurent</strong> promoted to Store Admin</>, time: "3 min ago" },
-  { color: "#4fffb0", text: <><strong>Raj Nair</strong> updated product catalog permissions</>, time: "27 min ago" },
-  { color: "#ff6b6b", text: <><strong>System</strong> detected unusual login attempt — blocked</>, time: "1h ago" },
-  { color: "#7b9cff", text: <><strong>Mia Chen</strong> account deactivated by super admin</>, time: "2h ago" },
-  { color: "#e8ff47", text: <><strong>Platform settings</strong> updated: 2FA enforced globally</>, time: "5h ago" },
+const activityLog = [
+  { action: "Admin created", user: "Elena Moreau", time: "2 min ago", type: "create" },
+  { action: "Settings updated", user: "Super Admin", time: "14 min ago", type: "settings" },
+  { action: "Admin suspended", user: "Priya Nair", time: "1 hr ago", type: "warning" },
+  { action: "System backup completed", user: "System", time: "3 hrs ago", type: "system" },
+  { action: "New store region added", user: "Super Admin", time: "Yesterday", type: "create" },
+  { action: "Permission policy updated", user: "Super Admin", time: "2 days ago", type: "settings" },
 ];
 
-const SETTINGS = [
-  { label: "Two-Factor Auth (Global)", sub: "Enforced for all admin accounts", defaultOn: true },
-  { label: "Maintenance Mode", sub: "Temporarily disable storefront", defaultOn: false },
-  { label: "New Admin Approval", sub: "Require super admin sign-off", defaultOn: true },
-  { label: "Audit Log Retention", sub: "Keep logs for 90 days", defaultOn: true },
-  { label: "Email Notifications", sub: "Alert on critical system events", defaultOn: false },
+const navItems = [
+  { id: "overview", icon: "⊞", label: "Overview" },
+  { id: "admins", icon: "👤", label: "Manage Admins" },
+  { id: "settings", icon: "⚙️", label: "Platform Settings" },
+  { id: "reports", icon: "📊", label: "System Reports" },
 ];
 
-const REPORTS = [
-  { icon: "📦", name: "Sales Performance Report", meta: "Generated Apr 2025", color: "rgba(232,255,71,0.1)" },
-  { icon: "👥", name: "Admin Activity Summary", meta: "Generated Apr 2025", color: "rgba(79,255,176,0.1)" },
-  { icon: "🔐", name: "Security & Access Audit", meta: "Generated Apr 2025", color: "rgba(123,156,255,0.1)" },
-  { icon: "⚡", name: "System Performance Log", meta: "Generated Apr 2025", color: "rgba(255,159,71,0.1)" },
-];
-
-const BARS = [
-  { month: "Nov", h: 38 }, { month: "Dec", h: 70 }, { month: "Jan", h: 52 },
-  { month: "Feb", h: 88 }, { month: "Mar", h: 64 }, { month: "Apr", h: 95 },
-];
-
-function Toggle({ defaultOn }) {
-  const [on, setOn] = useState(defaultOn);
-  return (
-    <button className={`toggle ${on ? "on" : "off"}`} onClick={() => setOn(o => !o)}>
-      <div className="toggle-knob" />
-    </button>
-  );
-}
+const avatarColors = { EM: "#2563eb", JO: "#0891b2", PN: "#7c3aed", ML: "#059669", SR: "#d97706" };
 
 export default function SuperAdminDashboard() {
-  const [active, setActive] = useState("overview");
+  const [activeNav, setActiveNav] = useState("overview");
+  const [adminList, setAdminList] = useState(admins);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({ name: "", email: "", role: "Store Admin", store: "" });
+  const [settings, setSettings] = useState({
+    maintenanceMode: false, newRegistrations: true, twoFactorRequired: true,
+    emailNotifications: true, autoBackup: true, darkMode: false,
+    sessionTimeout: "30", maxAdmins: "20",
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [toast, setToast] = useState(null);
 
-  const sections = [...new Set(NAV.map(n => n.section))];
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const toggleStatus = (id) => {
+    setAdminList(prev => prev.map(a => a.id === id ? { ...a, status: a.status === "active" ? "suspended" : "active" } : a));
+    showToast("Admin status updated");
+  };
+
+  const deleteAdmin = (id) => {
+    setAdminList(prev => prev.filter(a => a.id !== id));
+    showToast("Admin removed", "warning");
+  };
+
+  const addAdmin = () => {
+    if (!newAdmin.name || !newAdmin.email) return;
+    const initials = newAdmin.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
+    setAdminList(prev => [...prev, {
+      id: Date.now(), ...newAdmin, status: "active",
+      joined: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      avatar: initials,
+    }]);
+    setNewAdmin({ name: "", email: "", role: "Store Admin", store: "" });
+    setShowAddModal(false);
+    showToast("New admin added successfully");
+  };
+
+  const filteredAdmins = adminList.filter(a =>
+    a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    a.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <>
-      <style>{styles}</style>
-      <div className="dash-root">
-        {/* SIDEBAR */}
-        <div className="sidebar">
-          <div className="logo-area">
-            <div className="logo-badge">
-              <div className="logo-icon">L</div>
-              <div>
-                <div className="logo-text">LuxeStore</div>
-                <span className="logo-sub">Super Admin</span>
-              </div>
+    <div className="app">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+          --bg: #f7f8fa;
+          --sidebar: #0d1117;
+          --sidebar-hover: #161b22;
+          --accent: #2563eb;
+          --accent-light: #eff6ff;
+          --accent-hover: #1d4ed8;
+          --white: #ffffff;
+          --border: #e5e7eb;
+          --text: #111827;
+          --muted: #6b7280;
+          --danger: #ef4444;
+          --success: #10b981;
+          --warning: #f59e0b;
+          --card-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+          --font: 'Inter', sans-serif;
+        }
+
+        .app { display: flex; height: 100vh; font-family: var(--font); background: var(--bg); color: var(--text); overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar { width: 240px; flex-shrink: 0; background: var(--sidebar); display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .sidebar::before { content: ''; position: absolute; top: -80px; right: -60px; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,0.12), transparent 70%); pointer-events: none; }
+        .sb-logo { padding: 22px 20px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
+        .sb-logo-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
+        .sb-logo-name { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+        .sb-logo-sub { font-size: 0.62rem; color: rgba(255,255,255,0.3); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 1px; }
+        .sb-section-label { padding: 18px 20px 6px; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.22); }
+        .sb-nav { flex: 1; padding: 4px 10px; overflow-y: auto; }
+        .sb-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 9px; cursor: pointer; transition: all 0.18s; color: rgba(255,255,255,0.5); font-size: 0.875rem; font-weight: 500; margin-bottom: 2px; border: none; background: none; width: 100%; text-align: left; font-family: var(--font); }
+        .sb-item:hover { background: var(--sidebar-hover); color: rgba(255,255,255,0.82); }
+        .sb-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .sb-item-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
+        .sb-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
+        .sb-avatar { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .sb-user-name { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.82); }
+        .sb-user-role { font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+        .sb-badge { margin-left: auto; background: rgba(37,99,235,0.25); border: 1px solid rgba(37,99,235,0.45); color: #93c5fd; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 100px; text-transform: uppercase; }
+
+        /* MAIN */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 28px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .topbar-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+        .topbar-subtitle { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
+        .topbar-right { display: flex; align-items: center; gap: 8px; }
+        .topbar-btn { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: all 0.18s; position: relative; }
+        .topbar-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+        .topbar-notif { position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; background: var(--danger); border-radius: 50%; border: 1.5px solid white; }
+        .content { flex: 1; overflow-y: auto; padding: 24px 28px; }
+
+        /* STAT CARDS */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+        .stat-card { background: var(--white); border-radius: 12px; padding: 18px 20px; border: 1.5px solid var(--border); box-shadow: var(--card-shadow); transition: all 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
+        .stat-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+        .stat-icon { font-size: 1.4rem; }
+        .stat-change { font-size: 0.72rem; font-weight: 600; padding: 3px 8px; border-radius: 100px; }
+        .stat-change.up { background: #f0fdf4; color: var(--success); }
+        .stat-change.down { background: #fef2f2; color: var(--danger); }
+        .stat-value { font-size: 1.6rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+        .stat-label { font-size: 0.78rem; color: var(--muted); font-weight: 400; }
+
+        /* CARDS */
+        .card { background: var(--white); border-radius: 14px; border: 1.5px solid var(--border); box-shadow: var(--card-shadow); overflow: hidden; }
+        .card-header { padding: 16px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .card-title { font-size: 0.925rem; font-weight: 700; }
+        .card-subtitle { font-size: 0.76rem; color: var(--muted); margin-top: 1px; }
+
+        /* OVERVIEW GRID */
+        .overview-grid { display: grid; grid-template-columns: 1fr 320px; gap: 18px; }
+
+        /* TABLE */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 10px 16px; text-align: left; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
+        td { padding: 12px 16px; font-size: 0.855rem; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafafa; }
+        .td-name { display: flex; align-items: center; gap: 10px; }
+        .td-avatar { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.68rem; font-weight: 700; color: #fff; flex-shrink: 0; }
+        .td-fullname { font-weight: 600; font-size: 0.855rem; }
+        .td-email { font-size: 0.75rem; color: var(--muted); }
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 100px; font-size: 0.72rem; font-weight: 600; }
+        .status-active { background: #f0fdf4; color: var(--success); }
+        .status-suspended { background: #fef2f2; color: var(--danger); }
+        .status-inactive { background: #f9fafb; color: var(--muted); }
+        .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+        .action-btns { display: flex; gap: 6px; }
+        .act-btn { padding: 5px 11px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: pointer; border: 1.5px solid; transition: all 0.15s; font-family: var(--font); }
+        .act-btn-toggle { border-color: var(--border); color: var(--muted); background: #fff; }
+        .act-btn-toggle:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+        .act-btn-delete { border-color: #fee2e2; color: var(--danger); background: #fff; }
+        .act-btn-delete:hover { background: #fef2f2; }
+        .role-badge { display: inline-block; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; background: var(--accent-light); color: var(--accent); }
+
+        /* ACTIVITY */
+        .activity-list { padding: 6px 0; }
+        .activity-item { display: flex; align-items: flex-start; gap: 11px; padding: 11px 20px; }
+        .activity-item:not(:last-child) { border-bottom: 1px solid #f3f4f6; }
+        .act-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+        .act-create { background: var(--success); }
+        .act-settings { background: var(--accent); }
+        .act-warning { background: var(--warning); }
+        .act-system { background: var(--muted); }
+        .act-text { font-size: 0.82rem; font-weight: 500; }
+        .act-meta { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+
+        /* SETTINGS */
+        .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .settings-section { padding: 20px 22px; }
+        .settings-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+        .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+        .setting-row:last-child { border-bottom: none; }
+        .setting-label { font-size: 0.855rem; font-weight: 500; }
+        .setting-desc { font-size: 0.74rem; color: var(--muted); margin-top: 1px; }
+        .toggle { position: relative; width: 38px; height: 21px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; inset: 0; background: #e5e7eb; border-radius: 100px; cursor: pointer; transition: 0.2s; }
+        .toggle-slider::before { content: ''; position: absolute; width: 15px; height: 15px; border-radius: 50%; background: #fff; left: 3px; top: 3px; transition: 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .toggle input:checked + .toggle-slider { background: var(--accent); }
+        .toggle input:checked + .toggle-slider::before { transform: translateX(17px); }
+        .setting-input { width: 76px; padding: 6px 10px; border-radius: 7px; border: 1.5px solid var(--border); font-size: 0.82rem; font-family: var(--font); outline: none; text-align: center; transition: border-color 0.18s; }
+        .setting-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        /* REPORTS */
+        .reports-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+        .report-card-body { padding: 20px 22px; }
+        .bar-list { display: flex; flex-direction: column; gap: 13px; }
+        .bar-item-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 500; margin-bottom: 5px; }
+        .bar-track { height: 7px; background: #f3f4f6; border-radius: 100px; overflow: hidden; }
+        .bar-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width 0.6s ease; }
+        .bar-fill.green { background: var(--success); }
+        .bar-fill.amber { background: var(--warning); }
+        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .metric-item { background: #f9fafb; border-radius: 9px; padding: 13px; border: 1px solid var(--border); }
+        .metric-val { font-size: 1.25rem; font-weight: 800; }
+        .metric-lbl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+        /* BUTTONS */
+        .btn-primary { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.855rem; font-weight: 600; cursor: pointer; transition: all 0.18s; font-family: var(--font); display: inline-flex; align-items: center; gap: 5px; }
+        .btn-primary:hover { background: var(--accent-hover); box-shadow: 0 4px 12px rgba(37,99,235,0.3); transform: translateY(-1px); }
+        .btn-outline { background: #fff; color: var(--text); border: 1.5px solid var(--border); padding: 8px 16px; border-radius: 8px; font-size: 0.855rem; font-weight: 600; cursor: pointer; transition: all 0.18s; font-family: var(--font); }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* SEARCH */
+        .search-wrap { display: flex; align-items: center; gap: 8px; background: #f9fafb; border: 1.5px solid var(--border); border-radius: 8px; padding: 7px 12px; transition: all 0.18s; }
+        .search-wrap:focus-within { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .search-wrap input { border: none; background: none; outline: none; font-size: 0.855rem; font-family: var(--font); color: var(--text); width: 200px; }
+        .search-wrap input::placeholder { color: #bbb; }
+
+        /* MODAL */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal { background: #fff; border-radius: 16px; padding: 28px; width: 450px; box-shadow: 0 20px 60px rgba(0,0,0,0.16); }
+        .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .modal-subtitle { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
+        .form-field { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 0.78rem; font-weight: 600; color: #374151; margin-bottom: 5px; }
+        .form-input { width: 100%; padding: 9px 12px; border-radius: 8px; border: 1.5px solid var(--border); font-size: 0.855rem; font-family: var(--font); outline: none; transition: border-color 0.18s; background: #fafafa; }
+        .form-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 24px; right: 24px; z-index: 200; background: #111827; color: #fff; padding: 11px 18px; border-radius: 9px; font-size: 0.855rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.18); display: flex; align-items: center; gap: 8px; animation: slideUp 0.22s ease; }
+        .toast.warning { background: var(--warning); color: #fff; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-tag { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+        .page-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -0.02em; }
+        .page-subtitle { font-size: 0.875rem; color: var(--muted); margin-bottom: 20px; font-weight: 400; }
+
+        @media (max-width: 1100px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+          .overview-grid, .settings-grid, .reports-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+
+      {/* SIDEBAR */}
+      <aside className="sidebar">
+        <div className="sb-logo">
+          <div className="sb-logo-icon">🛍</div>
+          <div>
+            <div className="sb-logo-name">LuxeStore</div>
+            <div className="sb-logo-sub">Super Admin</div>
+          </div>
+        </div>
+        <div className="sb-section-label">Navigation</div>
+        <nav className="sb-nav">
+          {navItems.map(item => (
+            <button key={item.id} className={`sb-item ${activeNav === item.id ? "active" : ""}`} onClick={() => setActiveNav(item.id)}>
+              <span className="sb-item-icon">{item.icon}</span>
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <div className="sb-footer">
+          <div className="sb-avatar">SA</div>
+          <div>
+            <div className="sb-user-name">Super Admin</div>
+            <div className="sb-user-role">root access</div>
+          </div>
+          <div className="sb-badge">Root</div>
+        </div>
+      </aside>
+
+      {/* MAIN */}
+      <div className="main">
+        <div className="topbar">
+          <div>
+            <div className="topbar-title">
+              {activeNav === "overview" && "Dashboard Overview"}
+              {activeNav === "admins" && "Manage Admins"}
+              {activeNav === "settings" && "Platform Settings"}
+              {activeNav === "reports" && "System Reports"}
             </div>
+            <div className="topbar-subtitle">LuxeStore Control Panel · {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</div>
           </div>
-
-          <div className="role-chip">
-            <div className="role-dot" />
-            SUPER ADMIN ACCESS
-          </div>
-
-          <div className="nav-section">
-            {sections.map(sec => (
-              <div key={sec}>
-                <div className="nav-label">{sec}</div>
-                {NAV.filter(n => n.section === sec).map(item => (
-                  <div
-                    key={item.id}
-                    className={`nav-item ${active === item.id ? "active" : ""}`}
-                    onClick={() => setActive(item.id)}
-                  >
-                    <span className="nav-icon">{item.icon}</span>
-                    {item.label}
-                    {item.badge && <span className="nav-badge">{item.badge}</span>}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          <div className="sidebar-footer">
-            <div className="user-card">
-              <div className="avatar">SA</div>
-              <div>
-                <div className="user-name">Alex Rivera</div>
-                <div className="user-role">Super Admin</div>
-              </div>
-            </div>
+          <div className="topbar-right">
+            <button className="topbar-btn">🔔<span className="topbar-notif" /></button>
+            <button className="topbar-btn">⚙️</button>
+            <button className="topbar-btn">👤</button>
           </div>
         </div>
 
-        {/* MAIN */}
-        <div className="main">
-          <div className="topbar">
-            <div className="page-title">
-              {active === "overview" && "Dashboard Overview"}
-              {active === "admins" && "Manage Admins"}
-              {active === "settings" && "Platform Settings"}
-              {active === "reports" && "System Reports"}
-              {active === "security" && "Security & Audit"}
-              {active === "logs" && "Access Logs"}
-            </div>
-            <div className="topbar-actions">
-              <div className="icon-btn">
-                🔍
-              </div>
-              <div className="icon-btn">
-                🔔
-                <div className="notif-dot" />
-              </div>
-              <div className="avatar" style={{ width: 36, height: 36, borderRadius: 10, fontSize: 13 }}>SA</div>
-            </div>
-          </div>
+        <div className="content">
 
-          <div className="content">
-            {/* ALERT */}
-            <div className="alert-bar">
-              ⚠️ <span>Security alert: 3 failed login attempts detected on <strong>f.wagner@luxestore.com</strong>. Review recommended.</span>
-            </div>
-
-            {/* STATS */}
-            <div className="stats-grid">
-              {[
-                { label: "Total Admins", value: "12", trend: "+2", up: true, color: "rgba(232,255,71,0.12)", icon: "👤" },
-                { label: "Active Sessions", value: "7", trend: "+1", up: true, color: "rgba(79,255,176,0.12)", icon: "💻" },
-                { label: "Platform Uptime", value: "99.9%", trend: "0.1%", up: true, color: "rgba(123,156,255,0.12)", icon: "⚡" },
-                { label: "Pending Requests", value: "3", trend: "+3", up: false, color: "rgba(255,107,107,0.12)", icon: "📋" },
-              ].map((s, i) => (
-                <div className="stat-card" key={i}>
-                  <div className="stat-header">
-                    <div className="stat-icon-wrap" style={{ background: s.color }}>{s.icon}</div>
-                    <span className={`stat-trend ${s.up ? "trend-up" : "trend-down"}`}>{s.up ? "↑" : "↓"} {s.trend}</span>
+          {/* OVERVIEW */}
+          {activeNav === "overview" && (
+            <>
+              <div className="section-tag">Super Admin</div>
+              <div className="page-title">Platform Overview</div>
+              <div className="page-subtitle">Real-time snapshot of LuxeStore's performance and activity.</div>
+              <div className="stats-grid">
+                {systemReports.map(r => (
+                  <div className="stat-card" key={r.label}>
+                    <div className="stat-top">
+                      <div className="stat-icon">{r.icon}</div>
+                      <div className={`stat-change ${r.up ? "up" : "down"}`}>{r.change}</div>
+                    </div>
+                    <div className="stat-value">{r.value}</div>
+                    <div className="stat-label">{r.label}</div>
                   </div>
-                  <div className="stat-value">{s.value}</div>
-                  <div className="stat-label">{s.label}</div>
+                ))}
+              </div>
+              <div className="overview-grid">
+                <div className="card">
+                  <div className="card-header">
+                    <div><div className="card-title">Admin Accounts</div><div className="card-subtitle">{adminList.length} total administrators</div></div>
+                    <button className="btn-primary" onClick={() => setActiveNav("admins")}>View All →</button>
+                  </div>
+                  <div className="table-wrap">
+                    <table>
+                      <thead><tr><th>Admin</th><th>Role</th><th>Status</th></tr></thead>
+                      <tbody>
+                        {adminList.slice(0, 4).map(a => (
+                          <tr key={a.id}>
+                            <td><div className="td-name"><div className="td-avatar" style={{ background: avatarColors[a.avatar] || "#2563eb" }}>{a.avatar}</div><div><div className="td-fullname">{a.name}</div><div className="td-email">{a.email}</div></div></div></td>
+                            <td><span className="role-badge">{a.role}</span></td>
+                            <td><span className={`status-badge status-${a.status}`}><span className="status-dot" />{a.status.charAt(0).toUpperCase() + a.status.slice(1)}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">Activity Log</div><div className="card-subtitle">Recent system events</div></div></div>
+                  <div className="activity-list">
+                    {activityLog.map((a, i) => (
+                      <div className="activity-item" key={i}>
+                        <div className={`act-dot act-${a.type}`} />
+                        <div><div className="act-text">{a.action}</div><div className="act-meta">{a.user} · {a.time}</div></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
-            {/* PANELS ROW */}
-            <div className="panels-row">
-              {/* ADMINS TABLE */}
-              <div className="panel">
-                <div className="panel-head">
-                  <div className="panel-title">Admin Accounts</div>
-                  <button className="add-btn">＋ Add Admin</button>
+          {/* MANAGE ADMINS */}
+          {activeNav === "admins" && (
+            <>
+              <div className="section-tag">Access Control</div>
+              <div className="page-title">Manage Admins</div>
+              <div className="page-subtitle">Add, edit, suspend or remove platform administrators.</div>
+              <div className="card">
+                <div className="card-header">
+                  <div className="search-wrap">
+                    <span style={{ fontSize: 13, color: "#bbb" }}>🔍</span>
+                    <input placeholder="Search by name or email…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                  </div>
+                  <button className="btn-primary" onClick={() => setShowAddModal(true)}>＋ Add Admin</button>
                 </div>
                 <div className="table-wrap">
                   <table>
-                    <thead>
-                      <tr>
-                        <th>Admin</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Last Active</th>
-                        <th></th>
-                      </tr>
-                    </thead>
+                    <thead><tr><th>Admin</th><th>Role</th><th>Store</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody>
-                      {ADMINS.map((a, i) => (
-                        <tr key={i}>
-                          <td>
-                            <div className="admin-name-cell">
-                              <div className="mini-avatar" style={{ background: a.color }}>
-                                {a.name.split(" ").map(n => n[0]).join("")}
-                              </div>
-                              <div>
-                                <div className="admin-name">{a.name}</div>
-                                <div className="admin-email">{a.email}</div>
-                              </div>
-                            </div>
-                          </td>
-                          <td>{a.role}</td>
-                          <td>
-                            <span className={`status-pill status-${a.status}`}>
-                              {a.status === "active" ? "● Active" : a.status === "inactive" ? "○ Inactive" : "⚠ Pending"}
-                            </span>
-                          </td>
-                          <td>{a.last}</td>
-                          <td>
-                            <div className="action-row">
-                              <div className="act-btn">✏️</div>
-                              <div className="act-btn">🗑️</div>
-                            </div>
-                          </td>
+                      {filteredAdmins.map(a => (
+                        <tr key={a.id}>
+                          <td><div className="td-name"><div className="td-avatar" style={{ background: avatarColors[a.avatar] || "#2563eb" }}>{a.avatar}</div><div><div className="td-fullname">{a.name}</div><div className="td-email">{a.email}</div></div></div></td>
+                          <td><span className="role-badge">{a.role}</span></td>
+                          <td style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{a.store}</td>
+                          <td style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{a.joined}</td>
+                          <td><span className={`status-badge status-${a.status}`}><span className="status-dot" />{a.status.charAt(0).toUpperCase() + a.status.slice(1)}</span></td>
+                          <td><div className="action-btns"><button className="act-btn act-btn-toggle" onClick={() => toggleStatus(a.id)}>{a.status === "active" ? "Suspend" : "Activate"}</button><button className="act-btn act-btn-delete" onClick={() => deleteAdmin(a.id)}>Remove</button></div></td>
                         </tr>
                       ))}
+                      {filteredAdmins.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", padding: "28px", color: "var(--muted)", fontSize: "0.855rem" }}>No admins found.</td></tr>}
                     </tbody>
                   </table>
                 </div>
               </div>
+            </>
+          )}
 
-              {/* ACTIVITY */}
-              <div className="panel">
-                <div className="panel-head">
-                  <div className="panel-title">Recent Activity</div>
-                  <button className="panel-action">View all →</button>
-                </div>
-                <div className="feed-list">
-                  {ACTIVITY.map((f, i) => (
-                    <div className="feed-item" key={i}>
-                      <div className="feed-dot" style={{ background: f.color }} />
-                      <div>
-                        <div className="feed-text">{f.text}</div>
-                        <div className="feed-time">{f.time}</div>
+          {/* PLATFORM SETTINGS */}
+          {activeNav === "settings" && (
+            <>
+              <div className="section-tag">Configuration</div>
+              <div className="page-title">Platform Settings</div>
+              <div className="page-subtitle">Control global platform behavior and security policies.</div>
+              <div className="settings-grid">
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">Security & Access</div><div className="card-subtitle">Authentication and session policies</div></div></div>
+                  <div className="settings-section">
+                    <div className="settings-title">Controls</div>
+                    {[
+                      { key: "twoFactorRequired", label: "Require 2FA", desc: "Enforce two-factor auth for all admins" },
+                      { key: "newRegistrations", label: "Allow Registrations", desc: "Enable new store admin sign-ups" },
+                      { key: "maintenanceMode", label: "Maintenance Mode", desc: "Temporarily disable the public storefront" },
+                    ].map(s => (
+                      <div className="setting-row" key={s.key}>
+                        <div><div className="setting-label">{s.label}</div><div className="setting-desc">{s.desc}</div></div>
+                        <label className="toggle">
+                          <input type="checkbox" checked={settings[s.key]} onChange={() => { setSettings(p => ({ ...p, [s.key]: !p[s.key] })); showToast("Setting saved"); }} />
+                          <span className="toggle-slider" />
+                        </label>
                       </div>
+                    ))}
+                    <div className="setting-row">
+                      <div><div className="setting-label">Session Timeout (min)</div><div className="setting-desc">Auto-logout after inactivity</div></div>
+                      <input className="setting-input" type="number" value={settings.sessionTimeout} onChange={e => setSettings(p => ({ ...p, sessionTimeout: e.target.value }))} />
                     </div>
-                  ))}
+                    <div className="setting-row">
+                      <div><div className="setting-label">Max Admins</div><div className="setting-desc">Platform-wide admin limit</div></div>
+                      <input className="setting-input" type="number" value={settings.maxAdmins} onChange={e => setSettings(p => ({ ...p, maxAdmins: e.target.value }))} />
+                    </div>
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">System & Notifications</div><div className="card-subtitle">Platform automation and alerts</div></div></div>
+                  <div className="settings-section">
+                    <div className="settings-title">Automation</div>
+                    {[
+                      { key: "emailNotifications", label: "Email Notifications", desc: "Send system alerts via email" },
+                      { key: "autoBackup", label: "Auto Backup", desc: "Daily automated data backups" },
+                      { key: "darkMode", label: "Dark Mode Default", desc: "Apply dark theme for all admin sessions" },
+                    ].map(s => (
+                      <div className="setting-row" key={s.key}>
+                        <div><div className="setting-label">{s.label}</div><div className="setting-desc">{s.desc}</div></div>
+                        <label className="toggle">
+                          <input type="checkbox" checked={settings[s.key]} onChange={() => { setSettings(p => ({ ...p, [s.key]: !p[s.key] })); showToast("Setting saved"); }} />
+                          <span className="toggle-slider" />
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ padding: "0 22px 22px", display: "flex", gap: 10 }}>
+                    <button className="btn-primary" onClick={() => showToast("Settings saved successfully")}>Save Changes</button>
+                    <button className="btn-outline" onClick={() => showToast("Settings reset", "warning")}>Reset Defaults</button>
+                  </div>
                 </div>
               </div>
+            </>
+          )}
+
+          {/* SYSTEM REPORTS */}
+          {activeNav === "reports" && (
+            <>
+              <div className="section-tag">Analytics</div>
+              <div className="page-title">System Reports</div>
+              <div className="page-subtitle">Platform-wide metrics, performance indicators and store analytics.</div>
+              <div className="stats-grid" style={{ marginBottom: 20 }}>
+                {systemReports.map(r => (
+                  <div className="stat-card" key={r.label}>
+                    <div className="stat-top"><div className="stat-icon">{r.icon}</div><div className={`stat-change ${r.up ? "up" : "down"}`}>{r.change}</div></div>
+                    <div className="stat-value">{r.value}</div>
+                    <div className="stat-label">{r.label}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="reports-grid">
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">Sales by Region</div><div className="card-subtitle">Top performing store regions</div></div></div>
+                  <div className="report-card-body">
+                    <div className="bar-list">
+                      {[{ region: "New York", pct: 84, val: "$842K" }, { region: "Los Angeles", pct: 61, val: "$613K" }, { region: "United Kingdom", pct: 47, val: "$478K" }, { region: "Australia", pct: 32, val: "$318K" }, { region: "Europe (Other)", pct: 58, val: "$589K" }].map(r => (
+                        <div key={r.region}>
+                          <div className="bar-item-label"><span>{r.region}</span><span style={{ color: "var(--muted)" }}>{r.val}</span></div>
+                          <div className="bar-track"><div className="bar-fill" style={{ width: `${r.pct}%` }} /></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">Category Performance</div><div className="card-subtitle">Sales split by product category</div></div></div>
+                  <div className="report-card-body">
+                    <div className="bar-list">
+                      {[{ cat: "Women's Fashion", pct: 89 }, { cat: "Men's Fashion", pct: 72 }, { cat: "Footwear", pct: 55, color: "green" }, { cat: "Accessories", pct: 41, color: "amber" }, { cat: "Sale Items", pct: 33, color: "amber" }].map(r => (
+                        <div key={r.cat}>
+                          <div className="bar-item-label"><span>{r.cat}</span><span style={{ color: "var(--muted)" }}>{r.pct}%</span></div>
+                          <div className="bar-track"><div className={`bar-fill ${r.color || ""}`} style={{ width: `${r.pct}%` }} /></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">System Health</div><div className="card-subtitle">Infrastructure performance metrics</div></div></div>
+                  <div className="report-card-body">
+                    <div className="metric-grid">
+                      {[{ val: "99.98%", lbl: "Uptime (30d)" }, { val: "142ms", lbl: "Avg Response" }, { val: "3.2M", lbl: "API Calls/day" }, { val: "0", lbl: "Critical Errors" }, { val: "2.4TB", lbl: "Storage Used" }, { val: "Daily", lbl: "Last Backup" }].map(m => (
+                        <div className="metric-item" key={m.lbl}><div className="metric-val">{m.val}</div><div className="metric-lbl">{m.lbl}</div></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="card">
+                  <div className="card-header"><div><div className="card-title">Admin Activity</div><div className="card-subtitle">Actions per admin this month</div></div></div>
+                  <div className="report-card-body">
+                    <div className="bar-list">
+                      {adminList.slice(0, 5).map((a, i) => {
+                        const pct = [84, 67, 23, 91, 45][i];
+                        return (
+                          <div key={a.id}>
+                            <div className="bar-item-label"><span>{a.name}</span><span style={{ color: "var(--muted)" }}>{pct} actions</span></div>
+                            <div className="bar-track"><div className="bar-fill green" style={{ width: `${pct}%` }} /></div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+        </div>
+      </div>
+
+      {/* ADD ADMIN MODAL */}
+      {showAddModal && (
+        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-title">Add New Admin</div>
+            <div className="modal-subtitle">Grant admin access to a new platform user.</div>
+            <div className="form-row-2">
+              <div className="form-field"><label className="form-label">Full Name *</label><input className="form-input" placeholder="Jane Doe" value={newAdmin.name} onChange={e => setNewAdmin(p => ({ ...p, name: e.target.value }))} /></div>
+              <div className="form-field"><label className="form-label">Email Address *</label><input className="form-input" placeholder="jane@luxestore.com" value={newAdmin.email} onChange={e => setNewAdmin(p => ({ ...p, email: e.target.value }))} /></div>
             </div>
-
-            {/* BOTTOM ROW */}
-            <div className="bottom-row">
-              {/* SETTINGS */}
-              <div className="panel">
-                <div className="panel-head">
-                  <div className="panel-title">Platform Settings</div>
-                  <button className="panel-action">Edit all →</button>
-                </div>
-                <div className="settings-list">
-                  {SETTINGS.map((s, i) => (
-                    <div className="setting-row" key={i}>
-                      <div>
-                        <div className="setting-label">{s.label}</div>
-                        <div className="setting-sub">{s.sub}</div>
-                      </div>
-                      <Toggle defaultOn={s.defaultOn} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* REPORTS */}
-              <div className="panel">
-                <div className="panel-head">
-                  <div className="panel-title">System Reports</div>
-                  <button className="panel-action">All reports →</button>
-                </div>
-                <div>
-                  {REPORTS.map((r, i) => (
-                    <div className="report-item" key={i}>
-                      <div className="report-icon" style={{ background: r.color }}>{r.icon}</div>
-                      <div>
-                        <div className="report-name">{r.name}</div>
-                        <div className="report-meta">{r.meta}</div>
-                      </div>
-                      <button className="download-btn">↓ Export</button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* CHART */}
-              <div className="panel">
-                <div className="panel-head">
-                  <div className="panel-title">Revenue Overview</div>
-                  <button className="panel-action">Details →</button>
-                </div>
-                <div style={{ padding: "16px 22px 8px", display: "flex", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 26, letterSpacing: -1 }}>$284K</div>
-                    <div style={{ fontSize: 12, color: "var(--muted2)" }}>Last 6 months</div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 13, color: "#4fffb0", fontWeight: 600 }}>↑ 18.4%</div>
-                    <div style={{ fontSize: 11, color: "var(--muted)" }}>vs prev. period</div>
-                  </div>
-                </div>
-                <div className="mini-chart">
-                  {BARS.map((b, i) => (
-                    <div className="bar-wrap" key={i}>
-                      <div
-                        className="bar"
-                        style={{
-                          height: `${b.h}%`,
-                          background: i === BARS.length - 1
-                            ? "linear-gradient(180deg, #e8ff47, #4fffb0)"
-                            : "var(--surface2)",
-                          border: i === BARS.length - 1 ? "none" : "1px solid var(--border)",
-                        }}
-                      />
-                      <span className="bar-month">{b.month}</span>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ padding: "0 22px 18px", display: "flex", gap: 16 }}>
-                  {[
-                    { label: "Orders", val: "1,240", color: "#e8ff47" },
-                    { label: "Returns", val: "87", color: "#ff6b6b" },
-                    { label: "Avg Order", val: "$229", color: "#4fffb0" },
-                  ].map((m, i) => (
-                    <div key={i} style={{ flex: 1, background: "var(--surface2)", borderRadius: 8, padding: "8px 10px", border: "1px solid var(--border)" }}>
-                      <div style={{ fontSize: 11, color: m.color, fontWeight: 600, marginBottom: 2 }}>{m.label}</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, fontFamily: "'Syne', sans-serif" }}>{m.val}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <div className="form-row-2">
+              <div className="form-field"><label className="form-label">Role</label><select className="form-input" value={newAdmin.role} onChange={e => setNewAdmin(p => ({ ...p, role: e.target.value }))}><option>Store Admin</option><option>Catalog Admin</option><option>Finance Admin</option><option>Support Admin</option></select></div>
+              <div className="form-field"><label className="form-label">Assigned Store</label><input className="form-input" placeholder="LuxeStore NY" value={newAdmin.store} onChange={e => setNewAdmin(p => ({ ...p, store: e.target.value }))} /></div>
+            </div>
+            <div className="modal-actions">
+              <button className="btn-outline" onClick={() => setShowAddModal(false)}>Cancel</button>
+              <button className="btn-primary" onClick={addAdmin}>＋ Add Admin</button>
             </div>
           </div>
         </div>
-      </div>
-    </>
+      )}
+
+      {/* TOAST */}
+      {toast && <div className={`toast ${toast.type === "warning" ? "warning" : ""}`}>{toast.type === "warning" ? "⚠️" : "✅"} {toast.msg}</div>}
+    </div>
   );
 }
