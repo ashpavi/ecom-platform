@@ -4,7 +4,7 @@ import {
   FaBoxOpen,
   FaClipboardList,
   FaSignOutAlt,
-  FaTimes
+  FaTimes,
 } from "react-icons/fa";
 
 export default function AccountSidebar({ isOpen, setIsOpen }) {
@@ -19,96 +19,110 @@ export default function AccountSidebar({ isOpen, setIsOpen }) {
 
   return (
     <>
-      {/* BACKDROP (Mobile Only) */}
+      {/* Overlay (Mobile) */}
       <div
-        className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={() => setIsOpen(false)}
       />
 
-      {/* SIDEBAR */}
+      {/* Sidebar */}
       <div
-        className={`fixed md:static top-14 left-0 h-full md:h-auto w-72 
-                    bg-white md:bg-transparent 
-                    shadow-2xl md:shadow-none 
-                    border-r md:border 
-                    z-50 
-                    transform transition-transform duration-300 
+        className={`fixed lg:relative top-0 lg:top-auto left-0 
+                    h-full lg:h-auto 
+                    w-72 
+                    bg-white border shadow-sm 
+                    rounded-2xl lg:rounded-2xl
+                    p-6
+                    transform transition-transform duration-300
+                    z-50
                     ${
                       isOpen
                         ? "translate-x-0"
-                        : "-translate-x-full md:translate-x-0"
+                        : "-translate-x-full lg:translate-x-0"
                     }`}
       >
-        <div className="p-6 space-y-4">
+        <div className="flex flex-col h-full p-6">
 
-          {/* Mobile Header */}
-          <div className="flex justify-between items-center md:hidden">
-            <h2 className="font-semibold text-gray-800">My Account</h2>
-            <button onClick={() => setIsOpen(false)}>
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-base font-semibold text-gray-900">
+                My Account
+              </h2>
+              <p className="text-xs text-gray-500">
+                Manage your profile
+              </p>
+            </div>
+
+            <button
+              className="lg:hidden"
+              onClick={() => setIsOpen(false)}
+            >
               <FaTimes />
             </button>
           </div>
 
-          {/* Desktop Title */}
-          <h2 className="hidden md:block font-semibold mb-4 text-gray-800">
-            My Account
-          </h2>
+          {/* Navigation */}
+          <nav className="space-y-2 flex-1">
 
-          <NavLink
-            to="/account"
-            end
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `${linkStyle} ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <FaUser />
-            Dashboard
-          </NavLink>
+            <NavLink
+              to="/account"
+              end
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `${linkStyle} ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`
+              }
+            >
+              <FaUser size={14} />
+              Dashboard
+            </NavLink>
 
-          <NavLink
-            to="/account/orders"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `${linkStyle} ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <FaBoxOpen />
-            My Orders
-          </NavLink>
+            <NavLink
+              to="/account/orders"
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `${linkStyle} ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`
+              }
+            >
+              <FaBoxOpen size={14} />
+              My Orders
+            </NavLink>
 
-          <NavLink
-            to="/account/profile"
-            onClick={() => setIsOpen(false)}
-            className={({ isActive }) =>
-              `${linkStyle} ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-md"
-                  : "hover:bg-gray-100"
-              }`
-            }
-          >
-            <FaClipboardList />
-            Profile Settings
-          </NavLink>
+            <NavLink
+              to="/account/profile"
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `${linkStyle} ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`
+              }
+            >
+              <FaClipboardList size={14} />
+              Profile Settings
+            </NavLink>
 
-          <hr className="my-4" />
+          </nav>
 
+          {/* Logout */}
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition"
+            className="mt-auto flex items-center gap-3 px-4 py-3 
+                       rounded-xl text-sm font-medium text-red-500 
+                       hover:bg-red-50 transition"
           >
-            <FaSignOutAlt />
+            <FaSignOutAlt size={14} />
             Logout
           </button>
 

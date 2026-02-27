@@ -13,13 +13,18 @@ import DashboardPage from "../pages/public/account/dashboard";
 import MyOrdersPage from "../pages/public/account/myOrdersPage";
 import ProfileSettingsPage from "../pages/public/account/profileSettings";
 import AccountLayout from "../pages/public/account/accountLayout";
-import LoginPage from "../pages/public/account/login";
-import RegisterPage from "../pages/public/account/register";
+import LoginPage from "../pages/public/login";
+import RegisterPage from "../pages/public/register";
 import OrderDetailsModal from "../components/store/account/orderDetailModal";
 import AdminLayout from "../layouts/adminLayout";
 import AdminDashboard from "../pages/admin/adminDashboard";
 import AboutUs from "../pages/public/aboutUs";
 import ContactUs from "../pages/public/contactUs";
+import AdminProductsPage from "../pages/admin/adminProducts";
+import AddProductPage from "../pages/admin/addProducts";
+import AdminCategoriesPage from "../pages/admin/adminCategory";
+import AdminOrdersPage from "../pages/admin/adminOrder";
+import AdminUsersPage from "../pages/admin/adminUser";
 
 
 
@@ -41,6 +46,7 @@ export default function AppRoutes() {
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+      </Route>
 
         
         <Route element={<AccountLayout />}>
@@ -48,13 +54,18 @@ export default function AppRoutes() {
         <Route path="/account/orders" element={<MyOrdersPage />} />
         <Route path="/account/profile" element={<ProfileSettingsPage />} />
         <Route path="/account/order/:orderId" element={<OrderDetailsModal/>} />
-      </Route>
+      
       </Route>
 
 
       {/* ADMIN ROUTES */}
       <Route element={<AdminLayout />}>
         <Route path="/admin/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<AdminProductsPage />} />
+        <Route path="/admin/products/add" element={<AddProductPage />} />
+        <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+        <Route path="/admin/orders" element={<AdminOrdersPage />} />
+        <Route path="/admin/users" element={<AdminUsersPage/>} /> 
       </Route> 
 
       {/* SUPER ADMIN ROUTES */}

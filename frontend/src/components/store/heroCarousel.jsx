@@ -56,7 +56,7 @@ export default function Carousel({ slides }) {
                 {slide.subtitle}
               </p>
 
-              <Link to="/shop">
+              <Link to="/products">
                 <button className="mt-4 bg-black text-white px-8 py-3 rounded-full 
                                    hover:bg-gray-800 transition-all duration-300">
                   Shop Collection

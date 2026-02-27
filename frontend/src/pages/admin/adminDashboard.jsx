@@ -4,6 +4,7 @@ import {
   FaShoppingCart,
   FaChartLine
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 import {
   LineChart,
@@ -138,9 +139,10 @@ export default function DashboardPage() {
             Recent Orders
           </h2>
 
-          <button className="text-sm text-blue-600 hover:underline">
+          <Link to="/admin/orders"
+             className="text-sm text-blue-600 hover:underline">
             View All
-          </button>
+          </Link>
         </div>
 
         <div className="space-y-4">

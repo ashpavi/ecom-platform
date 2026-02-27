@@ -8,6 +8,7 @@ import {
   FaSignOutAlt,
   FaTimes
 } from "react-icons/fa";
+import logo from "../../assets/logo.jpg"; 
 
 export default function AdminSidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
@@ -16,7 +17,6 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all";
 
   const handleLogout = () => {
-    // later replace with real auth logic
     navigate("/");
   };
 
@@ -41,18 +41,26 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
                         : "-translate-x-full lg:translate-x-0"
                     }`}
       >
-        {/* Flex column to push logout to bottom */}
         <div className="flex flex-col h-full p-6">
 
-          {/* Top Section */}
+          {/* TOP BRAND SECTION */}
           <div className="flex items-center justify-between lg:justify-start mb-8">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Admin Panel
-              </h2>
-              <p className="text-xs text-gray-500">
-                Management Dashboard
-              </p>
+
+            <div className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="LuxeStore Logo"
+                className="w-10 h-10 object-contain rounded-md"
+              />
+
+              <div>
+                <h2 className="text-base font-semibold text-gray-900">
+                  LuxeStore
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Admin Panel
+                </p>
+              </div>
             </div>
 
             <button
@@ -67,7 +75,7 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
           <nav className="space-y-2 flex-1">
 
             <NavLink
-              to="/admin"
+              to="/admin/adminDashboard"
               end
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
@@ -140,7 +148,7 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
 
           </nav>
 
-          {/* Logout Button (Bottom) */}
+          {/* Logout Button */}
           <button
             onClick={handleLogout}
             className="mt-auto flex items-center gap-3 px-4 py-3 
