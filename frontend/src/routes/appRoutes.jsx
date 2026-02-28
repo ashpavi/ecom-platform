@@ -18,6 +18,7 @@ import RegisterPage from "../pages/public/register";
 import OrderDetailsModal from "../components/store/account/orderDetailModal";
 import AdminLayout from "../layouts/adminLayout";
 import AdminDashboard from "../pages/admin/adminDashboard";
+import SuperAdminDashboard from "../pages/superAdmin/superAdminDashboard";
 import AboutUs from "../pages/public/aboutUs";
 import ContactUs from "../pages/public/contactUs";
 import AdminProductsPage from "../pages/admin/adminProducts";
@@ -69,9 +70,7 @@ export default function AppRoutes() {
       </Route> 
 
       {/* SUPER ADMIN ROUTES */}
-      {/* <Route element={<SuperAdminLayout />}>
-        <Route path="/superAdmin/superAdminDashboard" element={<SuperAdminDashboard />} />
-      </Route> */}
+      <Route path="/superAdmin/superAdminDashboard" element={<SuperAdminDashboard />} />
 
     </Routes>
   );
