@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/store/navbar";
-import Footer from "../components/store/footer";
+import Navbar from "../components/store/Navbar";
+import Footer from "../components/store/Footer";
 
 export default function PublicLayout() {
   return (

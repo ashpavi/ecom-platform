@@ -20,7 +20,7 @@ import {
   Bar
 } from "recharts";
 
-import { db } from "../../firebase/firebaseConfig";
+import { db } from "../../firebase/FirebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
 export default function DashboardPage() {

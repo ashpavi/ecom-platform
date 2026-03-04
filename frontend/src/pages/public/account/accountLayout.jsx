@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import { Outlet } from "react-router-dom";
-import Navbar from "../../../components/store/navbar";
-import AccountSidebar from "../../../components/store/account/accountSidebar";
+import Navbar from "../../../components/store/Navbar";
+import AccountSidebar from "../../../components/store/account/AccountSidebar";
 
 export default function AccountLayout() {
   const [isOpen, setIsOpen] = useState(false);

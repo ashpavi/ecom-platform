@@ -1,5 +1,5 @@
 import { useState } from "react";
-import OrderDetailsModal from "../../../components/store/account/orderDetailModal";
+import OrderDetailsModal from "../../../components/store/account/OrderDetailModal";
 
 export default function MyOrdersPage() {
 

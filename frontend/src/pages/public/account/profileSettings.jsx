@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuth } from "../../../context/authContext";
+import { useAuth } from "../../../context/AuthContext";
 
-import { auth, db } from "../../../firebase/firebaseConfig";
+import { auth, db } from "../../../firebase/FirebaseConfig";
 import {
   updatePassword,
   EmailAuthProvider,

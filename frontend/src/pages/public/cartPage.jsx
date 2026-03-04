@@ -1,6 +1,6 @@
-import CartItem from "../../components/store/cartItem";
-import OrderSummary from "../../components/store/orderSummary";
-import { useCart } from "../../context/cartContext";
+import CartItem from "../../components/store/CartItem";
+import OrderSummary from "../../components/store/OrderSummary";
+import { useCart } from "../../context/CartContext";
 import { Link } from "react-router-dom";
 
 export default function CartPage() {

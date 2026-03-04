@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/logo.jpg";
 
 export default function LoginPage() {

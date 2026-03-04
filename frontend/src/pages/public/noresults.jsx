@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import Navbar from "../../components/store/navbar";
+import Navbar from "../../components/store/Navbar";
 
 const productDefs = [
   {

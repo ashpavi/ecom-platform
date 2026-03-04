@@ -4,7 +4,7 @@ import {
   FaCheckCircle
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../../context/authContext";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function DashboardPage() {
   const { currentUser } = useAuth();
