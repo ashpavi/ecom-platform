@@ -4,7 +4,9 @@ import {
   FaShoppingCart,
   FaChartLine
 } from "react-icons/fa";
+
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import {
   LineChart,
@@ -18,9 +20,37 @@ import {
   Bar
 } from "recharts";
 
+import { db } from "../../firebase/firebaseConfig";
+import { collection, getDocs } from "firebase/firestore";
+
 export default function DashboardPage() {
 
-  // Dummy Data (replace later with API)
+  const [customerCount, setCustomerCount] = useState(0);
+
+  /* ================= FETCH CUSTOMER COUNT ================= */
+
+  useEffect(() => {
+
+    const fetchCustomers = async () => {
+
+      const snapshot = await getDocs(collection(db, "users"));
+
+      const customers = snapshot.docs.filter(
+        doc => doc.data().role === "customer"
+      );
+
+      setCustomerCount(customers.length);
+
+    };
+
+    fetchCustomers();
+
+  }, []);
+
+
+
+  /* ================= CHART DATA ================= */
+
   const revenueData = [
     { month: "Jan", revenue: 4000 },
     { month: "Feb", revenue: 3200 },
@@ -36,21 +66,25 @@ export default function DashboardPage() {
     { name: "Delivered", value: 24 }
   ];
 
+
+
   return (
     <div className="space-y-12">
 
-      {/* ================= HEADER ================= */}
+      {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-semibold text-gray-900">
+        <h1 className="text-3xl font-semibold text-gray-900">
           Dashboard Overview
         </h1>
-        <p className="text-gray-500 text-sm mt-1">
+
+        <p className="text-gray-500 text-sm mt-2">
           Welcome back! Here’s what’s happening with your store today.
         </p>
       </div>
 
 
-      {/* ================= STAT CARDS ================= */}
+
+      {/* STAT CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
 
         <StatCard
@@ -67,8 +101,8 @@ export default function DashboardPage() {
 
         <StatCard
           icon={<FaUsers />}
-          title="Total Users"
-          value="1,245"
+          title="Total Customers"
+          value={customerCount}
         />
 
         <StatCard
@@ -80,22 +114,26 @@ export default function DashboardPage() {
       </div>
 
 
-      {/* ================= CHART SECTION ================= */}
+
+      {/* CHARTS */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
         {/* Revenue Chart */}
-        <div className="bg-white rounded-2xl border shadow-sm p-8 xl:col-span-2">
+        <div className="bg-white rounded-2xl shadow-md p-8 xl:col-span-2">
+
           <h2 className="font-semibold text-gray-800 mb-6">
             Revenue Overview
           </h2>
 
           <div className="h-80">
+
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={revenueData}>
                 <CartesianGrid stroke="#f1f5f9" />
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
+
                 <Line
                   type="monotone"
                   dataKey="revenue"
@@ -105,44 +143,59 @@ export default function DashboardPage() {
                 />
               </LineChart>
             </ResponsiveContainer>
+
           </div>
         </div>
 
 
-        {/* Orders Summary */}
-        <div className="bg-white rounded-2xl border shadow-sm p-8">
+
+        {/* Order Status */}
+        <div className="bg-white rounded-2xl shadow-md p-8">
+
           <h2 className="font-semibold text-gray-800 mb-6">
             Order Status
           </h2>
 
           <div className="h-80">
+
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={orderData}>
                 <CartesianGrid stroke="#f1f5f9" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="value" fill="#2563eb" radius={[8, 8, 0, 0]} />
+
+                <Bar
+                  dataKey="value"
+                  fill="#2563eb"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
+
           </div>
         </div>
 
       </div>
 
 
-      {/* ================= RECENT ORDERS ================= */}
-      <div className="bg-white rounded-2xl border shadow-sm p-8">
+
+      {/* RECENT ORDERS */}
+      <div className="bg-white rounded-2xl shadow-md p-8">
 
         <div className="flex items-center justify-between mb-6">
+
           <h2 className="font-semibold text-gray-800">
             Recent Orders
           </h2>
 
-          <Link to="/admin/orders"
-             className="text-sm text-blue-600 hover:underline">
+          <Link
+            to="/admin/orders"
+            className="text-sm text-blue-600 hover:text-blue-700"
+          >
             View All
           </Link>
+
         </div>
 
         <div className="space-y-4">
@@ -169,6 +222,7 @@ export default function DashboardPage() {
           />
 
         </div>
+
       </div>
 
     </div>
@@ -176,16 +230,20 @@ export default function DashboardPage() {
 }
 
 
-/* ================= SMALL COMPONENTS ================= */
+
+/* ================= COMPONENTS ================= */
 
 function StatCard({ icon, title, value }) {
+
   return (
-    <div className="bg-white border rounded-2xl p-6 shadow-sm 
-                    hover:shadow-md transition-all duration-300">
+    <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition">
+
       <div className="flex items-center justify-between mb-6">
-        <div className="bg-blue-50 p-3 rounded-xl text-blue-600">
+
+        <div className="bg-blue-50 p-3 rounded-xl text-blue-600 text-lg">
           {icon}
         </div>
+
       </div>
 
       <p className="text-sm text-gray-500">
@@ -195,9 +253,11 @@ function StatCard({ icon, title, value }) {
       <p className="text-3xl font-semibold text-gray-900 mt-1">
         {value}
       </p>
+
     </div>
   );
 }
+
 
 
 function OrderRow({ id, user, total, status }) {
@@ -210,7 +270,7 @@ function OrderRow({ id, user, total, status }) {
       : "bg-gray-100 text-gray-700";
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 border rounded-xl hover:bg-gray-50 transition">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
 
       <div>
         <p className="font-medium text-gray-900">{id}</p>
@@ -218,6 +278,7 @@ function OrderRow({ id, user, total, status }) {
       </div>
 
       <div className="flex items-center gap-6">
+
         <span className="font-medium text-gray-800">
           {total}
         </span>
@@ -225,6 +286,7 @@ function OrderRow({ id, user, total, status }) {
         <span className={`text-xs px-3 py-1 rounded-full ${statusColor}`}>
           {status}
         </span>
+
       </div>
 
     </div>

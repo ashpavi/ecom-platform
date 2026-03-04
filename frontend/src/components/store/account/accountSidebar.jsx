@@ -7,14 +7,22 @@ import {
   FaTimes,
 } from "react-icons/fa";
 
+import { useAuth } from "../../../context/authContext";
+
 export default function AccountSidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();
+  const { logoutUser } = useAuth();
 
   const linkStyle =
     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all";
 
-  const handleLogout = () => {
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      await logoutUser(); 
+      navigate("/login"); 
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
@@ -32,9 +40,8 @@ export default function AccountSidebar({ isOpen, setIsOpen }) {
         className={`fixed lg:relative top-0 lg:top-auto left-0 
                     h-full lg:h-auto 
                     w-72 
-                    bg-white border shadow-sm 
-                    rounded-2xl lg:rounded-2xl
-                    p-6
+                    bg-white shadow-sm 
+                    rounded-2xl 
                     transform transition-transform duration-300
                     z-50
                     ${

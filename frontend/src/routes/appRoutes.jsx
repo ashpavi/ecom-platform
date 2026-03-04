@@ -75,9 +75,9 @@ export default function AppRoutes() {
           }
         />
 
+        </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-      </Route>
 
       {/* ================= ACCOUNT ROUTES ================= */}
       <Route

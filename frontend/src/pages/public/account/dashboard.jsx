@@ -17,7 +17,7 @@ export default function DashboardPage() {
       {/* ================= HEADER ================= */}
       <div className="space-y-3">
         <h2 className="text-3xl font-semibold text-gray-900">
-          Welcome back, <span className="text-blue-600">{firstName}</span> 👋
+          Welcome, <span className="text-blue-600">{firstName}</span> 👋
         </h2>
         <p className="text-gray-500 text-sm">
           Here’s an overview of your account activity.

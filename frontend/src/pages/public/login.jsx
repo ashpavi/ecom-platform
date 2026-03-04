@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaLock } from "react-icons/fa";
+import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/authContext";
+import logo from "../../assets/logo.jpg";
 
 export default function LoginPage() {
   const { loginUser } = useAuth();
@@ -9,6 +10,8 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +23,6 @@ export default function LoginPage() {
     try {
       const user = await loginUser(email, password);
 
-      // 🔥 Role-based redirect
       if (user.role === "superadmin") {
         navigate("/superAdmin/superAdminDashboard");
       } else if (user.role === "admin") {
@@ -37,49 +39,105 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex items-center justify-center px-4">
-      <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-sm border">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center px-4">
 
+      <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
+
+        {/* ================= BRAND ================= */}
+        <Link
+          to="/"
+          className="flex items-center justify-center gap-3 mb-6"
+        >
+          <img
+            src={logo}
+            alt="LuxeStore"
+            className="w-10 h-10 object-contain rounded-md"
+          />
+
+          <span className="text-xl font-semibold text-gray-900">
+            LuxeStore
+          </span>
+        </Link>
+
+
+        {/* ================= HEADER ================= */}
         <div className="text-center mb-6">
-          <FaLock className="mx-auto text-blue-600 mb-3" size={30} />
-          <h2 className="text-2xl font-semibold">Welcome Back</h2>
+
+          <div className="bg-blue-50 w-12 h-12 flex items-center justify-center rounded-full mx-auto mb-3 text-blue-600">
+            <FaLock size={18} />
+          </div>
+
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Welcome Back
+          </h2>
+
           <p className="text-gray-500 text-sm mt-1">
             Login to your account
           </p>
+
         </div>
 
+
+        {/* ERROR */}
         {error && (
-          <div className="bg-red-100 text-red-600 text-sm p-3 rounded mb-4">
+          <div className="bg-red-100 text-red-600 text-sm p-3 rounded-lg mb-4">
             {error}
           </div>
         )}
 
+
+        {/* ================= FORM ================= */}
         <form className="space-y-5" onSubmit={handleSubmit}>
 
+          {/* EMAIL */}
           <div>
-            <label className="block text-sm mb-2">Email</label>
+            <label className="block text-sm mb-2 text-gray-600">
+              Email
+            </label>
+
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
               placeholder="Enter your email"
+              className="w-full bg-gray-100 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
+
+          {/* PASSWORD */}
           <div>
-            <label className="block text-sm mb-2">Password</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="Enter your password"
-            />
+
+            <label className="block text-sm mb-2 text-gray-600">
+              Password
+            </label>
+
+            <div className="relative">
+
+              <input
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="w-full bg-gray-100 rounded-lg px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+
+            </div>
+
           </div>
 
+
+          {/* LOGIN BUTTON */}
           <button
             type="submit"
             disabled={loading}
@@ -90,9 +148,14 @@ export default function LoginPage() {
 
         </form>
 
+
+        {/* REGISTER */}
         <p className="text-sm text-center mt-6 text-gray-600">
           Don’t have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link
+            to="/register"
+            className="text-blue-600 hover:underline"
+          >
             Register
           </Link>
         </p>

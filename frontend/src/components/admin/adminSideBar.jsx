@@ -8,21 +8,35 @@ import {
   FaSignOutAlt,
   FaTimes
 } from "react-icons/fa";
-import logo from "../../assets/logo.jpg"; 
+
+import logo from "../../assets/logo.jpg";
+import { useAuth } from "../../context/authContext";
 
 export default function AdminSidebar({ isOpen, setIsOpen }) {
+
   const navigate = useNavigate();
+  const { logoutUser } = useAuth();
 
   const linkStyle =
-    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all";
+    "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200";
 
-  const handleLogout = () => {
-    navigate("/");
+
+
+  /* ================= LOGOUT ================= */
+  const handleLogout = async () => {
+    try {
+      await logoutUser(); // Firebase logout
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
+
+
 
   return (
     <>
-      {/* Overlay (Mobile) */}
+      {/* ================= MOBILE OVERLAY ================= */}
       <div
         className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -30,10 +44,12 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
         onClick={() => setIsOpen(false)}
       />
 
-      {/* Sidebar */}
+
+
+      {/* ================= SIDEBAR ================= */}
       <div
         className={`fixed lg:static top-0 left-0 h-screen w-64 
-                    bg-white border-r shadow-sm z-50 
+                    bg-gray-50 shadow-xl z-50 
                     transform transition-transform duration-300
                     ${
                       isOpen
@@ -41,12 +57,13 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
                         : "-translate-x-full lg:translate-x-0"
                     }`}
       >
-        <div className="flex flex-col h-full p-6">
+        <div className="flex flex-col h-full px-6 py-6">
 
-          {/* TOP BRAND SECTION */}
-          <div className="flex items-center justify-between lg:justify-start mb-8">
+          {/* ================= BRAND ================= */}
+          <div className="flex items-center justify-between lg:justify-start mb-10">
 
             <div className="flex items-center gap-3">
+
               <img
                 src={logo}
                 alt="LuxeStore Logo"
@@ -57,21 +74,26 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
                 <h2 className="text-base font-semibold text-gray-900">
                   LuxeStore
                 </h2>
+
                 <p className="text-xs text-gray-500">
                   Admin Panel
                 </p>
               </div>
+
             </div>
 
             <button
-              className="lg:hidden"
+              className="lg:hidden text-gray-500"
               onClick={() => setIsOpen(false)}
             >
               <FaTimes />
             </button>
+
           </div>
 
-          {/* Navigation */}
+
+
+          {/* ================= NAVIGATION ================= */}
           <nav className="space-y-2 flex-1">
 
             <NavLink
@@ -90,8 +112,10 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
               Dashboard
             </NavLink>
 
+
             <NavLink
               to="/admin/products"
+              onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
@@ -104,8 +128,10 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
               Products
             </NavLink>
 
+
             <NavLink
               to="/admin/categories"
+              onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
@@ -118,8 +144,10 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
               Categories
             </NavLink>
 
+
             <NavLink
               to="/admin/orders"
+              onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
@@ -132,8 +160,10 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
               Orders
             </NavLink>
 
+
             <NavLink
               to="/admin/users"
+              onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
@@ -148,7 +178,9 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
 
           </nav>
 
-          {/* Logout Button */}
+
+
+          {/* ================= LOGOUT ================= */}
           <button
             onClick={handleLogout}
             className="mt-auto flex items-center gap-3 px-4 py-3 
