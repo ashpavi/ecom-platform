@@ -39,7 +39,7 @@ const mockOrders = [
   },
 ];
 
-export default function AdminOrdersPage() {
+export default function AdminOrder() {
   const [orders, setOrders] = useState(mockOrders);
   const [selectedOrder, setSelectedOrder] = useState(null);
 

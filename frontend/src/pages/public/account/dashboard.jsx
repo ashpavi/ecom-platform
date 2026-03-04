@@ -6,7 +6,7 @@ import {
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const { currentUser } = useAuth();
 
   const firstName = currentUser?.name?.split(" ")[0] || "User";

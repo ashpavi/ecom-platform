@@ -4,7 +4,7 @@ import { FaUserPlus, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/logo.jpg";
 
-export default function RegisterPage() {
+export default function Register() {
   const { registerUser } = useAuth();
   const navigate = useNavigate();
 

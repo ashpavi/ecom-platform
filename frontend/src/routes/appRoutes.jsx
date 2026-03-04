@@ -6,39 +6,44 @@ import AdminLayout from "../layouts/AdminLayout";
 
 
 
-import ProtectedRoute from "./ProtectedRoutes";
-import AdminRoute from "./AdminRoutes";
-import SuperAdminRoute from "./SuperAdminRoutes";
+import ProtectedRoutes from "./ProtectedRoutes";
+import AdminRoutes from "./AdminRoutes";
+import SuperAdminRoutes from "./SuperAdminRoutes";
 
 /* PUBLIC PAGES */
 import HomePage from "../pages/public/Homepage";
 import ProductList from "../pages/public/ProductList";
-import NoResults from "../pages/public/Noresults";
+import ProductDetails from "../pages/public/ProductDetails";
+import NoResults from "../pages/public/NoResults";
 import CartPage from "../pages/public/CartPage";
-import CheckoutPage from "../pages/public/Checkout";
-import OrderSuccessPage from "../pages/public/OrderSuccess";
-import LoginPage from "../pages/public/Login";
-import RegisterPage from "../pages/public/Register";
+import Checkout from "../pages/public/Checkout";
+import OrderSuccess from "../pages/public/OrderSuccess";
+import Login from "../pages/public/Login";
+import Register from "../pages/public/Register";
 import AboutUs from "../pages/public/AboutUs";
 import ContactUs from "../pages/public/ContactUs";
 
 /* ACCOUNT PAGES */
-import DashboardPage from "../pages/public/account/Dashboard";
+import Dashboard from "../pages/public/account/Dashboard";
 import MyOrdersPage from "../pages/public/account/MyOrdersPage";
-import ProfileSettingsPage from "../pages/public/account/ProfileSettings";
-import OrderDetailsModal from "../components/store/account/OrderDetailModal";
+import ProfileSettings from "../pages/public/account/ProfileSettings";
+import OrderDetailModal from "../components/store/account/OrderDetailModal";
 
 /* ADMIN PAGES */
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminProductsPage from "../pages/admin/AdminProducts";
-import AddProductPage from "../pages/admin/AddProducts";
-import AdminCategoriesPage from "../pages/admin/AdminCategory";
-import AdminOrdersPage from "../pages/admin/AdminOrder";
-import AdminUsersPage from "../pages/admin/AdminUser";
+import AdminProducts from "../pages/admin/AdminProducts";
+import AddProducts from "../pages/admin/AddProducts";
+import AdminCategory from "../pages/admin/AdminCategory";
+import AdminOrder from "../pages/admin/AdminOrder";
+import AdminUser from "../pages/admin/AdminUser";
 
 /* SUPER ADMIN */
 import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard";
-import ProductDetailPage from "../pages/public/ProductDetails";
+
+
+
+
+
 
 
 
@@ -50,7 +55,7 @@ export default function AppRoutes() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductList />} />
-        <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="/products/:id" element={<ProductDetails/>} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/no-results" element={<NoResults />} />
@@ -60,62 +65,62 @@ export default function AppRoutes() {
         <Route
           path="/checkout"
           element={
-            <ProtectedRoute>
-              <CheckoutPage />
-            </ProtectedRoute>
+            <ProtectedRoutes>
+              <Checkout />
+            </ProtectedRoutes>
           }
         />
 
         <Route
           path="/orderSuccess"
           element={
-            <ProtectedRoute>
-              <OrderSuccessPage />
-            </ProtectedRoute>
+            <ProtectedRoutes>
+              <OrderSuccess />
+            </ProtectedRoutes>
           }
         />
 
         </Route>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
       {/* ================= ACCOUNT ROUTES ================= */}
       <Route
         element={
-          <ProtectedRoute>
+          <ProtectedRoutes>
             <AccountLayout />
-          </ProtectedRoute>
+          </ProtectedRoutes>
         }
       >
-        <Route path="/account" element={<DashboardPage />} />
+        <Route path="/account" element={<Dashboard />} />
         <Route path="/account/orders" element={<MyOrdersPage />} />
-        <Route path="/account/profile" element={<ProfileSettingsPage />} />
-        <Route path="/account/order/:orderId" element={<OrderDetailsModal />} />
+        <Route path="/account/profile" element={<ProfileSettings />} />
+        <Route path="/account/order/:orderId" element={<OrderDetailModal />} />
       </Route>
 
       {/* ================= ADMIN ROUTES ================= */}
       <Route
         element={
-          <AdminRoute>
+          <AdminRoutes>
             <AdminLayout />
-          </AdminRoute>
+          </AdminRoutes>
         }
       >
         <Route path="/admin/adminDashboard" element={<AdminDashboard />} />
-        <Route path="/admin/products" element={<AdminProductsPage />} />
-        <Route path="/admin/products/add" element={<AddProductPage />} />
-        <Route path="/admin/categories" element={<AdminCategoriesPage />} />
-        <Route path="/admin/orders" element={<AdminOrdersPage />} />
-        <Route path="/admin/users" element={<AdminUsersPage />} />
+        <Route path="/admin/products" element={<AdminProducts />} />
+        <Route path="/admin/products/add" element={<AddProducts />} />
+        <Route path="/admin/categories" element={<AdminCategory />} />
+        <Route path="/admin/orders" element={<AdminOrder />} />
+        <Route path="/admin/users" element={<AdminUser />} />
       </Route>
 
       {/* ================= SUPER ADMIN ROUTE ================= */}
       <Route
         path="/superAdmin/superAdminDashboard"
         element={
-          <SuperAdminRoute>
+          <SuperAdminRoutes>
             <SuperAdminDashboard />
-          </SuperAdminRoute>
+          </SuperAdminRoutes>
         }
       />
 

@@ -1,7 +1,7 @@
 import { FaTimes, FaBox, FaMapMarkerAlt } from "react-icons/fa";
 import { useEffect } from "react";
 
-export default function OrderDetailsModal({ order, onClose }) {
+export default function OrderDetailModal({ order, onClose }) {
   if (!order) return null;
 
   useEffect(() => {

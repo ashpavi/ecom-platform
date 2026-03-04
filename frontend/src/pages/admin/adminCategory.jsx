@@ -7,7 +7,7 @@ const mockCategories = [
   { id: "CAT-003", name: "Clothing", productCount: 15 },
 ];
 
-export default function AdminCategoriesPage() {
+export default function AdminCategory() {
   const [categories, setCategories] = useState(mockCategories);
   const [newCategory, setNewCategory] = useState("");
   const [editingCategory, setEditingCategory] = useState(null);

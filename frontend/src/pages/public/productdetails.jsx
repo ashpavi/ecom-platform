@@ -269,7 +269,7 @@ function ReviewCard({ review }) {
   );
 }
 
-function ProductDetailPage() {
+function ProductDetails() {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [selectedSize, setSelectedSize] = useState("M");
@@ -556,4 +556,4 @@ function ProductDetailPage() {
   );
 }
 
-export default ProductDetailPage;
+export default ProductDetails;

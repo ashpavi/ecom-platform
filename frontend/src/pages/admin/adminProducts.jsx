@@ -25,7 +25,7 @@ const mockProducts = [
   },
 ];
 
-export default function AdminProductsPage() {
+export default function AdminProducts() {
   const [products, setProducts] = useState(mockProducts);
   const [editingProduct, setEditingProduct] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);

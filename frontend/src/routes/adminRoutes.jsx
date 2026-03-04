@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const AdminRoute = ({ children }) => {
+const AdminRoutes = ({ children }) => {
   const { currentUser } = useAuth();
 
   if (!currentUser) {
@@ -18,4 +18,4 @@ const AdminRoute = ({ children }) => {
   return children;
 };
 
-export default AdminRoute;
+export default AdminRoutes;

@@ -9,7 +9,7 @@ import {
   updateDoc
 } from "firebase/firestore";
 
-export default function AdminUsersPage() {
+export default function AdminUser() {
 
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);

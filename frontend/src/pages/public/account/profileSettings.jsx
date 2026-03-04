@@ -12,7 +12,7 @@ import {
 
 import { doc, updateDoc } from "firebase/firestore";
 
-export default function ProfileSettingsPage() {
+export default function ProfileSettings() {
 
   const { currentUser } = useAuth();
 

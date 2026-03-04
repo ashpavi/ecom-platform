@@ -23,7 +23,7 @@ import {
 import { db } from "../../firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
-export default function DashboardPage() {
+export default function AdminDashboard() {
 
   const [customerCount, setCustomerCount] = useState(0);
 

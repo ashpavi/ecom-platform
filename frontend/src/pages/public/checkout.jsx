@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-export default function CheckoutPage() {
+export default function Checkout() {
   const [shippingData, setShippingData] = useState({
     fullName: "",
     streetAddress: "",

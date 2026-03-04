@@ -4,7 +4,7 @@ import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/logo.jpg";
 
-export default function LoginPage() {
+export default function Login() {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
 

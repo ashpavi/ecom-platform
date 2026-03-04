@@ -7,7 +7,7 @@ import { FaCreditCard, FaPaypal, FaMoneyBillWave } from "react-icons/fa";
 import { useCart } from "../../context/CartContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function OrderSuccessPage() {
+export default function OrderSuccess() {
   const { cartItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();

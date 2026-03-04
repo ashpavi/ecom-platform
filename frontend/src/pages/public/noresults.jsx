@@ -216,7 +216,7 @@ function ShopModernFooter() {
   );
 }
 
-export default function ShopModernNoResults() {
+export default function NoResults() {
   const [searchParams] = useSearchParams();
   const [wishlist, setWishlist] = useState(new Set());
   const [cartAdded, setCartAdded] = useState(new Set());
