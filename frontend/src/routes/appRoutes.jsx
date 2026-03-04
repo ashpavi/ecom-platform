@@ -12,8 +12,8 @@ import SuperAdminRoute from "./superAdminRoutes";
 
 /* PUBLIC PAGES */
 import HomePage from "../pages/public/homepage";
-import ProductList from "../pages/public/productlist";
-import ProductDetails from "../pages/public/productdetails";
+import ProductList from "../pages/public/productList";
+import ProductDetails from "../pages/public/productDetails";
 import NoResults from "../pages/public/noresults";
 import CartPage from "../pages/public/cartPage";
 import CheckoutPage from "../pages/public/checkout";
