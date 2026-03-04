@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaEye, FaUserSlash, FaUserCheck } from "react-icons/fa";
 
-import { db } from "../../firebase/FirebaseConfig";
+import { db } from "../../firebase/firebaseConfig";
 import {
   collection,
   getDocs,
