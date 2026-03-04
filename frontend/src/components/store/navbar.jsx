@@ -1,19 +1,19 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
-  FaHeart,
   FaShoppingCart,
-  FaUser,
   FaBars,
   FaTimes,
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import logo from "../../assets/logo.jpg";
 import { useCart } from "../../context/cartContext";
+import { useAuth } from "../../context/authContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { totalItems } = useCart();
+  const { currentUser, logoutUser } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -35,6 +35,28 @@ export default function Navbar() {
       setIsOpen(false);
     }
   };
+
+  const handleLogout = async () => {
+    await logoutUser();
+    navigate("/");
+  };
+
+  const handleUserClick = () => {
+    if (!currentUser) {
+      navigate("/login");
+      return;
+    }
+
+    if (currentUser.role === "superadmin") {
+      navigate("/superAdmin/superAdminDashboard");
+    } else if (currentUser.role === "admin") {
+      navigate("/admin/adminDashboard");
+    } else {
+      navigate("/account");
+    }
+  };
+
+  const firstName = currentUser?.name?.split(" ")[0] || "";
 
   return (
     <>
@@ -85,19 +107,64 @@ export default function Navbar() {
           </form>
 
           {/* RIGHT */}
-          <div className="flex items-center space-x-6 text-gray-600">
+          <div className="flex items-center space-x-6 text-gray-700">
+
+            {/* CART */}
             <Link to="/cart" className="relative">
               <FaShoppingCart size={18} />
               {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-full">
                   {totalItems}
                 </span>
               )}
             </Link>
 
-            <Link to="/account">
-              <FaUser size={18} />
-            </Link>
+            {/* ================= NOT LOGGED IN ================= */}
+            {!currentUser && (
+              <div className="hidden md:flex items-center space-x-4">
+                <Link
+                  to="/login"
+                  className="bg-blue-300 text-black px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-400 transition"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/register"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+
+            {/* ================= LOGGED IN ================= */}
+            {currentUser && (
+              <div className="flex items-center space-x-4">
+
+                <button
+                  onClick={handleUserClick}
+                  className="flex items-center bg-gray-100 space-x-2 hover:bg-gray-200 px-3 py-2 rounded-full transition cursor-pointer"
+                >
+                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                    {firstName.charAt(0).toUpperCase()}
+                  </div>
+
+                  <span className="hidden md:block text-sm font-medium">
+                    {firstName}
+                  </span>
+                </button>
+
+                <button
+                  onClick={handleLogout}
+                  className="hidden md:block bg-red-500 px-4 py-2 rounded-full text-sm text-white hover:bg-red-600 transition cursor-pointer"
+                >
+                  Logout
+                </button>
+
+              </div>
+            )}
+
           </div>
         </div>
       </nav>
@@ -140,6 +207,35 @@ export default function Navbar() {
             <Link to="/products" onClick={() => setIsOpen(false)}>Shop</Link>
             <Link to="/aboutUs" onClick={() => setIsOpen(false)}>About Us</Link>
             <Link to="/contactUs" onClick={() => setIsOpen(false)}>Contact Us</Link>
+
+            {!currentUser && (
+              <>
+                <Link to="/login" onClick={() => setIsOpen(false)}>
+                  Login
+                </Link>
+                <Link to="/register" onClick={() => setIsOpen(false)}>
+                  Register
+                </Link>
+              </>
+            )}
+
+            {currentUser && (
+              <>
+                <div className="flex items-center space-x-2 mt-4">
+                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold">
+                    {firstName.charAt(0).toUpperCase()}
+                  </div>
+                  <span>{firstName}</span>
+                </div>
+
+                <button
+                  onClick={handleLogout}
+                  className="text-left text-red-500 mt-3"
+                >
+                  Logout
+                </button>
+              </>
+            )}
           </div>
 
         </div>

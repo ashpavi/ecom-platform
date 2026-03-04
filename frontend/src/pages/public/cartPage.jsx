@@ -47,7 +47,7 @@ export default function CartPage() {
               Looks like you haven’t added anything yet.
             </p>
             <Link
-              to="/shop"
+              to="/products"
               className="inline-block mt-6 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition"
             >
               Continue Shopping
