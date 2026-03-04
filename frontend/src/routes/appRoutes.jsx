@@ -39,6 +39,7 @@ import AdminUsersPage from "../pages/admin/adminUser";
 
 /* SUPER ADMIN */
 import SuperAdminDashboard from "../pages/superAdmin/superAdminDashboard";
+import ProductDetailPage from "../pages/public/productDetails";
 
 
 
@@ -50,7 +51,7 @@ export default function AppRoutes() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductList />} />
-        <Route path="/products/:id" element={<ProductDetails />} />
+        <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/no-results" element={<NoResults />} />
