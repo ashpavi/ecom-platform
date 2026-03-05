@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import AdminSidebar from "../components/admin/AdminSideBar";
+import AdminSideBar from "../components/admin/AdminSideBar.jsx";
+
 import { FaBars } from "react-icons/fa";
 
 export default function AdminLayout() {
@@ -10,7 +11,7 @@ export default function AdminLayout() {
     <div className="h-screen flex bg-white overflow-hidden">
 
       {/* Sidebar */}
-      <AdminSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <AdminSideBar isOpen={isOpen} setIsOpen={setIsOpen} />
 
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col overflow-hidden">
