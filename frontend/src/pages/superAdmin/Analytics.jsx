@@ -53,7 +53,7 @@ const integrations = [
   },
 ];
 
-export default function GlobalSettings() {
+export default function Analytics() {
   const [activeNav, setActiveNav] = useState("branding");
   const [primaryColor, setPrimaryColor] = useState("#137FEC");
   const [secondaryColor, setSecondaryColor] = useState("#F43F5E");
