@@ -12,7 +12,7 @@ import {
 import logo from "../../assets/logo.jpg";
 import { useAuth } from "../../context/AuthContext";
 
-export default function AdminSidebar({ isOpen, setIsOpen }) {
+export default function AdminSideBar({ isOpen, setIsOpen }) {
 
   const navigate = useNavigate();
   const { logoutUser } = useAuth();
