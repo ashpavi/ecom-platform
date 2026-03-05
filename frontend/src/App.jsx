@@ -1,14 +1,15 @@
 import { BrowserRouter } from "react-router-dom";
-import AppRoutes from "./routes/appRoutes";
 import { CartProvider } from "./context/CartContext";
-import ScrollToTop from "./utils/scrollToTop";
+import AppRoutes from "./routes/AppRoutes";
+import ScrollToTop from "./utils/ScrollToTop";
+
 
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
       <CartProvider>
-        <AppRoutes />
+         <AppRoutes />
       </CartProvider>
     </BrowserRouter>
   );

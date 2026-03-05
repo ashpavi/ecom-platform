@@ -41,12 +41,6 @@ import AdminUser from "../pages/admin/AdminUser";
 import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard";
 
 
-
-
-
-
-
-
 export default function AppRoutes() {
   return (
     <Routes>
