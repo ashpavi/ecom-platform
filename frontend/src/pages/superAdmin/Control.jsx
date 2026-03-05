@@ -65,7 +65,7 @@ function randomApiLog() {
 
 // ── COMPONENT ─────────────────────────────────────────────────────────────────
 
-export default function NexusControl() {
+export default function Control() {
   const [activeNav, setActiveNav] = useState("dashboard");
   const [apiLogs, setApiLogs] = useState(initialApiLogs);
   const [cpu, setCpu] = useState(42);
