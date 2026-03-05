@@ -65,7 +65,7 @@ const messages = [
   },
 ];
 
-export default function SuperAdminSupport() {
+export default function Support() {
   const [activeTab, setActiveTab] = useState("Public Reply");
   const [replyText, setReplyText] = useState("");
 
