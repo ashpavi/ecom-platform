@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
-import AppRoutes from "./routes/AppRoutes";
+import AppRoutes from "./routes/TempRoutes";
 import ScrollToTop from "./utils/ScrollToTop";
 
 

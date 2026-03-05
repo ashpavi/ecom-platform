@@ -1,44 +1,44 @@
 import { Routes, Route } from "react-router-dom";
 
 import PublicLayout from "../layouts/PublicLayout.jsx";
-import AccountLayout from "../pages/public/account/AccountLayout";
-import AdminLayout from "../layouts/AdminLayout";
+import AccountLayout from "../pages/public/account/AccountLayout.jsx";
+import AdminLayout from "../layouts/AdminLayout.jsx";
 
 
 
-import ProtectedRoutes from "./ProtectedRoutes";
-import AdminRoutes from "./AdminRoutes";
-import SuperAdminRoutes from "./SuperAdminRoutes";
+import ProtectedRoutes from "./ProtectedRoutes.jsx";
+import AdminRoutes from "./AdminRoutes.jsx";
+import SuperAdminRoutes from "./SuperAdminRoutes.jsx";
 
 /* PUBLIC PAGES */
-import HomePage from "../pages/public/Homepage";
-import ProductList from "../pages/public/ProductList";
-import ProductDetails from "../pages/public/ProductDetails";
-import NoResults from "../pages/public/NoResults";
-import CartPage from "../pages/public/CartPage";
-import Checkout from "../pages/public/Checkout";
-import OrderSuccess from "../pages/public/OrderSuccess";
-import Login from "../pages/public/Login";
-import Register from "../pages/public/Register";
-import AboutUs from "../pages/public/AboutUs";
-import ContactUs from "../pages/public/ContactUs";
+import HomePage from "../pages/public/Homepage.jsx";
+import ProductList from "../pages/public/ProductList.jsx";
+import ProductDetails from "../pages/public/ProductDetails.jsx";
+import NoResults from "../pages/public/NoResults.jsx";
+import CartPage from "../pages/public/CartPage.jsx";
+import Checkout from "../pages/public/Checkout.jsx";
+import OrderSuccess from "../pages/public/OrderSuccess.jsx";
+import Login from "../pages/public/Login.jsx";
+import Register from "../pages/public/Register.jsx";
+import AboutUs from "../pages/public/AboutUs.jsx";
+import ContactUs from "../pages/public/ContactUs.jsx";
 
 /* ACCOUNT PAGES */
-import Dashboard from "../pages/public/account/Dashboard";
-import MyOrdersPage from "../pages/public/account/MyOrdersPage";
-import ProfileSettings from "../pages/public/account/ProfileSettings";
-import OrderDetailModal from "../components/store/account/OrderDetailModal";
+import Dashboard from "../pages/public/account/Dashboard.jsx";
+import MyOrdersPage from "../pages/public/account/MyOrdersPage.jsx";
+import ProfileSettings from "../pages/public/account/ProfileSettings.jsx";
+import OrderDetailModal from "../components/store/account/OrderDetailModal.jsx";
 
 /* ADMIN PAGES */
-import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminProducts from "../pages/admin/AdminProducts";
-import AddProducts from "../pages/admin/AddProducts";
-import AdminCategory from "../pages/admin/AdminCategory";
-import AdminOrder from "../pages/admin/AdminOrder";
-import AdminUser from "../pages/admin/AdminUser";
+import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
+import AdminProducts from "../pages/admin/AdminProducts.jsx";
+import AddProducts from "../pages/admin/AddProducts.jsx";
+import AdminCategory from "../pages/admin/AdminCategory.jsx";
+import AdminOrder from "../pages/admin/AdminOrder.jsx";
+import AdminUser from "../pages/admin/AdminUser.jsx";
 
 /* SUPER ADMIN */
-import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard";
+import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard.jsx";
 
 
 export default function AppRoutes() {
