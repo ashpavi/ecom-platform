@@ -36,7 +36,7 @@ const statusFilters = ["Active", "Suspended"];
 
 // ── COMPONENT ─────────────────────────────────────────────────────────────────
 
-export default function StoreManagement() {
+export default function Management() {
   const [activePlan, setActivePlan] = useState("All Stores");
   const [activeStatus, setActiveStatus] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
