@@ -38,33 +38,33 @@ export default function HomePage() {
       </section>
 
       {/* FEATURED */}
-      <section>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <h2 className="text-xl sm:text-2xl font-bold mb-8">
-            Featured Products
-          </h2>
+            <h2 className="text-xl sm:text-2xl font-bold mb-8">
+              Featured Products
+            </h2>
 
-          <div className="grid grid-cols-1 
-                          sm:grid-cols-2 
-                          md:grid-cols-3 
-                          lg:grid-cols-4 
-                          gap-6">
-            {[1, 2, 3, 4].map((item) => (
-              <ProductCard
-                key={item}
-                product={{
-                  id: item,
-                  name: "Premium Product",
-                  price: 4500,
-                  image: ""
-                }}
-              />
-            ))}
+            <div className="grid grid-cols-1 
+                            sm:grid-cols-2 
+                            md:grid-cols-3 
+                            lg:grid-cols-4 
+                            gap-6">
+              {[1, 2, 3, 4].map((item) => (
+                <ProductCard
+                  key={item}
+                  product={{
+                    id: item,
+                    name: "Premium Product",
+                    price: 4500,
+                    image: ""
+                  }}
+                />
+              ))}
+            </div>
+
           </div>
-
-        </div>
-      </section>
+        </section>
 
             {/* ================= CATEGORIES ================= */}
       <section className="py-10 bg-gray-100">
