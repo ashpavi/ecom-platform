@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const contactMethods = [
   {
-    icon: "📧",
+    icon: "https://images.unsplash.com/photo-1557200134-90327ee9fafa?w=200&q=80",
     title: "Email Us",
     desc: "We'll respond within 24 hours",
     value: "support@shopmodern.com",
@@ -10,7 +10,7 @@ const contactMethods = [
     border: "#bfdbfe",
   },
   {
-    icon: "📞",
+    icon: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=200&q=80",
     title: "Call Us",
     desc: "Mon–Fri, 9am to 6pm EST",
     value: "+1 (800) 123-4567",
@@ -18,7 +18,7 @@ const contactMethods = [
     border: "#bbf7d0",
   },
   {
-    icon: "💬",
+    icon: "https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=200&q=80",
     title: "Live Chat",
     desc: "Available 24/7 for quick help",
     value: "Start a conversation →",
@@ -26,7 +26,7 @@ const contactMethods = [
     border: "#e9d5ff",
   },
   {
-    icon: "📍",
+    icon: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=200&q=80",
     title: "Visit Us",
     desc: "Our headquarters",
     value: "123 Commerce St, New York, NY",
@@ -86,7 +86,11 @@ export default function ContactUs() {
               className="rounded-xl p-6 border transition hover:shadow-lg"
               style={{ background: c.bg, borderColor: c.border }}
             >
-              <div className="text-2xl mb-3">{c.icon}</div>
+              <img
+                src={c.icon}
+                alt={c.title}
+                className="w-16 h-16 rounded-full object-cover mb-3"
+              />
               <div className="font-semibold mb-1">{c.title}</div>
               <div className="text-sm text-gray-500 mb-2">{c.desc}</div>
               <div className="text-blue-600 text-sm font-medium">{c.value}</div>

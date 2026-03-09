@@ -5,25 +5,25 @@ const teamMembers = [
   {
     name: "Sarah Chen",
     role: "Founder & CEO",
-    img: "https://api.dicebear.com/7.x/personas/svg?seed=sarah&backgroundColor=b6e3f4",
+    img: "https://randomuser.me/api/portraits/women/44.jpg",
     bio: "Visionary behind our mission to simplify and elevate modern shopping.",
   },
   {
     name: "Marcus Rivera",
     role: "Head of Design",
-    img: "https://api.dicebear.com/7.x/personas/svg?seed=marcus&backgroundColor=ffd5dc",
+    img: "https://randomuser.me/api/portraits/men/32.jpg",
     bio: "Designing seamless experiences that delight millions of shoppers.",
   },
   {
     name: "Priya Nair",
     role: "CTO",
-    img: "https://api.dicebear.com/7.x/personas/svg?seed=priya&backgroundColor=d1f7c4",
+    img: "https://randomuser.me/api/portraits/women/68.jpg",
     bio: "Building the technology powering our lightning-fast platform.",
   },
   {
     name: "James Okafor",
     role: "Head of Operations",
-    img: "https://api.dicebear.com/7.x/personas/svg?seed=james&backgroundColor=ffeacc",
+    img: "https://randomuser.me/api/portraits/men/75.jpg",
     bio: "Ensuring every order arrives smoothly and on time.",
   },
 ];
@@ -142,8 +142,12 @@ export default function AboutUs() {
           </p>
         </div>
 
-        <div className="rounded-2xl bg-blue-100 h-72 flex items-center justify-center text-6xl shadow-sm">
-          🏪
+        <div className="rounded-2xl bg-blue-100 h-72 overflow-hidden shadow-sm">
+          <img
+            src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&q=80"
+            alt="Modern store interior"
+            className="w-full h-full object-cover"
+          />
         </div>
       </section>
 
