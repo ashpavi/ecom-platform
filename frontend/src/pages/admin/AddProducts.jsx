@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 
 import { useProducts } from "../../hooks/useProducts";
 import { uploadProductImages } from "../../firebase/services/uploadService";
+import { useCategories } from "../../hooks/useCategories";
 
 export default function AddProducts() {
 
   const navigate = useNavigate();
   const { createProduct } = useProducts();
+  const { categories } = useCategories();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -222,14 +224,22 @@ export default function AddProducts() {
               Category
             </label>
 
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-            />
+            <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              >
+                <option value="">Select Category</option>
+
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+
+              </select>
 
           </div>
 

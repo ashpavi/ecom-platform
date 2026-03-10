@@ -37,6 +37,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard.jsx";
 import AdminProducts from "../pages/admin/AdminProducts.jsx";
 import AddProducts from "../pages/admin/AddProducts.jsx";
 import AdminCategory from "../pages/admin/AdminCategory.jsx";
+import AddCategory from "../pages/admin/AddCategory.jsx";
 import AdminOrder from "../pages/admin/AdminOrder.jsx";
 import AdminUser from "../pages/admin/AdminUser.jsx";
 
@@ -107,6 +108,7 @@ export default function AppRoutes() {
         <Route path="/admin/products" element={<AdminProducts />} />
         <Route path="/admin/products/add" element={<AddProducts />} />
         <Route path="/admin/categories" element={<AdminCategory />} />
+        <Route path="/admin/categories/add" element={<AddCategory />} />
         <Route path="/admin/orders" element={<AdminOrder />} />
         <Route path="/admin/users" element={<AdminUser />} />
       </Route>

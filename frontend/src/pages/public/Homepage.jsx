@@ -1,18 +1,27 @@
-import Carousel from "../../components/store/HeroCarousel";
-import ProductCard from "../../components/store/ProductCard";
+
+
+import { useProducts } from "../../hooks/useProducts";
+
 import slide1 from "../../assets/slide1.jpg";
 import slide2 from "../../assets/slide2.jpg";
 import slide3 from "../../assets/slide3.jpg";
-import { useProducts } from "../../hooks/useProducts";
+import ProductCard from "../../components/store/ProductCard";
+import Carousel from "../../components/store/HeroCarousel";
+import { useCategories } from "../../hooks/useCategories";
+import { useNavigate } from "react-router-dom";
+
 
 export default function HomePage() {
 
   const { products } = useProducts();
+  const { categories } = useCategories();
+
+  const navigate = useNavigate();
 
   const featuredProducts = products.slice(0, 4);
 
   return (
-    <div className="space-y-20">
+    <div className="space-y-16">
 
       {/* HERO */}
       <section>
@@ -44,26 +53,99 @@ export default function HomePage() {
       </section>
 
 
-      {/* FEATURED PRODUCTS */}
+      {/* CATEGORY SECTION */}
       <section>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <h2 className="text-xl sm:text-2xl font-bold mb-8">
-            Featured Products
+            Shop By Category
           </h2>
 
-          <div className="grid grid-cols-1 
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+            {categories.map((category) => (
+
+              <div
+                key={category.id}
+                onClick={() =>
+                  navigate(`/products?category=${category.name}`)
+                }
+                className="relative group cursor-pointer overflow-hidden rounded-xl"
+              >
+
+                {/* CATEGORY IMAGE */}
+
+                <img
+                  src={category.image}
+                  alt={category.name}
+                  className="w-full h-44 object-cover
+                            transition-transform duration-500
+                            group-hover:scale-110"
+                />
+
+
+                {/* DARK OVERLAY */}
+
+                <div className="absolute inset-0
+                                bg-black/40
+                                group-hover:bg-black/50
+                                transition">
+                </div>
+
+
+                {/* CATEGORY NAME */}
+
+                <div className="absolute inset-0 flex items-center justify-center">
+
+                  <h3 className="text-white text-lg sm:text-xl font-semibold
+                                tracking-wide
+                                transform transition
+                                group-hover:scale-110">
+
+                    {category.name}
+
+                  </h3>
+
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        </div>
+
+      </section>
+
+      {/* FEATURED PRODUCTS */}
+      <section>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div className="flex justify-between items-center mb-8">
+
+            <h2 className="text-xl sm:text-2xl font-bold">
+              Featured Products
+            </h2>
+
+          </div>
+
+          <div className="grid 
+                          grid-cols-2 
                           sm:grid-cols-2 
                           md:grid-cols-3 
                           lg:grid-cols-4 
-                          gap-6">
+                          gap-4 sm:gap-6">
 
             {featuredProducts.map((product) => (
+
               <ProductCard
                 key={product.id}
                 product={product}
               />
+
             ))}
 
           </div>

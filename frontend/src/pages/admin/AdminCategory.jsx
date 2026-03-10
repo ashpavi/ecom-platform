@@ -1,137 +1,219 @@
 import { useState } from "react";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
-const mockCategories = [
-  { id: "CAT-001", name: "Electronics", productCount: 12 },
-  { id: "CAT-002", name: "Accessories", productCount: 8 },
-  { id: "CAT-003", name: "Clothing", productCount: 15 },
-];
+import { useCategories } from "../../hooks/useCategories";
+import { useProducts } from "../../hooks/useProducts";
+import { uploadCategoryImage } from "../../firebase/services/uploadService";
 
 export default function AdminCategory() {
-  const [categories, setCategories] = useState(mockCategories);
-  const [newCategory, setNewCategory] = useState("");
+
+  const { products } = useProducts();
+  const { categories, editCategory, removeCategory } = useCategories();
+
   const [editingCategory, setEditingCategory] = useState(null);
 
-  // Add Category
-  const handleAddCategory = () => {
-    if (!newCategory.trim()) return;
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState("");
 
-    const newCat = {
-      id: `CAT-${Math.floor(Math.random() * 1000)}`,
-      name: newCategory,
-      productCount: 0,
-    };
+  const productCounts = products.reduce((acc, product) => {
+    const category = product.category?.toLowerCase().trim();
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {});
 
-    setCategories([...categories, newCat]);
-    setNewCategory("");
-  };
 
-  // Save Edited Category
-  const handleSaveEdit = () => {
-    setCategories(
-      categories.map((cat) =>
-        cat.id === editingCategory.id ? editingCategory : cat
-      )
+  /* DELETE */
+
+  const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm(
+      "Delete this category?"
     );
-    setEditingCategory(null);
+
+    if (!confirmDelete) return;
+
+    await removeCategory(id);
+
   };
 
-  // Delete Category
-  const handleDelete = (id) => {
-    setCategories(categories.filter((cat) => cat.id !== id));
+
+  /* IMAGE CHANGE */
+
+  const handleImageChange = (e) => {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    setImageFile(file);
+    setPreviewImage(URL.createObjectURL(file));
+
   };
+
+
+  /* SAVE EDIT */
+
+  const handleSaveEdit = async () => {
+
+    try {
+
+      let imageUrl = editingCategory.image;
+
+      if (imageFile) {
+
+        imageUrl = await uploadCategoryImage(imageFile);
+
+      }
+
+      const { id } = editingCategory;
+
+      await editCategory(id, {
+        name: editingCategory.name,
+        image: imageUrl
+      });
+
+      setEditingCategory(null);
+      setImageFile(null);
+      setPreviewImage("");
+
+    } catch (error) {
+
+      console.error("Update failed:", error);
+
+    }
+
+  };
+
 
   return (
+
     <div className="p-6">
 
       {/* HEADER */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-8">
-        Category Management
-      </h1>
 
-      {/* ADD CATEGORY */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border mb-8 flex flex-col sm:flex-row gap-4 items-center">
-        <input
-          type="text"
-          placeholder="New category name..."
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-        />
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
 
-        <button
-          onClick={handleAddCategory}
-          className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+        <h1 className="text-2xl font-bold text-gray-800">
+          Category Management
+        </h1>
+
+        <Link
+          to="/admin/categories/add"
+          className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
         >
           <FaPlus size={14} />
           Add Category
-        </button>
+        </Link>
+
       </div>
 
-      {/* CATEGORY TABLE */}
-      <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+
+      {/* TABLE */}
+
+      <div className="bg-white rounded-xl shadow border overflow-x-auto">
+
         <table className="w-full text-left">
 
-          <thead className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
+          <thead className="bg-gray-50 text-sm text-gray-600 uppercase">
+
             <tr>
-              <th className="p-4">ID</th>
-              <th className="p-4">Category Name</th>
+              <th className="p-4">Image</th>
+              <th className="p-4">Category</th>
               <th className="p-4">Products</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
+
           </thead>
 
+
           <tbody>
+
             {categories.map((category) => (
-              <tr key={category.id} className="border-t hover:bg-gray-50 transition">
+
+              <tr key={category.id} className="border-t">
+
+                {/* IMAGE */}
 
                 <td className="p-4">
-                  <span className="text-xs font-semibold bg-gray-100 px-3 py-1 rounded-full text-gray-600">
-                    {category.id}
-                  </span>
+
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-14 h-14 rounded-lg object-cover border"
+                  />
+
                 </td>
 
-                <td className="p-4 font-medium text-gray-800">
+
+                {/* NAME */}
+
+                <td className="p-4 font-medium">
                   {category.name}
                 </td>
 
+
+                {/* PRODUCT COUNT */}
+
                 <td className="p-4 text-gray-600">
-                  {category.productCount}
+                  {productCounts[category.name.toLowerCase()] || 0}
                 </td>
 
+
+                {/* ACTIONS */}
+
                 <td className="p-4">
+
                   <div className="flex justify-center gap-4">
+
                     <button
-                      onClick={() => setEditingCategory(category)}
-                      className="text-blue-600 hover:text-blue-800"
+                      onClick={() => {
+                        setEditingCategory(category);
+                        setPreviewImage(category.image);
+                        setImageFile(null);
+                      }}
+                      className="text-blue-600"
                     >
                       <FaEdit />
                     </button>
 
+
                     <button
                       onClick={() => handleDelete(category.id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-red-500"
                     >
                       <FaTrash />
                     </button>
+
                   </div>
+
                 </td>
 
               </tr>
+
             ))}
+
           </tbody>
 
         </table>
+
       </div>
 
+
       {/* EDIT MODAL */}
+
       {editingCategory && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6">
+
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
+
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
 
             <h2 className="text-xl font-bold mb-6">
               Edit Category
             </h2>
+
+
+            {/* NAME */}
 
             <input
               type="text"
@@ -139,32 +221,61 @@ export default function AdminCategory() {
               onChange={(e) =>
                 setEditingCategory({
                   ...editingCategory,
-                  name: e.target.value,
+                  name: e.target.value
                 })
               }
-              className="w-full border rounded-lg px-4 py-2 mb-6"
+              className="w-full border rounded-lg px-4 py-2 mb-4"
             />
 
-            <div className="flex justify-end gap-4">
+
+            {/* IMAGE */}
+
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+
+
+            {previewImage && (
+
+              <img
+                src={previewImage}
+                className="w-32 h-32 mt-4 object-cover rounded-lg border"
+              />
+
+            )}
+
+
+            {/* BUTTONS */}
+
+            <div className="flex justify-end gap-4 mt-6">
+
               <button
                 onClick={() => setEditingCategory(null)}
-                className="px-5 py-2 border rounded-lg hover:bg-gray-100 transition"
+                className="border px-4 py-2 rounded"
               >
                 Cancel
               </button>
 
+
               <button
                 onClick={handleSaveEdit}
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                className="bg-blue-600 text-white px-4 py-2 rounded"
               >
                 Save Changes
               </button>
+
             </div>
 
           </div>
+
         </div>
+
       )}
 
     </div>
+
   );
+
 }

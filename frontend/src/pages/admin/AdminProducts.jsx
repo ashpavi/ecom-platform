@@ -4,10 +4,12 @@ import { Link } from "react-router-dom";
 
 import { useProducts } from "../../hooks/useProducts";
 import { uploadProductImages } from "../../firebase/services/uploadService";
+import { useCategories } from "../../hooks/useCategories";
 
 export default function AdminProducts() {
 
   const { products, editProduct, removeProduct } = useProducts();
+  const { categories } = useCategories();
 
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -18,9 +20,15 @@ export default function AdminProducts() {
 
   const [search, setSearch] = useState("");
 
+  const productCounts = products.reduce((acc, product) => {
+      const category = product.category?.toLowerCase().trim();
+      acc[category] = (acc[category] || 0) + 1;
+      return acc;
+    }, {});
+
   /* SEARCH FILTER */
   const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.name?.toLowerCase().includes(search.toLowerCase())
   );
 
   /* IMAGE CHANGE */
@@ -279,8 +287,7 @@ export default function AdminProducts() {
                 className="w-full border rounded-lg px-4 py-2"
               />
 
-              <input
-                type="text"
+              <select
                 value={editingProduct.category}
                 onChange={(e) =>
                   setEditingProduct({
@@ -289,7 +296,17 @@ export default function AdminProducts() {
                   })
                 }
                 className="w-full border rounded-lg px-4 py-2"
-              />
+              >
+
+                <option value="">Select Category</option>
+
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name} ({productCounts[cat.name.toLowerCase()] || 0})
+                  </option>
+                ))}
+
+              </select>
 
               <input
                 type="number"

@@ -22,3 +22,17 @@ export const uploadProductImages = async (files, productId) => {
 
   return urls;
 };
+
+export const uploadCategoryImage = async (file) => {
+
+  const fileName = `categories/${Date.now()}-${file.name}`;
+
+  const storageRef = ref(storage, fileName);
+
+  await uploadBytes(storageRef, file);
+
+  const url = await getDownloadURL(storageRef);
+
+  return url;
+
+};
