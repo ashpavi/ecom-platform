@@ -1,38 +1,40 @@
 import { useState } from "react";
 
+const EmailIcon = ({ color }) => (
+  <svg viewBox="0 0 24 24" width="36" height="36" fill="none">
+    <rect x="2" y="4" width="20" height="16" rx="3" fill={color} opacity="0.9"/>
+    <path d="M2 7l10 7 10-7" stroke="white" strokeWidth="1.8" strokeLinecap="round"/>
+  </svg>
+);
+
+const PhoneIcon = ({ color }) => (
+  <svg viewBox="0 0 24 24" width="36" height="36" fill="none">
+    <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" fill={color}/>
+  </svg>
+);
+
+const ChatIcon = ({ color }) => (
+  <svg viewBox="0 0 24 24" width="40" height="40" fill="none">
+    <rect x="2" y="2" width="15" height="12" rx="3" fill={color}/>
+    <circle cx="6.5" cy="8" r="1.2" fill="white"/>
+    <circle cx="9.5" cy="8" r="1.2" fill="white"/>
+    <circle cx="12.5" cy="8" r="1.2" fill="white"/>
+    <rect x="7" y="10" width="15" height="11" rx="3" fill={color} opacity="0.4"/>
+  </svg>
+);
+
+const LocationIcon = ({ color }) => (
+  <svg viewBox="0 0 24 24" width="36" height="36" fill="none">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill={color}/>
+    <circle cx="12" cy="9" r="2.5" fill="white"/>
+  </svg>
+);
+
 const contactMethods = [
-  {
-    icon: "https://images.unsplash.com/photo-1557200134-90327ee9fafa?w=200&q=80",
-    title: "Email Us",
-    desc: "We'll respond within 24 hours",
-    value: "support@shopmodern.com",
-    bg: "#eff6ff",
-    border: "#bfdbfe",
-  },
-  {
-    icon: "https://images.unsplash.com/photo-1534536281715-e28d76689b4d?w=200&q=80",
-    title: "Call Us",
-    desc: "Mon–Fri, 9am to 6pm EST",
-    value: "+1 (800) 123-4567",
-    bg: "#f0fdf4",
-    border: "#bbf7d0",
-  },
-  {
-    icon: "https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=200&q=80",
-    title: "Live Chat",
-    desc: "Available 24/7 for quick help",
-    value: "Start a conversation →",
-    bg: "#fdf4ff",
-    border: "#e9d5ff",
-  },
-  {
-    icon: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=200&q=80",
-    title: "Visit Us",
-    desc: "Our headquarters",
-    value: "123 Commerce St, New York, NY",
-    bg: "#fff7ed",
-    border: "#fed7aa",
-  },
+  { title: "Email Us", desc: "We'll respond within 24 hours", value: "support@shopmodern.com", bg: "#f0f4ff", border: "#c7d7ff", iconBg: "#dbeafe", color: "#3b82f6", Icon: EmailIcon },
+  { title: "Call Us", desc: "Mon–Fri, 9am to 6pm EST", value: "+1 (800) 123-4567", bg: "#f0fff4", border: "#bbf7d0", iconBg: "#dcfce7", color: "#22c55e", Icon: PhoneIcon },
+  { title: "Live Chat", desc: "Available 24/7 for quick help", value: "Start a conversation →", bg: "#fff0f6", border: "#fbc9dd", iconBg: "#d5f5ef", color: "#2bbfa4", Icon: ChatIcon },
+  { title: "Visit Us", desc: "Our headquarters", value: "123 Commerce St, New York, NY", bg: "#fffbf0", border: "#fde8b0", iconBg: "#fef9c3", color: "#f59e0b", Icon: LocationIcon },
 ];
 
 const faqs = [
@@ -43,6 +45,7 @@ const faqs = [
 ];
 
 export default function ContactUs() {
+  const [hoveredCard, setHoveredCard] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -79,21 +82,37 @@ export default function ContactUs() {
 
       {/* CONTACT CARDS */}
       <section className="max-w-6xl mx-auto px-6 py-16">
+        <style>{`@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }`}</style>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {contactMethods.map((c) => (
+          {contactMethods.map(({ title, desc, value, bg, border, iconBg, color, Icon }, i) => (
             <div
-              key={c.title}
-              className="rounded-xl p-6 border transition hover:shadow-lg"
-              style={{ background: c.bg, borderColor: c.border }}
+              key={title}
+              onMouseEnter={() => setHoveredCard(i)}
+              onMouseLeave={() => setHoveredCard(null)}
+              style={{
+                background: bg,
+                border: `1.5px solid ${border}`,
+                borderRadius: 20,
+                padding: "28px 24px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+                boxShadow: hoveredCard === i ? "0 16px 40px rgba(0,0,0,0.13)" : "0 2px 10px rgba(0,0,0,0.06)",
+                transform: hoveredCard === i ? "translateY(-8px) scale(1.02)" : "translateY(0) scale(1)",
+                transition: "all 0.3s cubic-bezier(.4,0,.2,1)",
+                cursor: "pointer",
+                animation: `fadeUp 0.6s ease both`,
+                animationDelay: `${i * 0.12}s`,
+              }}
             >
-              <img
-                src={c.icon}
-                alt={c.title}
-                className="w-16 h-16 rounded-full object-cover mb-3"
-              />
-              <div className="font-semibold mb-1">{c.title}</div>
-              <div className="text-sm text-gray-500 mb-2">{c.desc}</div>
-              <div className="text-blue-600 text-sm font-medium">{c.value}</div>
+              <div style={{ background: iconBg, width: 64, height: 64, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Icon color={color} />
+              </div>
+              <div>
+                <p style={{ fontWeight: 700, color: "#0f172a", fontSize: 17 }}>{title}</p>
+                <p style={{ color: "#64748b", fontSize: 13, marginTop: 5, marginBottom: 10, lineHeight: 1.5 }}>{desc}</p>
+                <a href="#" style={{ color: color, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>{value}</a>
+              </div>
             </div>
           ))}
         </div>

@@ -287,6 +287,15 @@ export default function NexusControl() {
         .btn-maintenance { flex: 1; background: #fef2f2; border: 1.5px solid #fca5a5; color: #dc2626; padding: 9px 12px; border-radius: 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; font-family: var(--font); transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-maintenance:hover { background: #fee2e2; border-color: #f87171; }
 
+        /* ── CONTACT & SUPPORT ── */
+        .contact-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); }
+        .contact-title { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+        .contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .contact-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px 10px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--text); }
+        .contact-item:hover { border-color: var(--accent); background: #f0f9ff; transform: translateY(-2px); }
+        .contact-icon { width: 28px; height: 28px; }
+        .contact-label { font-size: 0.75rem; font-weight: 600; text-align: center; color: var(--text); }
+
         /* ── MODAL ── */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px); }
         .modal { background: var(--white); border-radius: 14px; padding: 28px; width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
@@ -555,6 +564,40 @@ export default function NexusControl() {
                   <button className="btn-maintenance" onClick={() => setMaintenanceModal(true)}>
                     ⚠️ Maintenance
                   </button>
+                </div>
+              </div>
+
+              {/* Contact & Support */}
+              <div className="contact-card">
+                <div className="contact-title">Contact & Support</div>
+                <div className="contact-grid">
+                  <a href="mailto:support@ecomplatform.com" className="contact-item">
+                    <svg viewBox="0 0 24 24" fill="#3b82f6" className="contact-icon">
+                      <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <div className="contact-label">Email Us</div>
+                  </a>
+
+                  <a href="tel:+1-800-000-0000" className="contact-item">
+                    <svg viewBox="0 0 24 24" fill="#22c55e" className="contact-icon">
+                      <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+                    </svg>
+                    <div className="contact-label">Call Us</div>
+                  </a>
+
+                  <a href="#" className="contact-item">
+                    <svg viewBox="0 0 24 24" fill="#ec4899" className="contact-icon">
+                      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                    </svg>
+                    <div className="contact-label">Live Chat</div>
+                  </a>
+
+                  <a href="#" className="contact-item">
+                    <svg viewBox="0 0 24 24" fill="#ef4444" className="contact-icon">
+                      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+                    </svg>
+                    <div className="contact-label">Visit Us</div>
+                  </a>
                 </div>
               </div>
 
