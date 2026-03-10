@@ -6,81 +6,185 @@ import { useProducts } from "../../hooks/useProducts";
 import { uploadProductImages } from "../../firebase/services/uploadService";
 
 export default function AdminProducts() {
+
   const { products, editProduct, removeProduct } = useProducts();
 
   const [editingProduct, setEditingProduct] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
 
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
+
+  const [draggedIndex, setDraggedIndex] = useState(null);
+
+  const [search, setSearch] = useState("");
+
+  /* SEARCH FILTER */
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  /* IMAGE CHANGE */
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
 
-    if (file) {
-      setImageFile(file);
-      setPreviewImage(URL.createObjectURL(file));
-    }
+    const files = Array.from(e.target.files);
+
+    setImageFiles(files);
+
+    const previews = files.map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    setPreviewImages(previews);
   };
 
+  /* SAVE EDIT */
   const handleSave = async () => {
-    let imageUrl = editingProduct.image;
+  try {
 
-    if (imageFile) {
-      imageUrl = await uploadProductImages(imageFile, editingProduct.id);
+    let imageUrls = previewImages;
+    if (imageFiles.length > 0) {
+
+      const uploaded = await uploadProductImages(
+        imageFiles,
+        editingProduct.id
+      );
+
+      imageUrls = uploaded;
     }
 
-    await editProduct(editingProduct.id, {
-      ...editingProduct,
-      image: imageUrl,
+    const { id, ...productData } = editingProduct;
+
+    await editProduct(id, {
+      ...productData,
+      images: imageUrls,
     });
 
     setEditingProduct(null);
-    setPreviewImage(null);
-    setImageFile(null);
+    setImageFiles([]);
+    setPreviewImages([]);
+
+  } catch (error) {
+
+    console.error("Update failed:", error);
+
+  }
+};
+
+  /* DELETE */
+  const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm(
+      "Delete this product?"
+    );
+
+    if (!confirmDelete) return;
+
+    await removeProduct(id);
+  };
+
+  /* DRAG REORDER */
+  const handleDrop = (index) => {
+
+    const updatedPreview = [...previewImages];
+    const updatedFiles = [...imageFiles];
+
+    const draggedPreview = updatedPreview[draggedIndex];
+    const draggedFile = updatedFiles[draggedIndex];
+
+    updatedPreview.splice(draggedIndex, 1);
+    updatedFiles.splice(draggedIndex, 1);
+
+    updatedPreview.splice(index, 0, draggedPreview);
+    updatedFiles.splice(index, 0, draggedFile);
+
+    setPreviewImages(updatedPreview);
+    setImageFiles(updatedFiles);
+  };
+
+  /* REMOVE IMAGE */
+  const removeImage = (index) => {
+
+    const updatedPreview = [...previewImages];
+    const updatedFiles = [...imageFiles];
+
+    updatedPreview.splice(index, 1);
+    updatedFiles.splice(index, 1);
+
+    setPreviewImages(updatedPreview);
+    setImageFiles(updatedFiles);
   };
 
   return (
     <div className="p-6">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+
         <h1 className="text-2xl font-bold text-gray-800">
           Product Management
         </h1>
 
-        <Link
-          to="/admin/products/add"
-          className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
-        >
-          <FaPlus size={14} />
-          Add Product
-        </Link>
+        <div className="flex gap-4">
+
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border px-4 py-2 rounded-lg"
+          />
+
+          <Link
+            to="/admin/products/add"
+            className="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
+          >
+            <FaPlus size={14} />
+            Add Product
+          </Link>
+
+        </div>
+
       </div>
 
       {/* TABLE */}
       <div className="bg-white rounded-xl shadow border overflow-x-auto">
+
         <table className="w-full text-left">
+
           <thead className="bg-gray-50 text-sm text-gray-600 uppercase">
+
             <tr>
               <th className="p-4">Product</th>
+              <th className="p-4">Brand</th>
               <th className="p-4">Category</th>
               <th className="p-4">Price</th>
               <th className="p-4">Stock</th>
               <th className="p-4 text-center">Actions</th>
             </tr>
+
           </thead>
 
           <tbody>
-            {products.map((product) => (
+
+            {filteredProducts.map((product) => (
+
               <tr key={product.id} className="border-t">
 
                 <td className="p-4 flex items-center gap-4">
+
                   <img
                     src={product.images?.[0]}
                     alt={product.name}
                     className="w-14 h-14 rounded-lg object-cover border"
                   />
-                  <span className="font-medium">{product.name}</span>
+
+                  <span className="font-medium">
+                    {product.name}
+                  </span>
+
                 </td>
+
+                <td className="p-4">{product.brand}</td>
 
                 <td className="p-4">{product.category}</td>
 
@@ -89,6 +193,7 @@ export default function AdminProducts() {
                 </td>
 
                 <td className="p-4">
+
                   {product.stock > 0 ? (
                     <span className="text-green-600">
                       {product.stock} in stock
@@ -98,15 +203,18 @@ export default function AdminProducts() {
                       Out of stock
                     </span>
                   )}
+
                 </td>
 
                 <td className="p-4">
+
                   <div className="flex justify-center gap-4">
 
                     <button
                       onClick={() => {
                         setEditingProduct(product);
-                        setPreviewImage(product.image);
+                        setPreviewImages(product.images || []);
+                        setImageFiles([]);
                       }}
                       className="text-blue-600"
                     >
@@ -114,26 +222,32 @@ export default function AdminProducts() {
                     </button>
 
                     <button
-                      onClick={() => removeProduct(product.id)}
+                      onClick={() => handleDelete(product.id)}
                       className="text-red-500"
                     >
                       <FaTrash />
                     </button>
 
                   </div>
+
                 </td>
 
               </tr>
+
             ))}
+
           </tbody>
+
         </table>
+
       </div>
 
       {/* EDIT MODAL */}
       {editingProduct && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
 
-          <div className="bg-white p-6 rounded-xl w-full max-w-lg">
+        <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50 p-4">
+
+          <div className="bg-white p-6 rounded-xl w-full max-w-lg overflow-y-auto max-h-[90vh]">
 
             <h2 className="text-xl font-bold mb-6">
               Edit Product
@@ -148,6 +262,30 @@ export default function AdminProducts() {
                   setEditingProduct({
                     ...editingProduct,
                     name: e.target.value,
+                  })
+                }
+                className="w-full border rounded-lg px-4 py-2"
+              />
+
+              <input
+                type="text"
+                value={editingProduct.brand}
+                onChange={(e) =>
+                  setEditingProduct({
+                    ...editingProduct,
+                    brand: e.target.value,
+                  })
+                }
+                className="w-full border rounded-lg px-4 py-2"
+              />
+
+              <input
+                type="text"
+                value={editingProduct.category}
+                onChange={(e) =>
+                  setEditingProduct({
+                    ...editingProduct,
+                    category: e.target.value,
                   })
                 }
                 className="w-full border rounded-lg px-4 py-2"
@@ -177,22 +315,64 @@ export default function AdminProducts() {
                 className="w-full border rounded-lg px-4 py-2"
               />
 
-              {/* IMAGE */}
+              <textarea
+                value={editingProduct.description}
+                onChange={(e) =>
+                  setEditingProduct({
+                    ...editingProduct,
+                    description: e.target.value,
+                  })
+                }
+                rows="3"
+                className="w-full border rounded-lg px-4 py-2"
+              />
+
               <input
                 type="file"
+                multiple
                 accept="image/*"
                 onChange={handleImageChange}
               />
 
-              {previewImage && (
-                <img
-                  src={previewImage}
-                  className="w-40 h-40 object-cover rounded-lg border"
-                />
+              {/* IMAGE PREVIEW */}
+              {previewImages.length > 0 && (
+
+                <div className="flex gap-3 flex-wrap">
+
+                  {previewImages.map((img, index) => (
+
+                    <div
+                      key={index}
+                      draggable
+                      onDragStart={() => setDraggedIndex(index)}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={() => handleDrop(index)}
+                      className="relative cursor-move"
+                    >
+
+                      <img
+                        src={img}
+                        className="w-24 h-24 object-cover rounded-lg border"
+                      />
+
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded"
+                      >
+                        ✕
+                      </button>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
               )}
 
             </div>
 
+            {/* BUTTONS */}
             <div className="flex justify-end gap-4 mt-6">
 
               <button
@@ -212,8 +392,11 @@ export default function AdminProducts() {
             </div>
 
           </div>
+
         </div>
+
       )}
+
     </div>
   );
 }

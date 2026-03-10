@@ -35,12 +35,15 @@ export const ProductProvider = ({ children }) => {
 
   // ADD PRODUCT
   const createProduct = async (productData) => {
-    const id = await addProduct(productData);
 
-    setProducts((prev) => [
-      ...prev,
-      { id, ...productData }
-    ]);
+    const docId = await addProduct(productData);
+
+    const newProduct = {
+      ...productData,
+      id: docId
+    };
+
+    setProducts((prev) => [...prev, newProduct]);
   };
 
   // UPDATE PRODUCT

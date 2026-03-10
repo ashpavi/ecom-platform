@@ -21,17 +21,25 @@ export default function AddProducts() {
   const [imageFiles, setImageFiles] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
 
+  const [draggedIndex, setDraggedIndex] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
+
   /* HANDLE INPUT CHANGE */
+
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
   };
 
+
   /* HANDLE IMAGE UPLOAD */
+
   const handleImageUpload = (e) => {
 
     const files = Array.from(e.target.files);
@@ -43,10 +51,52 @@ export default function AddProducts() {
     );
 
     setPreviewImages(previews);
+
   };
 
+
+  /* DRAG REORDER */
+
+  const handleDrop = (index) => {
+
+    const updatedPreview = [...previewImages];
+    const updatedFiles = [...imageFiles];
+
+    const draggedPreview = updatedPreview[draggedIndex];
+    const draggedFile = updatedFiles[draggedIndex];
+
+    updatedPreview.splice(draggedIndex, 1);
+    updatedFiles.splice(draggedIndex, 1);
+
+    updatedPreview.splice(index, 0, draggedPreview);
+    updatedFiles.splice(index, 0, draggedFile);
+
+    setPreviewImages(updatedPreview);
+    setImageFiles(updatedFiles);
+
+  };
+
+
+  /* REMOVE IMAGE */
+
+  const removeImage = (index) => {
+
+    const updatedPreview = [...previewImages];
+    const updatedFiles = [...imageFiles];
+
+    updatedPreview.splice(index, 1);
+    updatedFiles.splice(index, 1);
+
+    setPreviewImages(updatedPreview);
+    setImageFiles(updatedFiles);
+
+  };
+
+
   /* HANDLE SUBMIT */
+
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     try {
@@ -58,36 +108,44 @@ export default function AddProducts() {
       let imageUrls = [];
 
       if (imageFiles.length > 0) {
+
         imageUrls = await uploadProductImages(
           imageFiles,
           productId
         );
+
       }
 
       await createProduct({
-        id: productId,
         ...formData,
         price: Number(formData.price),
         stock: Number(formData.stock),
-        images: imageUrls,
+        images: imageUrls
       });
 
       navigate("/admin/products");
 
     } catch (error) {
+
       console.error("Error adding product:", error);
+
     }
 
     setLoading(false);
+
   };
 
+
   return (
+
     <div className="p-6 max-w-4xl mx-auto">
 
-      {/* PAGE HEADER */}
+      {/* HEADER */}
+
       <h1 className="text-2xl font-bold text-gray-800 mb-8">
         Add New Product
       </h1>
+
 
       <form
         onSubmit={handleSubmit}
@@ -95,7 +153,9 @@ export default function AddProducts() {
       >
 
         {/* PRODUCT NAME */}
+
         <div>
+
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Product Name
           </label>
@@ -108,10 +168,14 @@ export default function AddProducts() {
             required
             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
           />
+
         </div>
 
+
         {/* BRAND */}
+
         <div>
+
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Brand
           </label>
@@ -124,10 +188,14 @@ export default function AddProducts() {
             required
             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
           />
+
         </div>
 
+
         {/* DESCRIPTION */}
+
         <div>
+
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Description
           </label>
@@ -140,12 +208,16 @@ export default function AddProducts() {
             required
             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
           />
+
         </div>
 
+
         {/* CATEGORY PRICE STOCK */}
+
         <div className="grid md:grid-cols-3 gap-6">
 
           <div>
+
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
@@ -158,9 +230,12 @@ export default function AddProducts() {
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
             />
+
           </div>
 
+
           <div>
+
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Price (LKR)
             </label>
@@ -173,9 +248,12 @@ export default function AddProducts() {
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
             />
+
           </div>
 
+
           <div>
+
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Stock
             </label>
@@ -188,11 +266,14 @@ export default function AddProducts() {
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
             />
+
           </div>
 
         </div>
 
+
         {/* IMAGE UPLOAD */}
+
         <div>
 
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -207,25 +288,51 @@ export default function AddProducts() {
             className="block w-full text-sm text-gray-500"
           />
 
+
           {/* IMAGE PREVIEW */}
+
           {previewImages.length > 0 && (
+
             <div className="flex flex-wrap gap-4 mt-4">
 
               {previewImages.map((img, index) => (
-                <img
+
+                <div
                   key={index}
-                  src={img}
-                  alt="preview"
-                  className="w-32 h-32 object-cover rounded-lg border"
-                />
+                  draggable
+                  onDragStart={() => setDraggedIndex(index)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleDrop(index)}
+                  className="relative cursor-move"
+                >
+
+                  <img
+                    src={img}
+                    alt="preview"
+                    className="w-32 h-32 object-cover rounded-lg border"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 rounded"
+                  >
+                    ✕
+                  </button>
+
+                </div>
+
               ))}
 
             </div>
+
           )}
 
         </div>
 
+
         {/* ACTION BUTTONS */}
+
         <div className="flex justify-end gap-4 pt-4">
 
           <button
@@ -249,5 +356,6 @@ export default function AddProducts() {
       </form>
 
     </div>
+
   );
 }
