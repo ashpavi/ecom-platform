@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useCart } from "../../context/CartContext";
 import {
   FaArrowLeft,
   FaCreditCard,
@@ -7,6 +6,7 @@ import {
   FaMoneyBillWave
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../../hooks/useCart";
 
 export default function Checkout() {
   const [shippingData, setShippingData] = useState({

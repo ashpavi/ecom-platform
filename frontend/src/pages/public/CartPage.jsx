@@ -1,7 +1,7 @@
 import CartItem from "../../components/store/CartItem";
 import OrderSummary from "../../components/store/OrderSummary";
-import { useCart } from "../../context/CartContext";
 import { Link } from "react-router-dom";
+import { useCart } from "../../hooks/useCart";
 
 export default function CartPage() {
   const {

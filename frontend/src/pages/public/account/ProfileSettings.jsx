@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuth } from "../../../context/AuthContext";
 
 import { auth, db } from "../../../firebase/firebaseConfig";
 import {
@@ -11,6 +10,8 @@ import {
 } from "firebase/auth";
 
 import { doc, updateDoc } from "firebase/firestore";
+import { useAuth } from "../../../hooks/useAuth";
+
 
 export default function ProfileSettings() {
 

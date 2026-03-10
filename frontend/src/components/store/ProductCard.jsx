@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { FaShoppingCart, FaCheck } from "react-icons/fa";
-import { useCart } from "../../context/CartContext";
 import { useState } from "react";
+import { useCart } from "../../hooks/useCart";
+
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
@@ -33,7 +34,7 @@ export default function ProductCard({ product }) {
         className="block bg-gray-100 overflow-hidden aspect-square"
       >
         <img
-          src={product.image}
+          src={product.images?.[0]}
           alt={product.name}
           className="
           w-full h-full object-cover

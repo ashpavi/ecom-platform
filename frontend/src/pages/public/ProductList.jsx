@@ -1,50 +1,11 @@
 import { useState } from "react";
 import ProductCard from "../../components/store/ProductCard";
-
-const products = [
-  {
-    id: 1,
-    name: "Nike Air Max Velocity",
-    brand: "Nike",
-    category: "Shoes",
-    price: 25000,
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
-  },
-  {
-    id: 2,
-    name: "Adidas Cloud Runner",
-    brand: "Adidas",
-    category: "Shoes",
-    price: 22000,
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
-  },
-  {
-    id: 3,
-    name: "Puma Street Trainer",
-    brand: "Puma",
-    category: "Shoes",
-    price: 19000,
-    image: "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500",
-  },
-  {
-    id: 4,
-    name: "Reebok Classic Runner",
-    brand: "Reebok",
-    category: "Shoes",
-    price: 21000,
-    image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500",
-  },
-  {
-    id: 5,
-    name: "Nike Sport Hoodie",
-    brand: "Nike",
-    category: "Clothing",
-    price: 12000,
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
-  },
-];
+import { useProducts } from "../../hooks/useProducts";
 
 export default function ProductList() {
+
+  const { products, loading } = useProducts();
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [priceRange, setPriceRange] = useState(50000);
@@ -210,17 +171,14 @@ export default function ProductList() {
         {/* PRODUCTS */}
         <main className="flex-1">
 
-          <div
-            className="
-            grid gap-6
-            grid-cols-2
-            md:grid-cols-3
-            lg:grid-cols-4
-            "
-          >
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="grid gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {loading ? (
+              <p className="text-center col-span-full">Loading products...</p>
+            ) : (
+              filteredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            )}
           </div>
 
         </main>

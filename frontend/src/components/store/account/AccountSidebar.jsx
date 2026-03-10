@@ -6,8 +6,8 @@ import {
   FaSignOutAlt,
   FaTimes,
 } from "react-icons/fa";
+import { useAuth } from "../../../hooks/useAuth";
 
-import { useAuth } from "../../../context/AuthContext";
 
 export default function AccountSidebar({ isOpen, setIsOpen }) {
   const navigate = useNavigate();

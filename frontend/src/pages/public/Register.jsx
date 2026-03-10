@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUserPlus, FaEye, FaEyeSlash } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
 import logo from "../../assets/logo.jpg";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Register() {
   const { registerUser } = useAuth();

@@ -6,7 +6,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
-// 🟢 REGISTER (Default role = customer)
+// REGISTER 
 export const registerUser = async ({ name, email, password, phone }) => {
   const userCredential = await createUserWithEmailAndPassword(
     auth,
@@ -29,7 +29,7 @@ export const registerUser = async ({ name, email, password, phone }) => {
   return user;
 };
 
-// 🟢 LOGIN
+// LOGIN
 export const loginUser = async (email, password) => {
   const userCredential = await signInWithEmailAndPassword(
     auth,
@@ -51,10 +51,10 @@ export const loginUser = async (email, password) => {
     throw new Error("Your account has been blocked.");
   }
 
-  return userData; // includes role
+  return userData; 
 };
 
-// 🟢 LOGOUT
+// LOGOUT
 export const logoutUser = async () => {
   await signOut(auth);
 };

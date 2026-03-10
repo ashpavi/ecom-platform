@@ -6,8 +6,8 @@ import {
 } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import logo from "../../assets/logo.jpg";
-import { useCart } from "../../context/CartContext";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
+import { useCart } from "../../hooks/useCart";
 
 export default function Navbar() {
   const navigate = useNavigate();

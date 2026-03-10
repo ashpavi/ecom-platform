@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 
 import logo from "../../assets/logo.jpg";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function AdminSideBar({ isOpen, setIsOpen }) {
 

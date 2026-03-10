@@ -1,20 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { useProducts } from "../../hooks/useProducts";
+import { uploadProductImages } from "../../firebase/services/uploadService";
+
 export default function AddProducts() {
+
   const navigate = useNavigate();
+  const { createProduct } = useProducts();
 
   const [formData, setFormData] = useState({
     name: "",
+    brand: "",
     description: "",
     category: "",
     price: "",
     stock: "",
-    image: null,
   });
 
-  const [preview, setPreview] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
 
+  const [loading, setLoading] = useState(false);
+
+  /* HANDLE INPUT CHANGE */
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -22,24 +31,60 @@ export default function AddProducts() {
     });
   };
 
+  /* HANDLE IMAGE UPLOAD */
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData({ ...formData, image: file });
-      setPreview(URL.createObjectURL(file));
-    }
+
+    const files = Array.from(e.target.files);
+
+    setImageFiles(files);
+
+    const previews = files.map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    setPreviewImages(previews);
   };
 
-  const handleSubmit = (e) => {
+  /* HANDLE SUBMIT */
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Product Submitted:", formData);
-    navigate("/admin/products");
+
+    try {
+
+      setLoading(true);
+
+      const productId = Date.now().toString();
+
+      let imageUrls = [];
+
+      if (imageFiles.length > 0) {
+        imageUrls = await uploadProductImages(
+          imageFiles,
+          productId
+        );
+      }
+
+      await createProduct({
+        id: productId,
+        ...formData,
+        price: Number(formData.price),
+        stock: Number(formData.stock),
+        images: imageUrls,
+      });
+
+      navigate("/admin/products");
+
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
+
+    setLoading(false);
   };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
 
-      {/* Header */}
+      {/* PAGE HEADER */}
       <h1 className="text-2xl font-bold text-gray-800 mb-8">
         Add New Product
       </h1>
@@ -49,11 +94,12 @@ export default function AddProducts() {
         className="bg-white p-8 rounded-xl shadow-sm border space-y-6"
       >
 
-        {/* Product Name */}
+        {/* PRODUCT NAME */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Product Name
           </label>
+
           <input
             type="text"
             name="name"
@@ -64,47 +110,61 @@ export default function AddProducts() {
           />
         </div>
 
-        {/* Description */}
+        {/* BRAND */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Description
+            Brand
           </label>
-          <textarea
-            name="description"
-            value={formData.description}
+
+          <input
+            type="text"
+            name="brand"
+            value={formData.brand}
             onChange={handleChange}
-            rows="4"
             required
             className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
 
-        {/* Category + Price + Stock */}
+        {/* DESCRIPTION */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Description
+          </label>
+
+          <textarea
+            name="description"
+            rows="4"
+            value={formData.description}
+            onChange={handleChange}
+            required
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+        </div>
+
+        {/* CATEGORY PRICE STOCK */}
         <div className="grid md:grid-cols-3 gap-6">
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
             </label>
-            <select
+
+            <input
+              type="text"
               name="category"
               value={formData.category}
               onChange={handleChange}
               required
               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-            >
-              <option value="">Select Category</option>
-              <option>Electronics</option>
-              <option>Accessories</option>
-              <option>Clothing</option>
-              <option>Home</option>
-            </select>
+            />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Price ($)
+              Price (LKR)
             </label>
+
             <input
               type="number"
               name="price"
@@ -119,6 +179,7 @@ export default function AddProducts() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Stock
             </label>
+
             <input
               type="number"
               name="stock"
@@ -131,32 +192,42 @@ export default function AddProducts() {
 
         </div>
 
-        {/* Image Upload */}
+        {/* IMAGE UPLOAD */}
         <div>
+
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Product Image
+            Product Images
           </label>
 
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={handleImageUpload}
             className="block w-full text-sm text-gray-500"
           />
 
-          {preview && (
-            <div className="mt-4">
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-40 h-40 object-cover rounded-lg border"
-              />
+          {/* IMAGE PREVIEW */}
+          {previewImages.length > 0 && (
+            <div className="flex flex-wrap gap-4 mt-4">
+
+              {previewImages.map((img, index) => (
+                <img
+                  key={index}
+                  src={img}
+                  alt="preview"
+                  className="w-32 h-32 object-cover rounded-lg border"
+                />
+              ))}
+
             </div>
           )}
+
         </div>
 
-        {/* Buttons */}
+        {/* ACTION BUTTONS */}
         <div className="flex justify-end gap-4 pt-4">
+
           <button
             type="button"
             onClick={() => navigate("/admin/products")}
@@ -167,13 +238,16 @@ export default function AddProducts() {
 
           <button
             type="submit"
+            disabled={loading}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
           >
-            Save Product
+            {loading ? "Saving..." : "Save Product"}
           </button>
+
         </div>
 
       </form>
+
     </div>
   );
 }

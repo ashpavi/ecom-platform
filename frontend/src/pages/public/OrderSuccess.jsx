@@ -4,8 +4,8 @@ import {
   FaMapMarkerAlt
 } from "react-icons/fa";
 import { FaCreditCard, FaPaypal, FaMoneyBillWave } from "react-icons/fa";
-import { useCart } from "../../context/CartContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useCart } from "../../hooks/useCart";
 
 export default function OrderSuccess() {
   const { cartItems } = useCart();

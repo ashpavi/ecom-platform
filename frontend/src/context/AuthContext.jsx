@@ -1,11 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
-import { registerUser, loginUser, logoutUser } from "../firebase/services/authService";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+} from "../firebase/services/authService";
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -15,12 +19,17 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
+
         if (userDoc.exists()) {
-          setCurrentUser(userDoc.data());
+          setCurrentUser({
+            uid: user.uid,
+            ...userDoc.data(),
+          });
         }
       } else {
         setCurrentUser(null);
       }
+
       setLoading(false);
     });
 
@@ -40,5 +49,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
