@@ -2,7 +2,8 @@ import {
   FaDollarSign,
   FaUsers,
   FaShoppingCart,
-  FaChartLine
+  FaBoxOpen,
+  FaTruck
 } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
@@ -23,133 +24,153 @@ import {
 import { db } from "../../firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
+import { formatPrice } from "../../utils/formatPrice";
+
 export default function AdminDashboard() {
 
-  const [customerCount, setCustomerCount] = useState(0);
+  const [customers, setCustomers] = useState(0);
+  const [orders, setOrders] = useState([]);
+  const [revenue, setRevenue] = useState(0);
+  const [processingOrders, setProcessingOrders] = useState(0);
+  const [productsSold, setProductsSold] = useState(0);
 
-  /* ================= FETCH CUSTOMER COUNT ================= */
+  /* ================= FETCH DATA ================= */
 
   useEffect(() => {
 
-    const fetchCustomers = async () => {
+    const fetchData = async () => {
 
-      const snapshot = await getDocs(collection(db, "users"));
+      /* USERS */
 
-      const customers = snapshot.docs.filter(
-        doc => doc.data().role === "customer"
+      const userSnap = await getDocs(collection(db, "users"));
+
+      const customerCount = userSnap.docs.filter(
+        (doc) => doc.data().role === "customer"
+      ).length;
+
+      setCustomers(customerCount);
+
+      /* ORDERS */
+
+      const orderSnap = await getDocs(collection(db, "orders"));
+
+      const orderList = orderSnap.docs.map((doc) => doc.data());
+
+      setOrders(orderList);
+
+      /* TOTAL REVENUE */
+
+      const totalRevenue = orderList.reduce(
+        (acc, order) => acc + (order.total || 0),
+        0
       );
 
-      setCustomerCount(customers.length);
+      setRevenue(totalRevenue);
+
+      /* PROCESSING ORDERS */
+
+      const processing = orderList.filter(
+        (o) => o.status === "Processing"
+      ).length;
+
+      setProcessingOrders(processing);
+
+      /* PRODUCTS SOLD */
+
+      let sold = 0;
+
+      orderList.forEach((order) => {
+        order.items?.forEach((item) => {
+          sold += item.quantity;
+        });
+      });
+
+      setProductsSold(sold);
 
     };
 
-    fetchCustomers();
+    fetchData();
 
   }, []);
 
-
-
   /* ================= CHART DATA ================= */
 
-  const revenueData = [
-    { month: "Jan", revenue: 4000 },
-    { month: "Feb", revenue: 3200 },
-    { month: "Mar", revenue: 5000 },
-    { month: "Apr", revenue: 6800 },
-    { month: "May", revenue: 7200 },
-    { month: "Jun", revenue: 9100 }
+  const orderStatusData = [
+    {
+      name: "Processing",
+      value: processingOrders
+    },
+    {
+      name: "Completed",
+      value: orders.filter(o => o.status === "Delivered").length
+    },
+    {
+      name: "Cancelled",
+      value: orders.filter(o => o.status === "Cancelled").length
+    }
   ];
-
-  const orderData = [
-    { name: "Pending", value: 12 },
-    { name: "Processing", value: 8 },
-    { name: "Delivered", value: 24 }
-  ];
-
-
 
   return (
     <div className="space-y-12">
 
       {/* HEADER */}
+
       <div>
         <h1 className="text-3xl font-semibold text-gray-900">
-          Dashboard Overview
+          Admin Dashboard
         </h1>
 
         <p className="text-gray-500 text-sm mt-2">
-          Welcome back! Here’s what’s happening with your store today.
+          Overview of your ecommerce store performance
         </p>
       </div>
 
 
 
-      {/* STAT CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+      {/* ================= STAT CARDS ================= */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
 
         <StatCard
           icon={<FaDollarSign />}
           title="Total Revenue"
-          value="$42,580"
+          value={formatPrice(revenue)}
         />
 
         <StatCard
           icon={<FaShoppingCart />}
           title="Total Orders"
-          value="368"
+          value={orders.length}
+        />
+
+        <StatCard
+          icon={<FaTruck />}
+          title="Processing Orders"
+          value={processingOrders}
+        />
+
+        <StatCard
+          icon={<FaBoxOpen />}
+          title="Products Sold"
+          value={productsSold}
         />
 
         <StatCard
           icon={<FaUsers />}
-          title="Total Customers"
-          value={customerCount}
-        />
-
-        <StatCard
-          icon={<FaChartLine />}
-          title="Monthly Growth"
-          value="+18%"
+          title="Customers"
+          value={customers}
         />
 
       </div>
 
 
 
-      {/* CHARTS */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      {/* ================= CHARTS ================= */}
 
-        {/* Revenue Chart */}
-        <div className="bg-white rounded-2xl shadow-md p-8 xl:col-span-2">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
-          <h2 className="font-semibold text-gray-800 mb-6">
-            Revenue Overview
-          </h2>
+        {/* ORDER STATUS */}
 
-          <div className="h-80">
-
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={revenueData}>
-                <CartesianGrid stroke="#f1f5f9" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#2563eb"
-                  strokeWidth={3}
-                  dot={{ r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-
-          </div>
-        </div>
-
-
-
-        {/* Order Status */}
         <div className="bg-white rounded-2xl shadow-md p-8">
 
           <h2 className="font-semibold text-gray-800 mb-6">
@@ -159,7 +180,7 @@ export default function AdminDashboard() {
           <div className="h-80">
 
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={orderData}>
+              <BarChart data={orderStatusData}>
                 <CartesianGrid stroke="#f1f5f9" />
                 <XAxis dataKey="name" />
                 <YAxis />
@@ -170,56 +191,50 @@ export default function AdminDashboard() {
                   fill="#2563eb"
                   radius={[8, 8, 0, 0]}
                 />
+
               </BarChart>
             </ResponsiveContainer>
 
           </div>
-        </div>
-
-      </div>
-
-
-
-      {/* RECENT ORDERS */}
-      <div className="bg-white rounded-2xl shadow-md p-8">
-
-        <div className="flex items-center justify-between mb-6">
-
-          <h2 className="font-semibold text-gray-800">
-            Recent Orders
-          </h2>
-
-          <Link
-            to="/admin/orders"
-            className="text-sm text-blue-600 hover:text-blue-700"
-          >
-            View All
-          </Link>
 
         </div>
 
-        <div className="space-y-4">
 
-          <OrderRow
-            id="ORD-88321"
-            user="Alex Fernando"
-            total="$120.00"
-            status="Processing"
-          />
 
-          <OrderRow
-            id="ORD-88318"
-            user="John Silva"
-            total="$240.00"
-            status="Delivered"
-          />
+        {/* RECENT ORDERS */}
 
-          <OrderRow
-            id="ORD-88310"
-            user="Mary Perera"
-            total="$89.00"
-            status="Pending"
-          />
+        <div className="bg-white rounded-2xl shadow-md p-8">
+
+          <div className="flex items-center justify-between mb-6">
+
+            <h2 className="font-semibold text-gray-800">
+              Recent Orders
+            </h2>
+
+            <Link
+              to="/admin/orders"
+              className="text-sm text-blue-600 hover:text-blue-700"
+            >
+              View All
+            </Link>
+
+          </div>
+
+          <div className="space-y-4">
+
+            {orders.slice(0,5).map((order, index) => (
+
+              <OrderRow
+                key={index}
+                id={order.id || "ORDER"}
+                user={order.customer?.fullName}
+                total={formatPrice(order.total)}
+                status={order.status}
+              />
+
+            ))}
+
+          </div>
 
         </div>
 
@@ -267,14 +282,22 @@ function OrderRow({ id, user, total, status }) {
       ? "bg-green-100 text-green-700"
       : status === "Processing"
       ? "bg-yellow-100 text-yellow-700"
+      : status === "Cancelled"
+      ? "bg-red-100 text-red-700"
       : "bg-gray-100 text-gray-700";
 
   return (
+
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
 
       <div>
-        <p className="font-medium text-gray-900">{id}</p>
-        <p className="text-sm text-gray-500">{user}</p>
+        <p className="font-medium text-gray-900">
+          {id}
+        </p>
+
+        <p className="text-sm text-gray-500">
+          {user}
+        </p>
       </div>
 
       <div className="flex items-center gap-6">
@@ -290,5 +313,7 @@ function OrderRow({ id, user, total, status }) {
       </div>
 
     </div>
+
   );
+
 }

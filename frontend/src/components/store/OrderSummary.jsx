@@ -1,48 +1,50 @@
 import { useNavigate } from "react-router-dom";
+import { formatPrice } from "../../utils/formatPrice";
 
+export default function OrderSummary({ subtotal }) {
 
-export default function OrderSummary({ subtotal, shipping, tax }) {
-  const total = subtotal + shipping + tax;
   const navigate = useNavigate();
+
+  const isDisabled = subtotal === 0;
 
   return (
     <div className="bg-white border rounded-xl p-6 shadow-sm space-y-5">
 
-      <h2 className="text-xl font-semibold">Order Summary</h2>
+      <h2 className="text-xl font-semibold">
+        Order Summary
+      </h2>
 
-      <div className="space-y-3 text-gray-600">
-        <div className="flex justify-between">
-          <span>Subtotal</span>
-          <span>${subtotal.toFixed(2)}</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span>Shipping</span>
-          <span>${shipping.toFixed(2)}</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span>Estimated Tax</span>
-          <span>${tax.toFixed(2)}</span>
-        </div>
+      {/* SUBTOTAL */}
+      <div className="flex justify-between text-gray-600">
+        <span>Subtotal</span>
+        <span>{formatPrice(subtotal)}</span>
       </div>
 
       <hr />
 
+      {/* TOTAL */}
       <div className="flex justify-between font-bold text-lg">
         <span>Total</span>
-        <span>${total.toFixed(2)}</span>
+        <span>{formatPrice(subtotal)}</span>
       </div>
 
-      <button 
+      {/* CHECKOUT BUTTON */}
+      <button
+        disabled={isDisabled}
         onClick={() => navigate("/checkout")}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
+        className={`w-full py-3 rounded-lg text-white transition
+          ${isDisabled
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+          }`}
+      >
         Proceed to Checkout →
       </button>
 
       <p className="text-xs text-gray-500 text-center">
         Secure 256-bit SSL encrypted payment processing.
       </p>
+
     </div>
   );
 }

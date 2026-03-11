@@ -11,7 +11,7 @@ import AdminRoutes from "./AdminRoutes.jsx";
 import SuperAdminRoutes from "./SuperAdminRoutes.jsx";
 
 /* PUBLIC PAGES */
-import HomePage from "../pages/public/Homepage.jsx";
+import HomeRedirect from "./HomeRedirect.jsx";
 import ProductList from "../pages/public/ProductList.jsx";
 import ProductDetails from "../pages/public/ProductDetails.jsx";
 import NoResults from "../pages/public/NoResults.jsx";
@@ -51,7 +51,7 @@ export default function AppRoutes() {
 
       {/* ================= PUBLIC ROUTES ================= */}
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<HomeRedirect />} />
         <Route path="/products" element={<ProductList />} />
         <Route path="/products/:id" element={<ProductDetails/>} />
         <Route path="/aboutUs" element={<AboutUs />} />

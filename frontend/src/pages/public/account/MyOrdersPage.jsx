@@ -1,67 +1,95 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OrderDetailsModal from "../../../components/store/account/OrderDetailModal";
+import { getOrders } from "../../../firebase/services/orderService";
+import { formatPrice } from "../../../utils/formatPrice";
 
 export default function MyOrdersPage() {
 
+  const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
 
-  const orders = [
-    {
-      id: "ORD-882193",
-      total: 409.75,
-      status: "Processing",
-      date: "Oct 24, 2024",
-      items: [
-        { name: "Wireless Headphones", price: 299, quantity: 1 },
-        { name: "Cotton Tee", price: 55.75, quantity: 2 }
-      ],
-      shipping: {
-        name: "Alex Morgan",
-        address: "123 Main Street, NY 10001"
+  useEffect(() => {
+
+    const loadOrders = async () => {
+
+      try {
+
+        const data = await getOrders();
+        setOrders(data);
+
+      } catch (error) {
+
+        console.error("Failed to load orders:", error);
+
       }
-    },
-    {
-      id: "ORD-882120",
-      total: 129.00,
-      status: "Delivered",
-      date: "Oct 18, 2024",
-      items: [
-        { name: "Ceramic Mug", price: 29, quantity: 3 }
-      ],
-      shipping: {
-        name: "Alex Morgan",
-        address: "123 Main Street, NY 10001"
-      }
-    }
-  ];
+
+    };
+
+    loadOrders();
+
+  }, []);
 
   return (
+
     <div>
-      <h2 className="text-2xl font-semibold mb-6">My Orders</h2>
+
+      <h2 className="text-2xl font-semibold mb-6">
+        My Orders
+      </h2>
+
+      {orders.length === 0 && (
+        <p className="text-gray-500">
+          You haven't placed any orders yet.
+        </p>
+      )}
 
       <div className="space-y-4">
+
         {orders.map((order) => (
+
           <div
             key={order.id}
             className="border rounded-xl p-5 flex justify-between items-center hover:shadow-sm transition"
           >
+
+            {/* ORDER ID */}
+
             <div>
-              <p className="font-semibold">{order.id}</p>
+              <p className="text-sm text-gray-500">
+                {new Date(order.date).toLocaleDateString()}
+              </p>
+              <p className="font-semibold">
+                #{order.id}
+              </p>
               <p className="text-sm text-gray-600">
-                ${order.total.toFixed(2)}
+                {formatPrice(order.total)}
               </p>
             </div>
 
+
+            {/* STATUS */}
+
             <div className="flex items-center gap-6">
-              <span
-                className={`text-sm font-medium ${
-                  order.status === "Delivered"
-                    ? "text-green-600"
-                    : "text-yellow-600"
-                }`}
-              >
-                {order.status}
-              </span>
+
+              
+                  <span
+                    className={`px-4 py-1 rounded-full text-sm font-medium
+                    ${
+                      order.status === "Delivered"
+                        ? "bg-green-100 text-green-600"
+                        : order.status === "Shipped"
+                        ? "bg-blue-100 text-blue-600"
+                        : order.status === "Cancelled"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-yellow-100 text-yellow-600"
+                    }`}
+                  >
+                    {order.status || "Processing"}
+                  </span>
+                
+
+
+              {/* VIEW DETAILS */}
 
               <button
                 onClick={() => setSelectedOrder(order)}
@@ -69,18 +97,27 @@ export default function MyOrdersPage() {
               >
                 View Details
               </button>
+
             </div>
+
           </div>
+
         ))}
+
       </div>
 
-      {/* Modal */}
+
+      {/* ORDER MODAL */}
+
       {selectedOrder && (
         <OrderDetailsModal
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
         />
       )}
+
     </div>
+
   );
+
 }

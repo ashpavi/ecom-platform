@@ -3,38 +3,74 @@ import { createContext, useState } from "react";
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
+
   const [cartItems, setCartItems] = useState([]);
 
-  // Add to cart
+  /* ADD TO CART */
+
   const addToCart = (product) => {
+
     setCartItems((prev) => {
+
       const existing = prev.find((item) => item.id === product.id);
 
       if (existing) {
+
+        const newQty = existing.quantity + product.quantity;
+
+        if (newQty > product.stock) {
+          alert(`Only ${product.stock} items available in stock`);
+          return prev;
+        }
+
         return prev.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQty }
             : item
         );
       }
 
-      return [...prev, { ...product, quantity: 1 }];
+      if (product.quantity > product.stock) {
+        alert(`Only ${product.stock} items available in stock`);
+        return prev;
+      }
+
+      return [...prev, product];
+
     });
+
   };
 
-  // Increase
+
+  /* INCREASE QTY */
+
   const increaseQty = (id) => {
+
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
+      prev.map((item) => {
+
+        if (item.id === id) {
+
+          if (item.quantity >= item.stock) {
+            alert(`Maximum stock reached (${item.stock})`);
+            return item;
+          }
+
+          return { ...item, quantity: item.quantity + 1 };
+        }
+
+        return item;
+
+      })
     );
+
   };
 
-  // Decrease
+
+  /* DECREASE QTY */
+
   const decreaseQty = (id) => {
+
     setCartItems((prev) =>
       prev.map((item) =>
         item.id === id && item.quantity > 1
@@ -42,18 +78,31 @@ export function CartProvider({ children }) {
           : item
       )
     );
+
   };
 
-  // Remove
+
+  /* REMOVE ITEM */
+
   const removeItem = (id) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Total item count
+
+  /* CLEAR CART (ADD THIS) */
+
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
+
+  /* TOTAL ITEMS */
+
   const totalItems = cartItems.reduce(
     (acc, item) => acc + item.quantity,
     0
   );
+
 
   return (
     <CartContext.Provider
@@ -63,10 +112,12 @@ export function CartProvider({ children }) {
         increaseQty,
         decreaseQty,
         removeItem,
+        clearCart,  
         totalItems,
       }}
     >
       {children}
     </CartContext.Provider>
   );
+
 }

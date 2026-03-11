@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { FaShoppingCart, FaCheck } from "react-icons/fa";
 import { useState } from "react";
 import { useCart } from "../../hooks/useCart";
+import { formatPrice } from "../../utils/formatPrice";
 
 
 export default function ProductCard({ product }) {
@@ -12,11 +13,19 @@ export default function ProductCard({ product }) {
   const productPath = `/products/${productId}`;
 
   const handleAdd = () => {
-    addToCart(product);
+        addToCart({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          images: product.images,
+          stock: product.stock,
+          quantity: 1
+        });
 
-    setAdded(true);
-    setTimeout(() => setAdded(false), 1500);
-  };
+        setAdded(true);
+        setTimeout(() => setAdded(false), 1500);
+
+      };
 
   return (
     <div
@@ -66,9 +75,10 @@ export default function ProductCard({ product }) {
         </Link>
 
         {/* PRICE */}
-        <p className="text-black font-bold text-lg mt-2">
-          LKR {product.price}
-        </p>
+          <p className="text-black font-bold text-lg mt-2">
+            {formatPrice(product.price)}
+          </p>
+        
 
         {/* BUTTON */}
         <button
