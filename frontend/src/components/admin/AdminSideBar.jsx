@@ -8,6 +8,7 @@ import {
   FaSignOutAlt,
   FaTimes
 } from "react-icons/fa";
+import { MdOutlineMessage } from "react-icons/md";
 
 import logo from "../../assets/logo.jpg";
 import { useAuth } from "../../hooks/useAuth";
@@ -160,6 +161,21 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               Orders
             </NavLink>
 
+
+            <NavLink
+              to="/admin/messages"
+              onClick={() => setIsOpen(false)}
+              className={({ isActive }) =>
+                `${linkStyle} ${
+                  isActive
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`
+              }
+            >
+              <MdOutlineMessage size={14} />
+              Messages
+            </NavLink>
 
             <NavLink
               to="/admin/users"

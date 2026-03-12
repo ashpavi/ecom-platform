@@ -40,9 +40,11 @@ import AdminCategory from "../pages/admin/AdminCategory.jsx";
 import AddCategory from "../pages/admin/AddCategory.jsx";
 import AdminOrder from "../pages/admin/AdminOrder.jsx";
 import AdminUser from "../pages/admin/AdminUser.jsx";
+import AdminMessages from "../pages/admin/AdminMessages.jsx";
 
 /* SUPER ADMIN */
 import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard.jsx";
+
 
 
 export default function AppRoutes() {
@@ -111,6 +113,7 @@ export default function AppRoutes() {
         <Route path="/admin/categories/add" element={<AddCategory />} />
         <Route path="/admin/orders" element={<AdminOrder />} />
         <Route path="/admin/users" element={<AdminUser />} />
+        <Route path="/admin/messages" element={<AdminMessages />} />
       </Route>
 
       {/* ================= SUPER ADMIN ROUTE ================= */}
