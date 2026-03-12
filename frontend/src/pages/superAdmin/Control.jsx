@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getCollection, updateData, addLog } from "../../services/firebaseService";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
@@ -73,6 +74,27 @@ export default function Control() {
   const [storage] = useState(24);
   const [maintenanceModal, setMaintenanceModal] = useState(false);
   const [flushed, setFlushed] = useState(false);
+  const [storeList, setStoreList] = useState(stores);
+  const [accessLogList, setAccessLogList] = useState(accessLogs);
+
+  // ── Firebase: load stores and users on mount ──
+  useEffect(() => {
+    getCollection("stores").then((data) => {
+      if (data.length > 0) setStoreList(data);
+    }).catch(() => {});
+
+    getCollection("users").then((data) => {
+      if (data.length > 0) {
+        const mapped = data.slice(0, 10).map((u) => ({
+          user: u.displayName || u.email?.split("@")[0] || u.id,
+          role: u.role || "User",
+          ip: u.lastIp || "N/A",
+          lastActive: u.lastActive || "Unknown",
+        }));
+        setAccessLogList(mapped);
+      }
+    }).catch(() => {});
+  }, []);
 
   // Live API stream ticker
   useEffect(() => {
@@ -84,9 +106,22 @@ export default function Control() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleFlushCache = () => {
+  const handleFlushCache = async () => {
     setFlushed(true);
+    await addLog("Cache flushed", "Super Admin", "system").catch(() => {});
     setTimeout(() => setFlushed(false), 2500);
+  };
+
+  // ── Firebase: toggle store status ──
+  const handleToggleStore = async (store) => {
+    const newStatus = store.status === "active" ? "suspended" : "active";
+    setStoreList((prev) =>
+      prev.map((s) => (s.id === store.id ? { ...s, status: newStatus } : s))
+    );
+    if (typeof store.id === "string") {
+      await updateData("stores", store.id, { status: newStatus }).catch(() => {});
+    }
+    await addLog(`Store ${newStatus}: ${store.name || store.id}`, "Super Admin", newStatus === "suspended" ? "warning" : "create").catch(() => {});
   };
 
   return (
@@ -438,8 +473,8 @@ export default function Control() {
                       </tr>
                     </thead>
                     <tbody>
-                      {stores.map(store => {
-                        const s = statusColor[store.status];
+                      {storeList.map(store => {
+                        const s = statusColor[store.status] || statusColor.active;
                         return (
                           <tr key={store.id}>
                             <td>
@@ -460,8 +495,8 @@ export default function Control() {
                               </span>
                             </td>
                             <td>
-                              <button style={{ fontSize: "0.78rem", padding: "4px 10px", borderRadius: "6px", border: "1.5px solid var(--border)", background: "var(--white)", cursor: "pointer", color: "var(--muted)", fontFamily: "var(--font)", fontWeight: 500 }}>
-                                Manage
+                              <button onClick={() => handleToggleStore(store)} style={{ fontSize: "0.78rem", padding: "4px 10px", borderRadius: "6px", border: "1.5px solid var(--border)", background: "var(--white)", cursor: "pointer", color: "var(--muted)", fontFamily: "var(--font)", fontWeight: 500 }}>
+                                {store.status === "active" ? "Suspend" : "Activate"}
                               </button>
                             </td>
                           </tr>
@@ -489,7 +524,7 @@ export default function Control() {
                       </tr>
                     </thead>
                     <tbody>
-                      {accessLogs.map((log, i) => (
+                      {accessLogList.map((log, i) => (
                         <tr key={i}>
                           <td>{log.user}</td>
                           <td>{log.role}</td>

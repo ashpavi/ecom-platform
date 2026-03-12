@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getCollection, addData, addLog } from "../../services/firebaseService";
 
 const tags = ["PAYMENTS", "STRIPE", "BUG"];
 
@@ -68,6 +69,36 @@ const messages = [
 export default function Support() {
   const [activeTab, setActiveTab] = useState("Public Reply");
   const [replyText, setReplyText] = useState("");
+  const [tickets, setTickets] = useState([]);
+  const [activeTicket, setActiveTicket] = useState(null);
+
+  // ── Firebase: load support tickets on mount ──
+  useEffect(() => {
+    getCollection("supportTickets").then((data) => {
+      setTickets(data);
+      if (data.length > 0 && !activeTicket) setActiveTicket(data[0]);
+    }).catch(() => {});
+  }, []);
+
+  // ── Firebase: send a reply ──
+  const handleSendReply = async () => {
+    if (!replyText.trim()) return;
+    const reply = {
+      ticketId: activeTicket?.id || "general",
+      type: activeTab === "Internal Note" ? "internal" : "agent",
+      message: replyText,
+      admin: "Super Admin",
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toISOString(),
+    };
+    await addData("supportReplies", reply).catch(() => {});
+    await addLog(
+      `Support reply sent on ticket ${activeTicket?.id || "TKT"}`,
+      "Super Admin",
+      "settings"
+    ).catch(() => {});
+    setReplyText("");
+  };
 
   return (
     <div style={{
@@ -346,11 +377,13 @@ export default function Support() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: 11, color: "#94a3b8" }}>Markdown supported</span>
-                <button style={{
-                  background: "linear-gradient(135deg,#3b82f6,#6366f1)", color: "#fff", border: "none",
-                  borderRadius: 8, padding: "8px 20px", fontWeight: 700, fontSize: 13.5, cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 6,
-                }}>Send ▶</button>
+                <button
+                  onClick={handleSendReply}
+                  style={{
+                    background: "linear-gradient(135deg,#3b82f6,#6366f1)", color: "#fff", border: "none",
+                    borderRadius: 8, padding: "8px 20px", fontWeight: 700, fontSize: 13.5, cursor: "pointer",
+                    display: "flex", alignItems: "center", gap: 6,
+                  }}>Send ▶</button>
               </div>
             </div>
           </div>

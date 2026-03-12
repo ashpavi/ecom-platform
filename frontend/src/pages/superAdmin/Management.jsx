@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getCollection, addData, updateData, addLog } from "../../services/firebaseService";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
@@ -45,10 +46,56 @@ export default function Management() {
   const [showActionMenu, setShowActionMenu] = useState(null);
   const [form, setForm] = useState({ name: "", email: "", plan: "Pro" });
   const [toastMsg, setToastMsg] = useState(null);
+  const [storeList, setStoreList] = useState(allStores);
 
   const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(null), 2500); };
 
-  const filtered = allStores.filter(s => {
+  // ── Firebase: load stores on mount ──
+  useEffect(() => {
+    getCollection("stores").then((data) => {
+      if (data.length > 0) setStoreList(data);
+    }).catch(() => {});
+  }, []);
+
+  // ── Firebase: suspend a store ──
+  const handleSuspend = async (store) => {
+    const newStatus = store.status === "suspended" ? "active" : "suspended";
+    setStoreList((prev) =>
+      prev.map((s) => (s.id === store.id ? { ...s, status: newStatus } : s))
+    );
+    if (typeof store.id === "string") {
+      await updateData("stores", store.id, { status: newStatus }).catch(() => {});
+    }
+    await addLog(`Store ${newStatus}: ${store.name}`, "Super Admin", newStatus === "suspended" ? "warning" : "create").catch(() => {});
+    showToast(`${store.name} ${newStatus}`);
+    setShowActionMenu(null);
+  };
+
+  // ── Firebase: provision a new store ──
+  const handleProvision = async () => {
+    if (!form.name || !form.email) return;
+    const newStore = {
+      name: form.name,
+      email: form.email,
+      plan: form.plan,
+      status: "active",
+      launched: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      revenue: "$0.00",
+      revChange: "0.0%",
+      revUp: null,
+      icon: "🏪",
+      iconBg: "#eff6ff",
+      iconColor: "#2563eb",
+    };
+    const docRef = await addData("stores", newStore).catch(() => null);
+    setStoreList((prev) => [...prev, { id: docRef?.id ?? Date.now(), ...newStore }]);
+    await addLog(`Store provisioned: ${form.name}`, "Super Admin", "create").catch(() => {});
+    showToast(`Store "${form.name}" provisioned!`);
+    setShowProvisionModal(false);
+    setForm({ name: "", email: "", plan: "Pro" });
+  };
+
+  const filtered = storeList.filter(s => {
     const planMatch = activePlan === "All Stores" || s.plan === activePlan;
     const statusMatch = !activeStatus || s.status === activeStatus.toLowerCase();
     return planMatch && statusMatch;
@@ -386,7 +433,7 @@ export default function Management() {
                             <button className="action-menu-item" onClick={() => { showToast(`Viewing ${store.name}`); setShowActionMenu(null); }}>👁 View Details</button>
                             <button className="action-menu-item" onClick={() => { showToast(`Editing ${store.name}`); setShowActionMenu(null); }}>✏️ Edit Store</button>
                             <button className="action-menu-item" onClick={() => { showToast(`Impersonating ${store.name}`); setShowActionMenu(null); }}>🔑 Impersonate</button>
-                            <button className="action-menu-item danger" onClick={() => { showToast(`${store.name} suspended`); setShowActionMenu(null); }}>⛔ Suspend Store</button>
+                            <button className="action-menu-item danger" onClick={() => handleSuspend(store)}>⛔ {store.status === "suspended" ? "Activate" : "Suspend"} Store</button>
                           </div>
                         )}
                       </td>
@@ -449,7 +496,7 @@ export default function Management() {
             </div>
             <div className="modal-actions">
               <button className="btn-cancel" onClick={() => setShowProvisionModal(false)}>Cancel</button>
-              <button className="btn-confirm" onClick={() => { if (form.name && form.email) { showToast(`Store "${form.name}" provisioned!`); setShowProvisionModal(false); setForm({ name: "", email: "", plan: "Pro" }); } }}>
+              <button className="btn-confirm" onClick={handleProvision}>
                 Provision Store
               </button>
             </div>

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getCollection, addData, updateData, addLog } from "../../services/firebaseService";
 
 const navItems = [
   { id: "general", icon: "⊞", label: "General" },
@@ -64,10 +65,34 @@ export default function Analytics() {
   const [dirty, setDirty] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [settingsDocId, setSettingsDocId] = useState(null);
+
+  // ── Firebase: load branding settings on mount ──
+  useEffect(() => {
+    getCollection("settings").then((docs) => {
+      const branding = docs.find((d) => d.type === "branding") || docs[0];
+      if (branding) {
+        setSettingsDocId(branding.id);
+        if (branding.primaryColor) setPrimaryColor(branding.primaryColor);
+        if (branding.secondaryColor) setSecondaryColor(branding.secondaryColor);
+        if (branding.font) setFont(branding.font);
+        if (branding.integrationToggles) setIntegrationToggles(branding.integrationToggles);
+      }
+    }).catch(() => {});
+  }, []);
 
   const markDirty = () => { setDirty(true); setSaved(false); };
 
-  const handleSave = () => {
+  // ── Firebase: persist branding settings ──
+  const handleSave = async () => {
+    const payload = { type: "branding", primaryColor, secondaryColor, font, integrationToggles };
+    if (settingsDocId) {
+      await updateData("settings", settingsDocId, payload).catch(() => {});
+    } else {
+      const ref = await addData("settings", payload).catch(() => null);
+      if (ref) setSettingsDocId(ref.id);
+    }
+    await addLog("Platform branding settings updated", "Super Admin", "settings").catch(() => {});
     setSaved(true);
     setDirty(false);
     setTimeout(() => setSaved(false), 2500);

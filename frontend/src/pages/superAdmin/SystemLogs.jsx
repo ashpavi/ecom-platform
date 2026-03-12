@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { subscribeToCollection, addLog } from "../../services/firebaseService";
 
 // ── DATA ──────────────────────────────────────────────────────────────────────
 
@@ -95,16 +96,28 @@ export default function SystemLogs() {
   const [expandedLog, setExpandedLog]     = useState(null);
   const idRef = useRef(100);
 
+  // ── Firebase: real-time listener for systemLogs ──
   useEffect(() => {
-    if (paused) return;
-    const t = setInterval(() => {
-      idRef.current++;
-      setLogs(prev => [randomLog(idRef.current), ...prev.slice(0, 19)]);
-      setCpu(v => Math.max(5, Math.min(95, v + (Math.random() * 8 - 4))));
-      setLatency(v => Math.max(10, Math.min(200, v + (Math.random() * 20 - 10))));
-    }, 3000);
-    return () => clearInterval(t);
-  }, [paused]);
+    const unsubscribe = subscribeToCollection(
+      "systemLogs",
+      (firestoreLogs) => {
+        if (firestoreLogs.length > 0) {
+          const mapped = firestoreLogs.map((l, i) => ({
+            id: l.id || i + 1,
+            status: l.type === "CRITICAL" ? "critical" : l.type === "SECURITY" || l.type === "warning" ? "warning" : "info",
+            timestamp: l.time || (l.timestamp?.toDate?.().toISOString().replace("T", " ").slice(0, 19)) || "",
+            source: l.admin || "System",
+            type: l.type || (l.action?.toUpperCase().replace(/ /g, "_") ?? "LOG"),
+            message: l.action || l.message || "System event",
+            bg: l.type === "CRITICAL" ? "#fff1f2" : l.type === "SECURITY" ? "#fffbeb" : "",
+          }));
+          setLogs(mapped);
+        }
+      },
+      { orderByField: "timestamp", limitTo: 50 }
+    );
+    return () => unsubscribe();
+  }, []);
 
   const filtered = logs.filter(l => {
     if (activeFilter === "all")   return true;
@@ -538,7 +551,11 @@ export default function SystemLogs() {
             </div>
             <div className="modal-actions">
               <button className="btn-cancel" onClick={() => setLockdownModal(false)}>Cancel</button>
-              <button className="btn-danger" onClick={() => { setLockdownModal(false); setLockdownDone(true); }}>
+              <button className="btn-danger" onClick={() => {
+                setLockdownModal(false);
+                setLockdownDone(true);
+                addLog("Emergency lockdown activated", "Super Admin", "CRITICAL").catch(() => {});
+              }}>
                 Confirm Lockdown
               </button>
             </div>
