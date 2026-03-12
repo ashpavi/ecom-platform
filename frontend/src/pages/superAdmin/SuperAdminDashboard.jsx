@@ -1,80 +1,82 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const admins = [
-  { id: 1, name: "Elena Moreau", email: "elena@luxestore.com", role: "Store Admin", store: "LuxeStore NY", status: "active", joined: "Jan 12, 2024", avatar: "EM" },
-  { id: 2, name: "James Okafor", email: "james@luxestore.com", role: "Catalog Admin", store: "LuxeStore LA", status: "active", joined: "Feb 3, 2024", avatar: "JO" },
-  { id: 3, name: "Priya Nair", email: "priya@luxestore.com", role: "Finance Admin", store: "LuxeStore UK", status: "suspended", joined: "Mar 18, 2024", avatar: "PN" },
-  { id: 4, name: "Marcus Liu", email: "marcus@luxestore.com", role: "Store Admin", store: "LuxeStore AU", status: "active", joined: "Apr 5, 2024", avatar: "ML" },
-  { id: 5, name: "Sofia Reyes", email: "sofia@luxestore.com", role: "Support Admin", store: "LuxeStore EU", status: "inactive", joined: "May 22, 2024", avatar: "SR" },
-];
-
-const systemReports = [
-  { label: "Total Revenue", value: "$2.84M", change: "+18.4%", up: true, icon: "💰" },
-  { label: "Active Users", value: "142,390", change: "+9.2%", up: true, icon: "👥" },
-  { label: "Orders Today", value: "3,847", change: "+5.1%", up: true, icon: "📦" },
-  { label: "System Uptime", value: "99.98%", change: "-0.01%", up: false, icon: "🖥️" },
-];
-
-const activityLog = [
-  { action: "Admin created", user: "Elena Moreau", time: "2 min ago", type: "create" },
-  { action: "Settings updated", user: "Super Admin", time: "14 min ago", type: "settings" },
-  { action: "Admin suspended", user: "Priya Nair", time: "1 hr ago", type: "warning" },
-  { action: "System backup completed", user: "System", time: "3 hrs ago", type: "system" },
-  { action: "New store region added", user: "Super Admin", time: "Yesterday", type: "create" },
-  { action: "Permission policy updated", user: "Super Admin", time: "2 days ago", type: "settings" },
-];
+import { useSuperAdmin } from "../../hooks/useSuperAdmin";
+import { useAuth } from "../../hooks/useAuth";
 
 const navItems = [
   { id: "overview", icon: "⊞", label: "Overview" },
   { id: "admins", icon: "👤", label: "Manage Admins" },
-  { id: "settings", icon: "⚙️", label: "Platform Settings" },
-  { id: "reports", icon: "📊", label: "System Reports" },
 ];
 
 const avatarColors = { EM: "#2563eb", JO: "#0891b2", PN: "#7c3aed", ML: "#059669", SR: "#d97706" };
 
 export default function SuperAdminDashboard() {
+  const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("overview");
-  const [adminList, setAdminList] = useState(admins);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAdmin, setNewAdmin] = useState({ name: "", email: "", role: "Store Admin", store: "" });
-  const [settings, setSettings] = useState({
-    maintenanceMode: false, newRegistrations: true, twoFactorRequired: true,
-    emailNotifications: true, autoBackup: true, darkMode: false,
-    sessionTimeout: "30", maxAdmins: "20",
-  });
   const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState(null);
+
+  const {
+    admins,
+    metrics,
+    activityLog,
+    loading,
+    error,
+    addAdmin,
+    toggleAdminStatus,
+    removeAdmin,
+  } = useSuperAdmin();
+  const { logoutUser } = useAuth();
 
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 3000);
   };
 
-  const toggleStatus = (id) => {
-    setAdminList(prev => prev.map(a => a.id === id ? { ...a, status: a.status === "active" ? "suspended" : "active" } : a));
-    showToast("Admin status updated");
+  const toggleStatus = async (id, currentStatus) => {
+    try {
+      await toggleAdminStatus(id, currentStatus);
+      showToast("Admin status updated");
+    } catch (err) {
+      showToast(err.message || "Failed to update status", "warning");
+    }
   };
 
-  const deleteAdmin = (id) => {
-    setAdminList(prev => prev.filter(a => a.id !== id));
-    showToast("Admin removed", "warning");
+  const deleteAdmin = async (id, adminName) => {
+    try {
+      await removeAdmin(id, adminName);
+      showToast("Admin removed", "warning");
+    } catch (err) {
+      showToast(err.message || "Failed to remove admin", "warning");
+    }
   };
 
-  const addAdmin = () => {
+  const handleAddAdmin = async () => {
     if (!newAdmin.name || !newAdmin.email) return;
-    const initials = newAdmin.name.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
-    setAdminList(prev => [...prev, {
-      id: Date.now(), ...newAdmin, status: "active",
-      joined: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      avatar: initials,
-    }]);
-    setNewAdmin({ name: "", email: "", role: "Store Admin", store: "" });
-    setShowAddModal(false);
-    showToast("New admin added successfully");
+
+    try {
+      await addAdmin(newAdmin);
+      setNewAdmin({ name: "", email: "", role: "Store Admin", store: "" });
+      setShowAddModal(false);
+      showToast("New admin added successfully");
+    } catch (err) {
+      showToast(err.message || "Failed to add admin", "warning");
+    }
   };
 
-  const filteredAdmins = adminList.filter(a =>
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      navigate("/login");
+    } catch (err) {
+      showToast(err.message || "Logout failed", "warning");
+    }
+  };
+
+  const filteredAdmins = admins.filter(a =>
     a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     a.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -118,11 +120,12 @@ export default function SuperAdminDashboard() {
         .sb-item:hover { background: var(--sidebar-hover); color: rgba(255,255,255,0.82); }
         .sb-item.active { background: var(--accent); color: #fff; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
         .sb-item-icon { font-size: 14px; width: 20px; text-align: center; flex-shrink: 0; }
-        .sb-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 10px; }
+        .sb-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; }
         .sb-avatar { width: 32px; height: 32px; border-radius: 8px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #fff; flex-shrink: 0; }
         .sb-user-name { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.82); }
         .sb-user-role { font-size: 0.68rem; color: rgba(255,255,255,0.3); }
-        .sb-badge { margin-left: auto; background: rgba(37,99,235,0.25); border: 1px solid rgba(37,99,235,0.45); color: #93c5fd; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 100px; text-transform: uppercase; }
+        .sb-logout { width: 100%; max-width: 180px; background: rgba(239,68,68,0.12); border: 1px solid rgba(248,113,113,0.45); color: #fecaca; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.02em; padding: 10px 14px; border-radius: 12px; cursor: pointer; transition: all 0.18s; }
+        .sb-logout:hover { background: rgba(239,68,68,0.22); color: #fff; border-color: rgba(248,113,113,0.8); }
 
         /* MAIN */
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -281,12 +284,7 @@ export default function SuperAdminDashboard() {
           ))}
         </nav>
         <div className="sb-footer">
-          <div className="sb-avatar">SA</div>
-          <div>
-            <div className="sb-user-name">Super Admin</div>
-            <div className="sb-user-role">root access</div>
-          </div>
-          <div className="sb-badge">Root</div>
+          <button className="sb-logout" onClick={handleLogout}>Logout</button>
         </div>
       </aside>
 
@@ -297,15 +295,8 @@ export default function SuperAdminDashboard() {
             <div className="topbar-title">
               {activeNav === "overview" && "Dashboard Overview"}
               {activeNav === "admins" && "Manage Admins"}
-              {activeNav === "settings" && "Platform Settings"}
-              {activeNav === "reports" && "System Reports"}
             </div>
             <div className="topbar-subtitle">LuxeStore Control Panel · {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</div>
-          </div>
-          <div className="topbar-right">
-            <button className="topbar-btn">🔔<span className="topbar-notif" /></button>
-            <button className="topbar-btn">⚙️</button>
-            <button className="topbar-btn">👤</button>
           </div>
         </div>
 
@@ -317,8 +308,9 @@ export default function SuperAdminDashboard() {
               <div className="section-tag">Super Admin</div>
               <div className="page-title">Platform Overview</div>
               <div className="page-subtitle">Real-time snapshot of LuxeStore's performance and activity.</div>
+              {error && <div style={{ color: "#b91c1c", marginBottom: 12, fontSize: "0.85rem" }}>{error}</div>}
               <div className="stats-grid">
-                {systemReports.map(r => (
+                {metrics.map(r => (
                   <div className="stat-card" key={r.label}>
                     <div className="stat-top">
                       <div className="stat-icon">{r.icon}</div>
@@ -332,14 +324,14 @@ export default function SuperAdminDashboard() {
               <div className="overview-grid">
                 <div className="card">
                   <div className="card-header">
-                    <div><div className="card-title">Admin Accounts</div><div className="card-subtitle">{adminList.length} total administrators</div></div>
+                    <div><div className="card-title">Admin Accounts</div><div className="card-subtitle">{admins.length} total administrators</div></div>
                     <button className="btn-primary" onClick={() => setActiveNav("admins")}>View All →</button>
                   </div>
                   <div className="table-wrap">
                     <table>
                       <thead><tr><th>Admin</th><th>Role</th><th>Status</th></tr></thead>
                       <tbody>
-                        {adminList.slice(0, 4).map(a => (
+                        {admins.slice(0, 4).map(a => (
                           <tr key={a.id}>
                             <td><div className="td-name"><div className="td-avatar" style={{ background: avatarColors[a.avatar] || "#2563eb" }}>{a.avatar}</div><div><div className="td-fullname">{a.name}</div><div className="td-email">{a.email}</div></div></div></td>
                             <td><span className="role-badge">{a.role}</span></td>
@@ -381,154 +373,20 @@ export default function SuperAdminDashboard() {
                 </div>
                 <div className="table-wrap">
                   <table>
-                    <thead><tr><th>Admin</th><th>Role</th><th>Store</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Admin</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody>
                       {filteredAdmins.map(a => (
                         <tr key={a.id}>
                           <td><div className="td-name"><div className="td-avatar" style={{ background: avatarColors[a.avatar] || "#2563eb" }}>{a.avatar}</div><div><div className="td-fullname">{a.name}</div><div className="td-email">{a.email}</div></div></div></td>
                           <td><span className="role-badge">{a.role}</span></td>
-                          <td style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{a.store}</td>
                           <td style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{a.joined}</td>
                           <td><span className={`status-badge status-${a.status}`}><span className="status-dot" />{a.status.charAt(0).toUpperCase() + a.status.slice(1)}</span></td>
-                          <td><div className="action-btns"><button className="act-btn act-btn-toggle" onClick={() => toggleStatus(a.id)}>{a.status === "active" ? "Suspend" : "Activate"}</button><button className="act-btn act-btn-delete" onClick={() => deleteAdmin(a.id)}>Remove</button></div></td>
+                          <td><div className="action-btns"><button className="act-btn act-btn-toggle" onClick={() => toggleStatus(a.id, a.status)}>{a.status === "active" ? "Suspend" : "Activate"}</button><button className="act-btn act-btn-delete" onClick={() => deleteAdmin(a.id, a.name)}>Remove</button></div></td>
                         </tr>
                       ))}
-                      {filteredAdmins.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", padding: "28px", color: "var(--muted)", fontSize: "0.855rem" }}>No admins found.</td></tr>}
+                      {filteredAdmins.length === 0 && <tr><td colSpan={5} style={{ textAlign: "center", padding: "28px", color: "var(--muted)", fontSize: "0.855rem" }}>No admins found.</td></tr>}
                     </tbody>
                   </table>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* PLATFORM SETTINGS */}
-          {activeNav === "settings" && (
-            <>
-              <div className="section-tag">Configuration</div>
-              <div className="page-title">Platform Settings</div>
-              <div className="page-subtitle">Control global platform behavior and security policies.</div>
-              <div className="settings-grid">
-                <div className="card">
-                  <div className="card-header"><div><div className="card-title">Security & Access</div><div className="card-subtitle">Authentication and session policies</div></div></div>
-                  <div className="settings-section">
-                    <div className="settings-title">Controls</div>
-                    {[
-                      { key: "twoFactorRequired", label: "Require 2FA", desc: "Enforce two-factor auth for all admins" },
-                      { key: "newRegistrations", label: "Allow Registrations", desc: "Enable new store admin sign-ups" },
-                      { key: "maintenanceMode", label: "Maintenance Mode", desc: "Temporarily disable the public storefront" },
-                    ].map(s => (
-                      <div className="setting-row" key={s.key}>
-                        <div><div className="setting-label">{s.label}</div><div className="setting-desc">{s.desc}</div></div>
-                        <label className="toggle">
-                          <input type="checkbox" checked={settings[s.key]} onChange={() => { setSettings(p => ({ ...p, [s.key]: !p[s.key] })); showToast("Setting saved"); }} />
-                          <span className="toggle-slider" />
-                        </label>
-                      </div>
-                    ))}
-                    <div className="setting-row">
-                      <div><div className="setting-label">Session Timeout (min)</div><div className="setting-desc">Auto-logout after inactivity</div></div>
-                      <input className="setting-input" type="number" value={settings.sessionTimeout} onChange={e => setSettings(p => ({ ...p, sessionTimeout: e.target.value }))} />
-                    </div>
-                    <div className="setting-row">
-                      <div><div className="setting-label">Max Admins</div><div className="setting-desc">Platform-wide admin limit</div></div>
-                      <input className="setting-input" type="number" value={settings.maxAdmins} onChange={e => setSettings(p => ({ ...p, maxAdmins: e.target.value }))} />
-                    </div>
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="card-header"><div><div className="card-title">System & Notifications</div><div className="card-subtitle">Platform automation and alerts</div></div></div>
-                  <div className="settings-section">
-                    <div className="settings-title">Automation</div>
-                    {[
-                      { key: "emailNotifications", label: "Email Notifications", desc: "Send system alerts via email" },
-                      { key: "autoBackup", label: "Auto Backup", desc: "Daily automated data backups" },
-                      { key: "darkMode", label: "Dark Mode Default", desc: "Apply dark theme for all admin sessions" },
-                    ].map(s => (
-                      <div className="setting-row" key={s.key}>
-                        <div><div className="setting-label">{s.label}</div><div className="setting-desc">{s.desc}</div></div>
-                        <label className="toggle">
-                          <input type="checkbox" checked={settings[s.key]} onChange={() => { setSettings(p => ({ ...p, [s.key]: !p[s.key] })); showToast("Setting saved"); }} />
-                          <span className="toggle-slider" />
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ padding: "0 22px 22px", display: "flex", gap: 10 }}>
-                    <button className="btn-primary" onClick={() => showToast("Settings saved successfully")}>Save Changes</button>
-                    <button className="btn-outline" onClick={() => showToast("Settings reset", "warning")}>Reset Defaults</button>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* SYSTEM REPORTS */}
-          {activeNav === "reports" && (
-            <>
-              <div className="section-tag">Analytics</div>
-              <div className="page-title">System Reports</div>
-              <div className="page-subtitle">Platform-wide metrics, performance indicators and store analytics.</div>
-              <div className="stats-grid" style={{ marginBottom: 20 }}>
-                {systemReports.map(r => (
-                  <div className="stat-card" key={r.label}>
-                    <div className="stat-top"><div className="stat-icon">{r.icon}</div><div className={`stat-change ${r.up ? "up" : "down"}`}>{r.change}</div></div>
-                    <div className="stat-value">{r.value}</div>
-                    <div className="stat-label">{r.label}</div>
-                  </div>
-                ))}
-              </div>
-              <div className="reports-grid">
-                <div className="card">
-                  <div className="card-header"><div><div className="card-title">Sales by Region</div><div className="card-subtitle">Top performing store regions</div></div></div>
-                  <div className="report-card-body">
-                    <div className="bar-list">
-                      {[{ region: "New York", pct: 84, val: "$842K" }, { region: "Los Angeles", pct: 61, val: "$613K" }, { region: "United Kingdom", pct: 47, val: "$478K" }, { region: "Australia", pct: 32, val: "$318K" }, { region: "Europe (Other)", pct: 58, val: "$589K" }].map(r => (
-                        <div key={r.region}>
-                          <div className="bar-item-label"><span>{r.region}</span><span style={{ color: "var(--muted)" }}>{r.val}</span></div>
-                          <div className="bar-track"><div className="bar-fill" style={{ width: `${r.pct}%` }} /></div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="card-header"><div><div className="card-title">Category Performance</div><div className="card-subtitle">Sales split by product category</div></div></div>
-                  <div className="report-card-body">
-                    <div className="bar-list">
-                      {[{ cat: "Women's Fashion", pct: 89 }, { cat: "Men's Fashion", pct: 72 }, { cat: "Footwear", pct: 55, color: "green" }, { cat: "Accessories", pct: 41, color: "amber" }, { cat: "Sale Items", pct: 33, color: "amber" }].map(r => (
-                        <div key={r.cat}>
-                          <div className="bar-item-label"><span>{r.cat}</span><span style={{ color: "var(--muted)" }}>{r.pct}%</span></div>
-                          <div className="bar-track"><div className={`bar-fill ${r.color || ""}`} style={{ width: `${r.pct}%` }} /></div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="card-header"><div><div className="card-title">System Health</div><div className="card-subtitle">Infrastructure performance metrics</div></div></div>
-                  <div className="report-card-body">
-                    <div className="metric-grid">
-                      {[{ val: "99.98%", lbl: "Uptime (30d)" }, { val: "142ms", lbl: "Avg Response" }, { val: "3.2M", lbl: "API Calls/day" }, { val: "0", lbl: "Critical Errors" }, { val: "2.4TB", lbl: "Storage Used" }, { val: "Daily", lbl: "Last Backup" }].map(m => (
-                        <div className="metric-item" key={m.lbl}><div className="metric-val">{m.val}</div><div className="metric-lbl">{m.lbl}</div></div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                <div className="card">
-                  <div className="card-header"><div><div className="card-title">Admin Activity</div><div className="card-subtitle">Actions per admin this month</div></div></div>
-                  <div className="report-card-body">
-                    <div className="bar-list">
-                      {adminList.slice(0, 5).map((a, i) => {
-                        const pct = [84, 67, 23, 91, 45][i];
-                        return (
-                          <div key={a.id}>
-                            <div className="bar-item-label"><span>{a.name}</span><span style={{ color: "var(--muted)" }}>{pct} actions</span></div>
-                            <div className="bar-track"><div className="bar-fill green" style={{ width: `${pct}%` }} /></div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
                 </div>
               </div>
             </>
@@ -553,7 +411,7 @@ export default function SuperAdminDashboard() {
             </div>
             <div className="modal-actions">
               <button className="btn-outline" onClick={() => setShowAddModal(false)}>Cancel</button>
-              <button className="btn-primary" onClick={addAdmin}>＋ Add Admin</button>
+              <button className="btn-primary" onClick={handleAddAdmin} disabled={loading}>＋ Add Admin</button>
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { submitContactMessage } from "../../firebase/services/messageService";
+
 const EmailIcon = ({ color }) => (
   <svg viewBox="0 0 24 24" className="w-9 h-9" fill="none">
     <rect x="2" y="4" width="20" height="16" rx="3" fill={color} opacity="0.9"/>
@@ -100,6 +102,39 @@ export default function ContactUs() {
 
   const [openFaq, setOpenFaq] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    topic: "",
+    message: "",
+  });
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitError("");
+    setSubmitting(true);
+
+    try {
+      await submitContactMessage(formData);
+      setSubmitted(true);
+      setFormData({
+        fullName: "",
+        email: "",
+        topic: "",
+        message: "",
+      });
+    } catch (err) {
+      setSubmitError(err.message || "Failed to send message");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="bg-gray-100 text-gray-900">
@@ -179,18 +214,21 @@ export default function ContactUs() {
               </h3>
 
               <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setSubmitted(true);
-                }}
+                onSubmit={handleSubmit}
                 className="space-y-4"
               >
+
+                {submitError && (
+                  <p className="text-sm text-red-500">{submitError}</p>
+                )}
 
                 <div className="grid sm:grid-cols-2 gap-4">
 
                   <input
                     className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
                     placeholder="Full Name"
+                    value={formData.fullName}
+                    onChange={(e) => handleChange("fullName", e.target.value)}
                     required
                   />
 
@@ -198,29 +236,41 @@ export default function ContactUs() {
                     type="email"
                     className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
                     placeholder="Email Address"
+                    value={formData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
                     required
                   />
 
                 </div>
 
-                <select className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                  <option>Select topic</option>
-                  <option>Order & Shipping</option>
-                  <option>Returns</option>
-                  <option>Product Question</option>
+                <select
+                  className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.topic}
+                  onChange={(e) => handleChange("topic", e.target.value)}
+                  required
+                >
+                  <option value="">Select topic</option>
+                  <option value="Order & Shipping">Order & Shipping</option>
+                  <option value="Returns">Returns</option>
+                  <option value="Product Question">Product Question</option>
+                  <option value="Other">Other</option>
                 </select>
 
                 <textarea
                   rows="5"
                   className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
                   placeholder="Tell us how we can help"
+                  value={formData.message}
+                  onChange={(e) => handleChange("message", e.target.value)}
                   required
                 />
 
                 <button
+                  type="submit"
+                  disabled={submitting}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
                 >
-                  Send Message →
+                  {submitting ? "Sending..." : "Send Message →"}
                 </button>
 
               </form>
