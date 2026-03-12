@@ -44,12 +44,6 @@ import AdminMessages from "../pages/admin/AdminMessages.jsx";
 
 /* SUPER ADMIN */
 import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard.jsx";
-import Analytics from "../pages/superAdmin/Analytics.jsx";
-import Control from "../pages/superAdmin/Control.jsx";
-import Management from "../pages/superAdmin/Management.jsx";
-import Settings from "../pages/superAdmin/Settings.jsx";
-import Support from "../pages/superAdmin/Support.jsx";
-import SystemLogs from "../pages/superAdmin/SystemLogs.jsx";
 
 
 
@@ -128,54 +122,6 @@ export default function AppRoutes() {
         element={
           <SuperAdminRoutes>
             <SuperAdminDashboard />
-          </SuperAdminRoutes>
-        }
-      />
-      <Route
-        path="/superAdmin/analytics"
-        element={
-          <SuperAdminRoutes>
-            <Analytics />
-          </SuperAdminRoutes>
-        }
-      />
-      <Route
-        path="/superAdmin/control"
-        element={
-          <SuperAdminRoutes>
-            <Control />
-          </SuperAdminRoutes>
-        }
-      />
-      <Route
-        path="/superAdmin/management"
-        element={
-          <SuperAdminRoutes>
-            <Management />
-          </SuperAdminRoutes>
-        }
-      />
-      <Route
-        path="/superAdmin/settings"
-        element={
-          <SuperAdminRoutes>
-            <Settings />
-          </SuperAdminRoutes>
-        }
-      />
-      <Route
-        path="/superAdmin/support"
-        element={
-          <SuperAdminRoutes>
-            <Support />
-          </SuperAdminRoutes>
-        }
-      />
-      <Route
-        path="/superAdmin/systemLogs"
-        element={
-          <SuperAdminRoutes>
-            <SystemLogs />
           </SuperAdminRoutes>
         }
       />
