@@ -3,20 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { getCollection, addData, deleteData, updateData, addLog } from "../../services/firebaseService";
 import { useAuth } from "../../hooks/useAuth";
 
-
-const admins = [
-  { id: 1, name: "Elena Moreau", email: "elena@luxestore.com", role: "Store Admin", store: "LuxeStore NY", status: "active", joined: "Jan 12, 2024", avatar: "EM" },
-  { id: 2, name: "James Okafor", email: "james@luxestore.com", role: "Catalog Admin", store: "LuxeStore LA", status: "active", joined: "Feb 3, 2024", avatar: "JO" },
-  { id: 3, name: "Priya Nair", email: "priya@luxestore.com", role: "Finance Admin", store: "LuxeStore UK", status: "suspended", joined: "Mar 18, 2024", avatar: "PN" },
-  { id: 4, name: "Marcus Liu", email: "marcus@luxestore.com", role: "Store Admin", store: "LuxeStore AU", status: "active", joined: "Apr 5, 2024", avatar: "ML" },
-  { id: 5, name: "Sofia Reyes", email: "sofia@luxestore.com", role: "Support Admin", store: "LuxeStore EU", status: "inactive", joined: "May 22, 2024", avatar: "SR" },
-];
-
 const systemReports = [
   { label: "Total Revenue", value: "$2.84M", change: "+18.4%", up: true, icon: "💰" },
   { label: "Active Users", value: "142,390", change: "+9.2%", up: true, icon: "👥" },
-  { label: "Orders Today", value: "3,847", change: "+5.1%", up: true, icon: "📦" },
-  { label: "System Uptime", value: "99.98%", change: "-0.01%", up: false, icon: "🖥️" },
+  { label: "Orders", value: "3,847", change: "+5.1%", up: true, icon: "📦" },
 ];
 
 const activityLog = [
@@ -39,11 +29,11 @@ export default function SuperAdminDashboard() {
   const navigate = useNavigate();
   const { logoutUser } = useAuth();
   const [activeNav, setActiveNav] = useState("overview");
-  const [adminList, setAdminList] = useState(admins);
+  const [adminList, setAdminList] = useState([]);
   const [liveStats, setLiveStats] = useState({ users: 0, orders: 0, products: 0 });
   const [liveActivity, setLiveActivity] = useState(activityLog);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newAdmin, setNewAdmin] = useState({ name: "", email: "", role: "Store Admin", store: "" });
+  const [newAdmin, setNewAdmin] = useState({ name: "", email: "", role: "admin", store: "" });
   const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState(null);
 
@@ -55,21 +45,55 @@ export default function SuperAdminDashboard() {
   // ── Firebase data loading ──
   useEffect(() => {
     const loadDashboardData = async () => {
-      const [userData, orderData, productData, adminData, logData] = await Promise.all([
+      const [userData, orderData, productData, logData] = await Promise.all([
         getCollection("users"),
         getCollection("orders"),
         getCollection("products"),
-        getCollection("admins"),
         getCollection("systemLogs"),
       ]);
 
+      const activeUsersCount = userData.filter((u) => {
+        const status = String(u.status || "").toLowerCase();
+        return !u.isBlocked && status !== "suspended" && status !== "disabled" && status !== "inactive";
+      }).length;
+
       setLiveStats({
-        users: userData.length,
+        users: activeUsersCount,
         orders: orderData.length,
         products: productData.length,
       });
 
-      if (adminData.length > 0) setAdminList(adminData);
+      const privilegedUsers = userData
+        .filter((u) => ["admin", "superadmin"].includes((u.role || "").toLowerCase()))
+        .map((u) => {
+          const rawName = u.name || u.displayName || u.email || "Unknown";
+          const initials = rawName
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .slice(0, 2)
+            .toUpperCase();
+
+          let joined = "N/A";
+          if (u.createdAt?.toDate) {
+            joined = u.createdAt.toDate().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          } else if (u.createdAt) {
+            joined = new Date(u.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+          }
+
+          return {
+            id: u.uid || u.id,
+            name: rawName,
+            email: u.email || "No email",
+            role: (u.role || "admin").toLowerCase() === "superadmin" ? "Super Admin" : "Admin",
+            store: u.store || "-",
+            status: u.isBlocked ? "suspended" : "active",
+            joined,
+            avatar: initials || "AD",
+          };
+        });
+
+      setAdminList(privilegedUsers);
 
       if (logData.length > 0) {
         const formatted = logData
@@ -90,9 +114,9 @@ export default function SuperAdminDashboard() {
 
   // Derive stat cards with live counts overlaid on the static defaults
   const overviewStats = systemReports.map((r) => {
-    if (r.label === "Active Users" && liveStats.users > 0)
+    if (r.label === "Active Users")
       return { ...r, value: liveStats.users.toLocaleString() };
-    if (r.label === "Orders Today" && liveStats.orders > 0)
+    if (r.label === "Orders")
       return { ...r, value: liveStats.orders.toLocaleString() };
     return r;
   });
@@ -103,9 +127,7 @@ export default function SuperAdminDashboard() {
     setAdminList((prev) =>
       prev.map((a) => (a.id === id ? { ...a, status: newStatus } : a))
     );
-    if (typeof id === "string") {
-      await updateData("admins", id, { status: newStatus }).catch(() => {});
-    }
+    await updateData("users", id, { isBlocked: newStatus === "suspended" }).catch(() => {});
     await addLog(
       `Admin ${newStatus}: ${admin?.name || id}`,
       "Super Admin",
@@ -117,9 +139,7 @@ export default function SuperAdminDashboard() {
   const deleteAdmin = async (id) => {
     const admin = adminList.find((a) => a.id === id);
     setAdminList((prev) => prev.filter((a) => a.id !== id));
-    if (typeof id === "string") {
-      await deleteData("admins", id).catch(() => {});
-    }
+    await deleteData("users", id).catch(() => {});
     await addLog(`Admin removed: ${admin?.name || id}`, "Super Admin", "warning").catch(() => {});
     showToast("Admin removed", "warning");
   };
@@ -127,16 +147,23 @@ export default function SuperAdminDashboard() {
   const addAdmin = async () => {
     if (!newAdmin.name || !newAdmin.email) return;
     const initials = newAdmin.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+    const roleValue = newAdmin.role;
+    const roleLabel = roleValue === "superadmin" ? "Super Admin" : "Admin";
     const entry = {
-      ...newAdmin,
+      name: newAdmin.name,
+      email: newAdmin.email,
+      role: roleValue,
+      store: newAdmin.store || "-",
+      isBlocked: false,
       status: "active",
       joined: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       avatar: initials,
+      createdAt: new Date().toISOString(),
     };
-    const docRef = await addData("admins", entry).catch(() => null);
-    setAdminList((prev) => [...prev, { id: docRef?.id ?? Date.now(), ...entry }]);
+    const docRef = await addData("users", entry).catch(() => null);
+    setAdminList((prev) => [...prev, { id: docRef?.id ?? Date.now(), ...entry, role: roleLabel }]);
     await addLog(`Admin created: ${newAdmin.name}`, "Super Admin", "create").catch(() => {});
-    setNewAdmin({ name: "", email: "", role: "Store Admin", store: "" });
+    setNewAdmin({ name: "", email: "", role: "admin", store: "" });
     setShowAddModal(false);
     showToast("New admin added successfully");
   };
@@ -414,19 +441,18 @@ export default function SuperAdminDashboard() {
                 </div>
                 <div className="table-wrap">
                   <table>
-                    <thead><tr><th>Admin</th><th>Role</th><th>Store</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Admin</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody>
                       {filteredAdmins.map(a => (
                         <tr key={a.id}>
                           <td><div className="td-name"><div className="td-avatar" style={{ background: avatarColors[a.avatar] || "#2563eb" }}>{a.avatar}</div><div><div className="td-fullname">{a.name}</div><div className="td-email">{a.email}</div></div></div></td>
                           <td><span className="role-badge">{a.role}</span></td>
-                          <td style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{a.store}</td>
                           <td style={{ fontSize: "0.82rem", color: "var(--muted)" }}>{a.joined}</td>
                           <td><span className={`status-badge status-${a.status}`}><span className="status-dot" />{a.status.charAt(0).toUpperCase() + a.status.slice(1)}</span></td>
                           <td><div className="action-btns"><button className="act-btn act-btn-toggle" onClick={() => toggleStatus(a.id)}>{a.status === "active" ? "Suspend" : "Activate"}</button><button className="act-btn act-btn-delete" onClick={() => deleteAdmin(a.id)}>Remove</button></div></td>
                         </tr>
                       ))}
-                      {filteredAdmins.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", padding: "28px", color: "var(--muted)", fontSize: "0.855rem" }}>No admins found.</td></tr>}
+                      {filteredAdmins.length === 0 && <tr><td colSpan={5} style={{ textAlign: "center", padding: "28px", color: "var(--muted)", fontSize: "0.855rem" }}>No admins found.</td></tr>}
                     </tbody>
                   </table>
                 </div>
@@ -449,7 +475,7 @@ export default function SuperAdminDashboard() {
               <div className="form-field"><label className="form-label">Email Address *</label><input className="form-input" placeholder="jane@luxestore.com" value={newAdmin.email} onChange={e => setNewAdmin(p => ({ ...p, email: e.target.value }))} /></div>
             </div>
             <div className="form-row-2">
-              <div className="form-field"><label className="form-label">Role</label><select className="form-input" value={newAdmin.role} onChange={e => setNewAdmin(p => ({ ...p, role: e.target.value }))}><option>Store Admin</option><option>Catalog Admin</option><option>Finance Admin</option><option>Support Admin</option></select></div>
+              <div className="form-field"><label className="form-label">Role</label><select className="form-input" value={newAdmin.role} onChange={e => setNewAdmin(p => ({ ...p, role: e.target.value }))}><option value="admin">Admin</option><option value="superadmin">Super Admin</option></select></div>
               <div className="form-field"><label className="form-label">Assigned Store</label><input className="form-input" placeholder="LuxeStore NY" value={newAdmin.store} onChange={e => setNewAdmin(p => ({ ...p, store: e.target.value }))} /></div>
             </div>
             <div className="modal-actions">
