@@ -8,6 +8,20 @@ export default function AdminOrders() {
   const { orders, loading, updateOrderStatus } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  const handlePrint = () => {
+
+  const printContent = document.getElementById("printable-order").innerHTML;
+  const originalContent = document.body.innerHTML;
+
+  document.body.innerHTML = printContent;
+
+  window.print();
+
+  document.body.innerHTML = originalContent;
+
+  window.location.reload();
+};
+
   const statusColor = (status) => {
     switch (status) {
       case "Processing":
@@ -120,8 +134,10 @@ export default function AdminOrders() {
 
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
 
-          <div className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 overflow-y-auto max-h-[90vh]">
-
+        <div
+          id="printable-order"
+          className="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 overflow-y-auto max-h-[90vh]"
+        >
             <h2 className="text-xl font-bold mb-6">
               Order Details
             </h2>
@@ -207,16 +223,23 @@ export default function AdminOrders() {
 
             </div>
 
-            <div className="mt-6 text-right">
+           <div className="mt-6 flex justify-between">
 
-              <button
-                onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-              >
-                Close
-              </button>
+            <button
+              onClick={handlePrint}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Print Order
+            </button>
 
-            </div>
+            <button
+              onClick={() => setSelectedOrder(null)}
+              className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+            >
+              Close
+            </button>
+
+          </div>
 
           </div>
 
