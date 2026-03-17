@@ -62,21 +62,15 @@ export default function AppRoutes() {
         <Route path="/cart" element={<CartPage />} />
 
         {/* 🔐 Protected Checkout */}
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoutes>
-              <Checkout />
-            </ProtectedRoutes>
-          }
-        />
+        <Route path="/checkout" element={<Checkout />} />
+      
 
         <Route
           path="/orderSuccess"
           element={
-            <ProtectedRoutes>
+            
               <OrderSuccess />
-            </ProtectedRoutes>
+            
           }
         />
 
