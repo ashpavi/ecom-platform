@@ -3,7 +3,7 @@ import {
   FaArrowRight,
   FaMapMarkerAlt,
   FaCreditCard,
-  FaPaypal,
+  FaUniversity,
   FaMoneyBillWave
 } from "react-icons/fa";
 
@@ -11,6 +11,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
 import { formatPrice } from "../../utils/formatPrice";
 import { useEffect } from "react";
+import { bankTransferDetails } from "../../utils/bankTransferDetails";
 
 export default function OrderSuccess() {
 
@@ -22,6 +23,7 @@ export default function OrderSuccess() {
   const orderId = location.state?.orderId;
   const shippingData = location.state?.shippingData;
   const paymentMethod = location.state?.paymentMethod;
+  const paymentDetails = location.state?.paymentDetails || bankTransferDetails;
 
   const items = location.state?.items || [];
   const subtotal = location.state?.subtotal || 0;
@@ -121,9 +123,41 @@ export default function OrderSuccess() {
                 </>
               )}
 
+              {paymentMethod === "bankTransfer" && (
+                <div className="w-full space-y-4">
+                  <div className="flex items-center gap-3">
+                    <FaUniversity className="text-blue-600" />
+                    Bank Transfer
+                  </div>
+
+                  <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-sm">
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Bank Name</p>
+                        <p className="font-medium text-gray-800">{paymentDetails.bankName}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Account Name</p>
+                        <p className="font-medium text-gray-800">{paymentDetails.accountName}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Account Number</p>
+                        <p className="font-medium text-gray-800">{paymentDetails.accountNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">SWIFT Code</p>
+                        <p className="font-medium text-gray-800">{paymentDetails.swiftCode}</p>
+                      </div>
+                    </div>
+
+                    <p className="mt-3 text-xs text-gray-600">{paymentDetails.reference}</p>
+                  </div>
+                </div>
+              )}
+
               {paymentMethod === "paypal" && (
                 <>
-                  <FaPaypal className="text-blue-600" />
+                  <FaUniversity className="text-blue-600" />
                   PayPal
                 </>
               )}
