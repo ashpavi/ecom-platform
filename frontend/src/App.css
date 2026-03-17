@@ -6,3 +6,9 @@ html, body, #root {
   margin: 0;
   padding: 0;
 }
+
+@media print {
+  button {
+    display: none !important;
+  }
+}
