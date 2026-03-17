@@ -1,10 +1,20 @@
-import { FaTimes, FaBox, FaMapMarkerAlt, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaTimes,
+  FaBox,
+  FaMapMarkerAlt,
+  FaMoneyBillWave,
+  FaCreditCard,
+  FaUniversity
+} from "react-icons/fa";
 import { useEffect } from "react";
 import { formatPrice } from "../../../utils/formatPrice";
+import { bankTransferDetails } from "../../../utils/bankTransferDetails";
 
 export default function OrderDetailModal({ order, onClose }) {
 
   if (!order) return null;
+
+  const paymentDetails = order.paymentDetails || bankTransferDetails;
 
   useEffect(() => {
 
@@ -130,9 +140,26 @@ export default function OrderDetailModal({ order, onClose }) {
                 </>
               )}
 
+              {order.paymentMethod === "bankTransfer" && (
+                <div className="w-full space-y-3">
+                  <div className="flex items-center gap-2">
+                    <FaUniversity className="text-blue-600" />
+                    Bank Transfer
+                  </div>
+
+                  <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4 text-xs text-gray-700">
+                    <p><strong>Bank:</strong> {paymentDetails.bankName}</p>
+                    <p><strong>Account:</strong> {paymentDetails.accountName}</p>
+                    <p><strong>Account No:</strong> {paymentDetails.accountNumber}</p>
+                    <p><strong>SWIFT:</strong> {paymentDetails.swiftCode}</p>
+                    <p><strong>Reference:</strong> {paymentDetails.reference}</p>
+                  </div>
+                </div>
+              )}
+
               {order.paymentMethod === "paypal" && (
                 <>
-                  <FaPaypal className="text-blue-600" />
+                  <FaUniversity className="text-blue-600" />
                   PayPal
                 </>
               )}

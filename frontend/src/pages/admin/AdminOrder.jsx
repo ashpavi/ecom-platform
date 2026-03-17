@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FaEye } from "react-icons/fa";
 import { useOrders } from "../../hooks/useOrders";
 import { formatPrice } from "../../utils/formatPrice";
+import { formatPaymentMethod } from "../../utils/formatPaymentMethod";
 
 export default function AdminOrders() {
 
@@ -73,7 +74,7 @@ export default function AdminOrders() {
                 </td>
 
                 <td className="p-4 text-gray-600">
-                  {order.paymentMethod}
+                  {formatPaymentMethod(order.paymentMethod)}
                 </td>
 
                 <td className="p-4">
@@ -136,7 +137,7 @@ export default function AdminOrders() {
 
               <p><strong>Phone:</strong> {selectedOrder.customer?.contactno}</p>
 
-              <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
+              <p><strong>Payment Method:</strong> {formatPaymentMethod(selectedOrder.paymentMethod)}</p>
 
               <p><strong>Status:</strong> {selectedOrder.status}</p>
 

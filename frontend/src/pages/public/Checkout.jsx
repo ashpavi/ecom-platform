@@ -2,13 +2,14 @@ import { useState } from "react";
 import {
   FaArrowLeft,
   FaCreditCard,
-  FaPaypal,
+  FaUniversity,
   FaMoneyBillWave
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
 import { createOrder } from "../../firebase/services/orderService";
 import { formatPrice } from "../../utils/formatPrice";
+import { bankTransferDetails } from "../../utils/bankTransferDetails";
 
 export default function Checkout() {
 
@@ -84,10 +85,15 @@ export default function Checkout() {
 
   try {
 
+    const paymentDetails = paymentMethod === "bankTransfer"
+      ? bankTransferDetails
+      : null;
+
     const order = {
       customer: shippingData,
       items: cartItems,
       paymentMethod,
+      paymentDetails,
       subtotal,
       codFee: COD_FEE,
       total,
@@ -102,6 +108,7 @@ export default function Checkout() {
         orderId,
         shippingData,
         paymentMethod,
+        paymentDetails,
         items: cartItems,
         subtotal,
         codFee: COD_FEE,
@@ -231,35 +238,77 @@ export default function Checkout() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-                <div
+                <button
+                  type="button"
                   onClick={() => setPaymentMethod("card")}
                   className={`p-4 rounded-xl border flex items-center gap-3 cursor-pointer
-                    ${paymentMethod === "card" ? "border-blue-600 bg-blue-50" : ""}`}
+                    transition-colors ${paymentMethod === "card" ? "border-blue-600 bg-blue-50" : ""}`}
                 >
                   <FaCreditCard />
                   Credit Card
-                </div>
+                </button>
 
 
-                <div
-                  onClick={() => setPaymentMethod("paypal")}
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("bankTransfer")}
                   className={`p-4 rounded-xl border flex items-center gap-3 cursor-pointer
-                    ${paymentMethod === "paypal" ? "border-blue-600 bg-blue-50" : ""}`}
+                    transition-colors ${paymentMethod === "bankTransfer" ? "border-blue-600 bg-blue-50" : ""}`}
                 >
-                  <FaPaypal />
-                  PayPal
-                </div>
+                  <FaUniversity />
+                  Bank Transfer
+                </button>
 
 
-                <div
+                <button
+                  type="button"
                   onClick={() => setPaymentMethod("cod")}
                   className={`p-4 rounded-xl border flex items-center gap-3 cursor-pointer
-                    ${paymentMethod === "cod" ? "border-blue-600 bg-blue-50" : ""}`}
+                    transition-colors ${paymentMethod === "cod" ? "border-blue-600 bg-blue-50" : ""}`}
                 >
                   <FaMoneyBillWave />
                   Cash on Delivery
-                </div>
+                </button>
 
+              </div>
+
+              <div
+                className={`grid transition-all duration-300 ease-out ${paymentMethod === "bankTransfer"
+                  ? "grid-rows-[1fr] opacity-100"
+                  : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="mt-4 rounded-2xl border border-blue-100 bg-gradient-to-br from-sky-50 to-white p-5 text-sm text-gray-700 shadow-sm">
+                    <div className="flex items-center gap-2 text-blue-700 font-semibold mb-4">
+                      <FaUniversity />
+                      Transfer Details
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Bank Name</p>
+                        <p className="font-medium">{bankTransferDetails.bankName}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Account Name</p>
+                        <p className="font-medium">{bankTransferDetails.accountName}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">Account Number</p>
+                        <p className="font-medium">{bankTransferDetails.accountNumber}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-wide text-gray-500">SWIFT Code</p>
+                        <p className="font-medium">{bankTransferDetails.swiftCode}</p>
+                      </div>
+                    </div>
+
+                    <p className="mt-4 rounded-xl bg-white/80 px-4 py-3 text-xs text-gray-600 border border-blue-100">
+                      {bankTransferDetails.reference}
+                    </p>
+                  </div>
+                </div>
               </div>
 
             </div>
