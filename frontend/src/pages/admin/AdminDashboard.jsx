@@ -3,7 +3,8 @@ import {
   FaUsers,
   FaShoppingCart,
   FaBoxOpen,
-  FaTruck
+  FaTruck,
+  FaCheckCircle
 } from "react-icons/fa";
 
 import { Link } from "react-router-dom";
@@ -32,6 +33,7 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState([]);
   const [revenue, setRevenue] = useState(0);
   const [processingOrders, setProcessingOrders] = useState(0);
+  const [completedOrders, setCompletedOrders] = useState(0); 
   const [productsSold, setProductsSold] = useState(0);
 
   /* ================= FETCH DATA ================= */
@@ -54,7 +56,10 @@ export default function AdminDashboard() {
 
       const orderSnap = await getDocs(collection(db, "orders"));
 
-      const orderList = orderSnap.docs.map((doc) => doc.data());
+      const orderList = orderSnap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
       setOrders(orderList);
 
@@ -74,6 +79,14 @@ export default function AdminDashboard() {
       ).length;
 
       setProcessingOrders(processing);
+
+      /* ✅ COMPLETED ORDERS */
+
+      const completed = orderList.filter(
+        (o) => o.status === "Delivered"
+      ).length;
+
+      setCompletedOrders(completed);
 
       /* PRODUCTS SOLD */
 
@@ -102,7 +115,7 @@ export default function AdminDashboard() {
     },
     {
       name: "Completed",
-      value: orders.filter(o => o.status === "Delivered").length
+      value: completedOrders
     },
     {
       name: "Cancelled",
@@ -125,11 +138,9 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-
-
       {/* ================= STAT CARDS ================= */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-6">
 
         <StatCard
           icon={<FaDollarSign />}
@@ -149,6 +160,13 @@ export default function AdminDashboard() {
           value={processingOrders}
         />
 
+        {/* ✅ NEW CARD */}
+        <StatCard
+          icon={<FaCheckCircle />}
+          title="Completed Orders"
+          value={completedOrders}
+        />
+
         <StatCard
           icon={<FaBoxOpen />}
           title="Products Sold"
@@ -162,8 +180,6 @@ export default function AdminDashboard() {
         />
 
       </div>
-
-
 
       {/* ================= CHARTS ================= */}
 
@@ -199,8 +215,6 @@ export default function AdminDashboard() {
 
         </div>
 
-
-
         {/* RECENT ORDERS */}
 
         <div className="bg-white rounded-2xl shadow-md p-8">
@@ -222,11 +236,11 @@ export default function AdminDashboard() {
 
           <div className="space-y-4">
 
-            {orders.slice(0,5).map((order, index) => (
+            {orders.slice(0, 5).map((order) => (
 
               <OrderRow
-                key={index}
-                id={order.id || "ORDER"}
+                key={order.id}
+                id={order.id}
                 user={order.customer?.fullName}
                 total={formatPrice(order.total)}
                 status={order.status}
@@ -244,36 +258,25 @@ export default function AdminDashboard() {
   );
 }
 
-
-
 /* ================= COMPONENTS ================= */
 
 function StatCard({ icon, title, value }) {
-
   return (
     <div className="bg-white rounded-2xl p-6 shadow-md hover:shadow-lg transition">
-
       <div className="flex items-center justify-between mb-6">
-
         <div className="bg-blue-50 p-3 rounded-xl text-blue-600 text-lg">
           {icon}
         </div>
-
       </div>
 
-      <p className="text-sm text-gray-500">
-        {title}
-      </p>
+      <p className="text-sm text-gray-500">{title}</p>
 
       <p className="text-3xl font-semibold text-gray-900 mt-1">
         {value}
       </p>
-
     </div>
   );
 }
-
-
 
 function OrderRow({ id, user, total, status }) {
 
@@ -291,13 +294,8 @@ function OrderRow({ id, user, total, status }) {
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
 
       <div>
-        <p className="font-medium text-gray-900">
-          {id}
-        </p>
-
-        <p className="text-sm text-gray-500">
-          {user}
-        </p>
+        <p className="font-medium text-gray-900">{id}</p>
+        <p className="text-sm text-gray-500">{user}</p>
       </div>
 
       <div className="flex items-center gap-6">
@@ -313,7 +311,5 @@ function OrderRow({ id, user, total, status }) {
       </div>
 
     </div>
-
   );
-
 }
