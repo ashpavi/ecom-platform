@@ -10,11 +10,13 @@ import { useCart } from "../../hooks/useCart";
 import { createOrder } from "../../firebase/services/orderService";
 import { formatPrice } from "../../utils/formatPrice";
 import { bankTransferDetails } from "../../utils/bankTransferDetails";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Checkout() {
 
   const navigate = useNavigate();
   const { cartItems } = useCart();
+  const { currentUser } = useAuth();
 
   const [paymentMethod, setPaymentMethod] = useState("card");
 
@@ -98,7 +100,8 @@ export default function Checkout() {
       codFee: COD_FEE,
       total,
       status: "Processing",
-      date: new Date().toISOString()
+      date: new Date().toISOString(),
+      userId: currentUser.uid
     };
 
     const orderId = await createOrder(order);

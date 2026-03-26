@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase/firebaseConfig";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 
 import {
@@ -21,9 +21,18 @@ export const AuthProvider = ({ children }) => {
         const userDoc = await getDoc(doc(db, "users", user.uid));
 
         if (userDoc.exists()) {
+          const userData = userDoc.data();
+
+          // 🚨 BLOCK CHECK HERE
+          if (userData.isBlocked) {
+            await signOut(auth); // 🔥 FORCE LOGOUT
+            setCurrentUser(null);
+            return;
+          }
+
           setCurrentUser({
             uid: user.uid,
-            ...userDoc.data(),
+            ...userData,
           });
         }
       } else {

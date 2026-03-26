@@ -48,6 +48,7 @@ export const loginUser = async (email, password) => {
   const userData = userDoc.data();
 
   if (userData.isBlocked) {
+    await signOut(auth);
     throw new Error("Your account has been blocked.");
   }
 
