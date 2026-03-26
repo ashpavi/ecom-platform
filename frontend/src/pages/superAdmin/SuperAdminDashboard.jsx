@@ -10,12 +10,13 @@ const navItems = [
 ];
 
 const avatarColors = { EM: "#2563eb", JO: "#0891b2", PN: "#7c3aed", ML: "#059669", SR: "#d97706" };
+const initialAdminForm = { name: "", email: "", role: "Store Admin", store: "" };
 
 export default function SuperAdminDashboard() {
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState("overview");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newAdmin, setNewAdmin] = useState({ name: "", email: "", role: "Store Admin", store: "" });
+  const [newAdmin, setNewAdmin] = useState(initialAdminForm);
   const [searchQuery, setSearchQuery] = useState("");
   const [toast, setToast] = useState(null);
 
@@ -59,12 +60,17 @@ export default function SuperAdminDashboard() {
 
     try {
       await addAdmin(newAdmin);
-      setNewAdmin({ name: "", email: "", role: "Store Admin", store: "" });
+      setNewAdmin(initialAdminForm);
       setShowAddModal(false);
       showToast("New admin added successfully");
     } catch (err) {
       showToast(err.message || "Failed to add admin", "warning");
     }
+  };
+
+  const closeAddModal = () => {
+    setShowAddModal(false);
+    setNewAdmin(initialAdminForm);
   };
 
   const handleLogout = async () => {
@@ -397,7 +403,7 @@ export default function SuperAdminDashboard() {
 
       {/* ADD ADMIN MODAL */}
       {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
+        <div className="modal-overlay" onClick={closeAddModal}>
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-title">Add New Admin</div>
             <div className="modal-subtitle">Grant admin access to a new platform user.</div>
@@ -410,7 +416,7 @@ export default function SuperAdminDashboard() {
               <div className="form-field"><label className="form-label">Assigned Store</label><input className="form-input" placeholder="LuxeStore NY" value={newAdmin.store} onChange={e => setNewAdmin(p => ({ ...p, store: e.target.value }))} /></div>
             </div>
             <div className="modal-actions">
-              <button className="btn-outline" onClick={() => setShowAddModal(false)}>Cancel</button>
+              <button className="btn-outline" onClick={closeAddModal}>Cancel</button>
               <button className="btn-primary" onClick={handleAddAdmin} disabled={loading}>＋ Add Admin</button>
             </div>
           </div>

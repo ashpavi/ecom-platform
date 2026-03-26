@@ -4,22 +4,24 @@ import { Link } from "react-router-dom";
 
 export default function Carousel({ slides }) {
   const [current, setCurrent] = useState(0);
+  const lastIndex = slides.length - 1;
+
+  const isAtFirstSlide = current === 0;
+  const isAtLastSlide = current === lastIndex;
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev < lastIndex ? prev + 1 : prev));
     }, 5000);
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [lastIndex]);
 
   const nextSlide = () => {
-    setCurrent((prev) => (prev + 1) % slides.length);
+    setCurrent((prev) => (prev < lastIndex ? prev + 1 : prev));
   };
 
   const prevSlide = () => {
-    setCurrent((prev) =>
-      prev === 0 ? slides.length - 1 : prev - 1
-    );
+    setCurrent((prev) => (prev > 0 ? prev - 1 : prev));
   };
 
   return (
@@ -82,18 +84,24 @@ export default function Carousel({ slides }) {
       {/* NAVIGATION */}
       <button
         onClick={prevSlide}
-        className="absolute left-6 top-1/2 -translate-y-1/2 
-                   bg-white shadow-lg p-3 rounded-full 
-                   hover:scale-110 transition"
+        disabled={isAtFirstSlide}
+        className={`absolute left-6 top-1/2 -translate-y-1/2 bg-white shadow-lg p-3 rounded-full transition ${
+          isAtFirstSlide
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:scale-110"
+        }`}
       >
         <FaChevronLeft />
       </button>
 
       <button
         onClick={nextSlide}
-        className="absolute right-6 top-1/2 -translate-y-1/2 
-                   bg-white shadow-lg p-3 rounded-full 
-                   hover:scale-110 transition"
+        disabled={isAtLastSlide}
+        className={`absolute right-6 top-1/2 -translate-y-1/2 bg-white shadow-lg p-3 rounded-full transition ${
+          isAtLastSlide
+            ? "opacity-40 cursor-not-allowed"
+            : "hover:scale-110"
+        }`}
       >
         <FaChevronRight />
       </button>
