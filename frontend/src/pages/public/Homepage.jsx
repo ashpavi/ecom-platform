@@ -172,11 +172,15 @@ export default function HomePage() {
             Get up to 40% off on selected items.
           </p>
 
-          <button className="mt-8 bg-white text-blue-600 
+          <button
+            type="button"
+            onClick={() => navigate("/products")}
+            className="mt-8 bg-white text-blue-600 
                              px-8 py-3 rounded-xl 
                              font-semibold 
                              hover:bg-gray-200 
-                             transition">
+                             transition cursor-pointer"
+          >
             Explore Deals
           </button>
 
