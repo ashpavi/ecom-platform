@@ -17,16 +17,31 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
+
+      // PREVENT REDIRECT WHEN CREATING ADMIN
+      const isCreatingAdmin = localStorage.getItem("creatingAdmin");
+
+      if (isCreatingAdmin) {
+        localStorage.removeItem("creatingAdmin");
+
+        //  IMPORTANT: do NOT set currentUser here
+        // this prevents UI switching to the new admin
+
+        setLoading(false);
+        return;
+      }
+
       if (user) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
 
         if (userDoc.exists()) {
           const userData = userDoc.data();
 
-          // 🚨 BLOCK CHECK HERE
+          
           if (userData.isBlocked) {
-            await signOut(auth); // 🔥 FORCE LOGOUT
+            await signOut(auth);
             setCurrentUser(null);
+            setLoading(false);
             return;
           }
 

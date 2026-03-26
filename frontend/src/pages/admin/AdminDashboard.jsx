@@ -26,23 +26,34 @@ import { db } from "../../firebase/firebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 
 import { formatPrice } from "../../utils/formatPrice";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function AdminDashboard() {
+
+  const { currentUser } = useAuth();
 
   const [customers, setCustomers] = useState(0);
   const [orders, setOrders] = useState([]);
   const [revenue, setRevenue] = useState(0);
   const [processingOrders, setProcessingOrders] = useState(0);
-  const [completedOrders, setCompletedOrders] = useState(0); 
+  const [completedOrders, setCompletedOrders] = useState(0);
   const [productsSold, setProductsSold] = useState(0);
 
-  /* ================= FETCH DATA ================= */
+  const [currentTime, setCurrentTime] = useState(new Date());
 
+  /* ================= LIVE CLOCK ================= */
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
 
     const fetchData = async () => {
-
-      /* USERS */
 
       const userSnap = await getDocs(collection(db, "users"));
 
@@ -51,8 +62,6 @@ export default function AdminDashboard() {
       ).length;
 
       setCustomers(customerCount);
-
-      /* ORDERS */
 
       const orderSnap = await getDocs(collection(db, "orders"));
 
@@ -63,8 +72,6 @@ export default function AdminDashboard() {
 
       setOrders(orderList);
 
-      /* TOTAL REVENUE */
-
       const totalRevenue = orderList.reduce(
         (acc, order) => acc + (order.total || 0),
         0
@@ -72,23 +79,17 @@ export default function AdminDashboard() {
 
       setRevenue(totalRevenue);
 
-      /* PROCESSING ORDERS */
-
       const processing = orderList.filter(
         (o) => o.status === "Processing"
       ).length;
 
       setProcessingOrders(processing);
 
-      /* ✅ COMPLETED ORDERS */
-
       const completed = orderList.filter(
         (o) => o.status === "Delivered"
       ).length;
 
       setCompletedOrders(completed);
-
-      /* PRODUCTS SOLD */
 
       let sold = 0;
 
@@ -106,17 +107,22 @@ export default function AdminDashboard() {
 
   }, []);
 
+  /* ================= FORMAT DATE ================= */
+
+  const formattedDate = currentTime.toLocaleDateString("en-GB", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+
+  const formattedTime = currentTime.toLocaleTimeString();
+
   /* ================= CHART DATA ================= */
 
   const orderStatusData = [
-    {
-      name: "Processing",
-      value: processingOrders
-    },
-    {
-      name: "Completed",
-      value: completedOrders
-    },
+    { name: "Processing", value: processingOrders },
+    { name: "Completed", value: completedOrders },
     {
       name: "Cancelled",
       value: orders.filter(o => o.status === "Cancelled").length
@@ -124,60 +130,46 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-10">
 
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
 
-      <div>
-        <h1 className="text-3xl font-semibold text-gray-900">
-          Admin Dashboard
-        </h1>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl">
 
-        <p className="text-gray-500 text-sm mt-2">
-          Overview of your ecommerce store performance
-        </p>
+        <div>
+          <h1 className="text-3xl font-semibold text-gray-900">
+           Admin Dashboard -{currentUser?.name || "Admin"} 
+          </h1>
+
+          <p className="text-gray-500 text-sm mt-1">
+            Here's what's happening with your store today
+          </p>
+        </div>
+
+        <div className="bg-white border rounded-xl px-4 py-3 shadow-sm text-right">
+
+          <p className="text-sm text-gray-500">
+            {formattedDate}
+          </p>
+
+          <p className="text-lg font-semibold text-gray-900">
+            {formattedTime}
+          </p>
+
+        </div>
+
       </div>
 
       {/* ================= STAT CARDS ================= */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-6">
 
-        <StatCard
-          icon={<FaDollarSign />}
-          title="Total Revenue"
-          value={formatPrice(revenue)}
-        />
-
-        <StatCard
-          icon={<FaShoppingCart />}
-          title="Total Orders"
-          value={orders.length}
-        />
-
-        <StatCard
-          icon={<FaTruck />}
-          title="Processing Orders"
-          value={processingOrders}
-        />
-
-        {/* ✅ NEW CARD */}
-        <StatCard
-          icon={<FaCheckCircle />}
-          title="Completed Orders"
-          value={completedOrders}
-        />
-
-        <StatCard
-          icon={<FaBoxOpen />}
-          title="Products Sold"
-          value={productsSold}
-        />
-
-        <StatCard
-          icon={<FaUsers />}
-          title="Customers"
-          value={customers}
-        />
+        <StatCard icon={<FaDollarSign />} title="Total Revenue" value={formatPrice(revenue)} />
+        <StatCard icon={<FaShoppingCart />} title="Total Orders" value={orders.length} />
+        <StatCard icon={<FaTruck />} title="Processing Orders" value={processingOrders} />
+        <StatCard icon={<FaCheckCircle />} title="Completed Orders" value={completedOrders} />
+        <StatCard icon={<FaBoxOpen />} title="Products Sold" value={productsSold} />
+        <StatCard icon={<FaUsers />} title="Customers" value={customers} />
 
       </div>
 
@@ -186,7 +178,6 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
         {/* ORDER STATUS */}
-
         <div className="bg-white rounded-2xl shadow-md p-8">
 
           <h2 className="font-semibold text-gray-800 mb-6">
@@ -194,29 +185,20 @@ export default function AdminDashboard() {
           </h2>
 
           <div className="h-80">
-
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={orderStatusData}>
                 <CartesianGrid stroke="#f1f5f9" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-
-                <Bar
-                  dataKey="value"
-                  fill="#2563eb"
-                  radius={[8, 8, 0, 0]}
-                />
-
+                <Bar dataKey="value" fill="#2563eb" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-
           </div>
 
         </div>
 
         {/* RECENT ORDERS */}
-
         <div className="bg-white rounded-2xl shadow-md p-8">
 
           <div className="flex items-center justify-between mb-6">
@@ -290,7 +272,6 @@ function OrderRow({ id, user, total, status }) {
       : "bg-gray-100 text-gray-700";
 
   return (
-
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
 
       <div>

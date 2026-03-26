@@ -43,8 +43,9 @@ import AdminUser from "../pages/admin/AdminUser.jsx";
 import AdminMessages from "../pages/admin/AdminMessages.jsx";
 
 /* SUPER ADMIN */
-import SuperAdminDashboard from "../pages/superAdmin/SuperAdminDashboard.jsx";
-
+import SuperAdminLayout from "../layouts/SuperAdminLayout.jsx";
+import Overview from "../pages/superAdmin/Overview.jsx";
+import ManageAdmins from "../pages/superAdmin/ManageAdmins.jsx";
 
 
 export default function AppRoutes() {
@@ -61,7 +62,7 @@ export default function AppRoutes() {
         <Route path="/no-results" element={<NoResults />} />
         <Route path="/cart" element={<CartPage />} />
 
-        {/* 🔐 Protected Checkout */}
+        {/* Protected Checkout */}
         <Route path="/checkout" element={<Checkout />} />
       
 
@@ -112,13 +113,16 @@ export default function AppRoutes() {
 
       {/* ================= SUPER ADMIN ROUTE ================= */}
       <Route
-        path="/superAdmin/superAdminDashboard"
+        path="/superadmin"
         element={
           <SuperAdminRoutes>
-            <SuperAdminDashboard />
+            <SuperAdminLayout />
           </SuperAdminRoutes>
         }
-      />
+      >
+        <Route index element={<Overview />} />
+        <Route path="manageAdmins" element={<ManageAdmins />} />
+      </Route>
 
     </Routes>
   );
