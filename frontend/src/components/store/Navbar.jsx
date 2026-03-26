@@ -60,7 +60,7 @@ export default function Navbar() {
     }
 
     if (currentUser.role === "superadmin") {
-      navigate("/superAdmin/superAdminDashboard");
+      navigate("/superadmin");
     } else if (currentUser.role === "admin") {
       navigate("/admin/adminDashboard");
     } else {

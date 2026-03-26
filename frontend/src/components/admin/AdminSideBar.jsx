@@ -21,36 +21,30 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
   const linkStyle =
     "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200";
 
-
-
   /* ================= LOGOUT ================= */
   const handleLogout = async () => {
     try {
-      await logoutUser(); // Firebase logout
+      await logoutUser();
       navigate("/login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-
-
   return (
     <>
       {/* ================= MOBILE OVERLAY ================= */}
       <div
-        className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden transition ${
+        className={`fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden transition ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         onClick={() => setIsOpen(false)}
       />
 
-
-
       {/* ================= SIDEBAR ================= */}
       <div
         className={`fixed lg:static top-0 left-0 h-screen w-64 
-                    bg-gray-50 shadow-xl z-50 
+                    bg-gray-900 text-white shadow-xl z-50 
                     transform transition-transform duration-300
                     ${
                       isOpen
@@ -72,11 +66,11 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               />
 
               <div>
-                <h2 className="text-base font-semibold text-gray-900">
+                <h2 className="text-base font-semibold text-white">
                   LuxeStore
                 </h2>
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-400">
                   Admin Panel
                 </p>
               </div>
@@ -84,15 +78,13 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
             </div>
 
             <button
-              className="lg:hidden text-gray-500"
+              className="lg:hidden text-gray-400"
               onClick={() => setIsOpen(false)}
             >
               <FaTimes />
             </button>
 
           </div>
-
-
 
           {/* ================= NAVIGATION ================= */}
           <nav className="space-y-2 flex-1">
@@ -104,8 +96,8 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
@@ -113,15 +105,14 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               Dashboard
             </NavLink>
 
-
             <NavLink
               to="/admin/products"
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
@@ -129,15 +120,14 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               Products
             </NavLink>
 
-
             <NavLink
               to="/admin/categories"
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
@@ -145,15 +135,14 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               Categories
             </NavLink>
 
-
             <NavLink
               to="/admin/orders"
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
@@ -161,15 +150,14 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               Orders
             </NavLink>
 
-
             <NavLink
               to="/admin/messages"
               onClick={() => setIsOpen(false)}
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
@@ -183,8 +171,8 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
               className={({ isActive }) =>
                 `${linkStyle} ${
                   isActive
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800"
                 }`
               }
             >
@@ -194,14 +182,12 @@ export default function AdminSideBar({ isOpen, setIsOpen }) {
 
           </nav>
 
-
-
           {/* ================= LOGOUT ================= */}
           <button
             onClick={handleLogout}
             className="mt-auto flex items-center gap-3 px-4 py-3 
-                       rounded-xl text-sm font-medium text-red-500 
-                       hover:bg-red-50 transition"
+                       rounded-xl text-sm font-medium text-red-400 
+                       hover:bg-red-500/10 transition"
           >
             <FaSignOutAlt size={14} />
             Logout

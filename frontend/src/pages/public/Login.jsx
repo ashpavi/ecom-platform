@@ -24,7 +24,7 @@ export default function Login() {
       const user = await loginUser(email, password);
 
       if (user.role === "superadmin") {
-        navigate("/superAdmin/superAdminDashboard");
+        navigate("/superadmin");
       } else if (user.role === "admin") {
         navigate("/admin/adminDashboard");
       } else {
