@@ -9,6 +9,7 @@ export const createOrder = async (orderData) => {
 
   const docRef = await addDoc(ordersCollection, {
     ...orderData,
+    userId: orderData.userId,
     status: "Processing",
     createdAt: new Date()
   });
