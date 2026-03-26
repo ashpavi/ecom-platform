@@ -1,4 +1,4 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   FaShoppingCart,
   FaBars,
@@ -14,6 +14,18 @@ export default function Navbar() {
   const location = useLocation();
   const { totalItems } = useCart();
   const { currentUser, logoutUser } = useAuth();
+
+  const desktopNavClass = ({ isActive }) =>
+    `transition-colors duration-200 ${
+      isActive ? "text-blue-600 font-semibold" : "text-gray-600 hover:text-blue-600"
+    }`;
+
+  const mobileNavClass = ({ isActive }) =>
+    `rounded-lg px-2 py-1 transition-colors duration-200 ${
+      isActive
+        ? "text-blue-700 bg-blue-50 font-semibold"
+        : "text-gray-700 hover:text-blue-700 hover:bg-blue-50"
+    }`;
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -84,11 +96,11 @@ export default function Navbar() {
               </span>
             </Link>
 
-            <div className="hidden md:flex space-x-6 ml-6 text-gray-600 font-medium">
-              <Link to="/">Home</Link>
-              <Link to="/products">Shop</Link>
-              <Link to="/aboutUs">About Us</Link>
-              <Link to="/contactUs">Contact Us</Link>
+            <div className="hidden md:flex space-x-6 ml-6 font-medium">
+              <NavLink to="/" end className={desktopNavClass}>Home</NavLink>
+              <NavLink to="/products" className={desktopNavClass}>Shop</NavLink>
+              <NavLink to="/aboutUs" className={desktopNavClass}>About Us</NavLink>
+              <NavLink to="/contactUs" className={desktopNavClass}>Contact Us</NavLink>
             </div>
           </div>
 
@@ -122,19 +134,31 @@ export default function Navbar() {
             {/* ================= NOT LOGGED IN ================= */}
             {!currentUser && (
               <div className="hidden md:flex items-center space-x-4">
-                <Link
+                <NavLink
                   to="/login"
-                  className="bg-blue-300 text-black px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-400 transition"
+                  className={({ isActive }) =>
+                    `px-4 py-2 rounded-full text-sm font-medium transition ${
+                      isActive
+                        ? "bg-blue-500 text-white"
+                        : "bg-blue-300 text-black hover:bg-blue-400"
+                    }`
+                  }
                 >
                   Login
-                </Link>
+                </NavLink>
 
-                <Link
+                <NavLink
                   to="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition"
+                  className={({ isActive }) =>
+                    `px-4 py-2 rounded-full text-sm font-medium transition ${
+                      isActive
+                        ? "bg-blue-800 text-white"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`
+                  }
                 >
                   Register
-                </Link>
+                </NavLink>
               </div>
             )}
 
@@ -202,20 +226,16 @@ export default function Navbar() {
             />
           </form>
 
-          <div className="flex flex-col space-y-4 text-gray-700 font-medium">
-            <Link to="/" onClick={() => setIsOpen(false)}>Home</Link>
-            <Link to="/products" onClick={() => setIsOpen(false)}>Shop</Link>
-            <Link to="/aboutUs" onClick={() => setIsOpen(false)}>About Us</Link>
-            <Link to="/contactUs" onClick={() => setIsOpen(false)}>Contact Us</Link>
+          <div className="flex flex-col space-y-4 font-medium">
+            <NavLink to="/" end className={mobileNavClass} onClick={() => setIsOpen(false)}>Home</NavLink>
+            <NavLink to="/products" className={mobileNavClass} onClick={() => setIsOpen(false)}>Shop</NavLink>
+            <NavLink to="/aboutUs" className={mobileNavClass} onClick={() => setIsOpen(false)}>About Us</NavLink>
+            <NavLink to="/contactUs" className={mobileNavClass} onClick={() => setIsOpen(false)}>Contact Us</NavLink>
 
             {!currentUser && (
               <>
-                <Link to="/login" onClick={() => setIsOpen(false)}>
-                  Login
-                </Link>
-                <Link to="/register" onClick={() => setIsOpen(false)}>
-                  Register
-                </Link>
+                <NavLink to="/login" className={mobileNavClass} onClick={() => setIsOpen(false)}>Login</NavLink>
+                <NavLink to="/register" className={mobileNavClass} onClick={() => setIsOpen(false)}>Register</NavLink>
               </>
             )}
 

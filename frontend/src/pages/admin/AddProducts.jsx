@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useProducts } from "../../hooks/useProducts";
 import { uploadProductImages } from "../../firebase/services/uploadService";
 import { useCategories } from "../../hooks/useCategories";
+import defaultProductImage from "../../assets/default-product.jpg";
+
 
 export default function AddProducts() {
 
@@ -115,6 +117,10 @@ export default function AddProducts() {
           imageFiles,
           productId
         );
+
+      } else {
+
+        imageUrls = [defaultProductImage]; // ✅ fallback
 
       }
 

@@ -16,6 +16,7 @@ export default function ProductList() {
   const selectedCategory = searchParams.get("category") || "All";
   const selectedBrand = searchParams.get("brand") || "All";
   const priceRange = Number(searchParams.get("maxPrice")) || 50000;
+  const searchQuery = (searchParams.get("search") || "").trim().toLowerCase();
 
 
   /* AUTO GENERATE BRANDS FROM PRODUCTS */
@@ -41,7 +42,13 @@ export default function ProductList() {
     const priceMatch =
       product.price <= priceRange;
 
-    return categoryMatch && brandMatch && priceMatch;
+    const searchMatch =
+      !searchQuery ||
+      `${product.name || ""} ${product.brand || ""} ${product.category || ""}`
+        .toLowerCase()
+        .includes(searchQuery);
+
+    return categoryMatch && brandMatch && priceMatch && searchMatch;
 
   });
 
@@ -75,7 +82,9 @@ export default function ProductList() {
         </h1>
 
         <p className="text-gray-500 mt-2">
-          Discover the best products curated for you
+          {searchQuery
+            ? `Showing results for "${searchParams.get("search")}"`
+            : "Discover the best products curated for you"}
         </p>
 
         <div className="w-24 h-1 bg-blue-600 mx-auto mt-4 rounded"></div>
@@ -267,9 +276,15 @@ export default function ProductList() {
 
             ) : (
 
-              filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))
+              filteredProducts.length > 0 ? (
+                filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              ) : (
+                <p className="text-center text-gray-500 col-span-full">
+                  No products found for your current search and filters.
+                </p>
+              )
 
             )}
 
