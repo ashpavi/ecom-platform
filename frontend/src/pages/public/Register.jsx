@@ -5,7 +5,7 @@ import logo from "../../assets/logo.jpg";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Register() {
-  const { registerUser } = useAuth();
+  const { registerUser, logoutUser } = useAuth();
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
@@ -29,7 +29,9 @@ export default function Register() {
         password,
       });
 
-      navigate("/account");
+      
+      await logoutUser();
+      navigate("/login");
 
     } catch (err) {
       setError(err.message);

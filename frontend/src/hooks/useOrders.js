@@ -5,21 +5,34 @@ import {
   updateDoc,
   doc,
   query,
-  orderBy
+  orderBy,
+  where
 } from "firebase/firestore";
 import { db } from "../firebase/firebaseConfig";
 
-export function useOrders() {
+export function useOrders(userId = null) {
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
-    const q = query(
-      collection(db, "orders"),
-      orderBy("date", "desc")
-    );
+    let q;
+
+    if (userId) {
+      // ✅ CUSTOMER
+      q = query(
+        collection(db, "orders"),
+        where("userId", "==", userId),
+        orderBy("createdAt", "desc")
+      );
+    } else {
+      // ✅ ADMIN
+      q = query(
+        collection(db, "orders"),
+        orderBy("createdAt", "desc")
+      );
+    }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
 
@@ -31,20 +44,19 @@ export function useOrders() {
       setOrders(orderList);
       setLoading(false);
 
-    });
+    },
+  (error) => {
+    console.error("Firestore error:", error);
+    setLoading(false); // 🔥 prevents stuck loading
+  });
 
     return unsubscribe;
 
-  }, []);
+  }, [userId]);
 
   const updateOrderStatus = async (orderId, status) => {
-
     const orderRef = doc(db, "orders", orderId);
-
-    await updateDoc(orderRef, {
-      status
-    });
-
+    await updateDoc(orderRef, { status });
   };
 
   return {
@@ -52,5 +64,4 @@ export function useOrders() {
     loading,
     updateOrderStatus
   };
-
 }
